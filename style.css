@@ -127,21 +127,36 @@ body {
 }
 
 .landing-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-decoration: none;
+    line-height: 1;
+    gap: 2px;
+    transition: opacity 0.3s var(--ease);
+}
+.landing-logo:hover { opacity: 0.85; }
+
+.logo-patria {
     font-family: 'Playfair Display', serif;
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 700;
     color: #fff;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.18em;
     transition: color 0.4s var(--ease);
 }
 
-.landing-nav.scrolled .landing-logo {
-    color: var(--primary);
+.logo-capital {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gold);
+    letter-spacing: 0.35em;
+    margin-left: 1px;
 }
 
-.landing-logo .logo-icon {
-    color: var(--gold);
-    margin-right: 6px;
+.landing-nav.scrolled .logo-patria {
+    color: var(--primary);
 }
 
 .landing-nav-links {
@@ -799,6 +814,14 @@ body {
     font-size: 13px;
     line-height: 1.7;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin-bottom: 12px;
 }
 
 .landing-footer a {
