@@ -1041,6 +1041,264 @@ function sendBilan() {
     window.location.href = `mailto:${CGP_EMAIL}?subject=${subject}&body=${body}`;
 }
 
+function exportBilanPDF() {
+    const d = collectFormData();
+    const r = getSimResults();
+    const nf = new Intl.NumberFormat('fr-FR');
+    const fmtEur = (v) => v != null && v !== 0 ? nf.format(v) + ' \u20AC' : '\u2014';
+    const dateStr = new Date().toLocaleDateString('fr-FR');
+    const clientName = `${d.prenom || ''} ${d.nom || ''}`.trim() || 'Client';
+
+    const totalRevenus = (d.salairesClient || 0) + (d.salairesConjoint || 0) + (d.revenusBIC || 0) + (d.dividendes || 0) + (d.revenusFonciers || 0) + (d.pensions || 0) + (d.autresRevenus || 0);
+    const totalCharges = (d.loyer || 0) + (d.creditRP || 0) + (d.creditLocatif || 0) + (d.creditConso || 0) + (d.pensionAlim || 0) + (d.autresCharges || 0);
+    const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
+    const totalFin = (d.livrets || 0) + (d.pel || 0) + (d.assuranceVie || 0) + (d.pea || 0) + (d.cto || 0) + (d.per || 0) + (d.epargneSalariale || 0) + (d.autresPlacement || 0);
+    const patriBrut = totalImmo + totalFin;
+    const dettes = d.capitalRestantRP || 0;
+    const patriNet = patriBrut - dettes;
+
+    // Helper to build a table row
+    const row = (label, value) => `<tr><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;">${label}</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;font-weight:500;">${value}</td></tr>`;
+    const totalRow = (label, value) => `<tr><td style="padding:8px 12px;border-top:2px solid #254a65;font-weight:700;color:#254a65;">${label}</td><td style="padding:8px 12px;border-top:2px solid #254a65;text-align:right;font-weight:700;color:#254a65;">${value}</td></tr>`;
+    const sectionTitle = (title) => `<h2 style="color:#254a65;font-size:16px;margin:28px 0 6px 0;padding-bottom:6px;border-bottom:2px solid #c8a94e;font-family:'Georgia',serif;">${title}</h2>`;
+    const tableOpen = '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;">';
+    const tableClose = '</table>';
+
+    // Build sections
+    let identite = sectionTitle('Identit\u00e9');
+    identite += tableOpen;
+    identite += row('Nom', `${d.nom || '\u2014'} ${d.prenom || ''}`);
+    identite += row('Date de naissance', d.dateNaissance || '\u2014');
+    identite += row('Situation matrimoniale', d.situationMatri || '\u2014');
+    identite += row('R\u00e9gime matrimonial', d.regimeMatri || '\u2014');
+    identite += row('Enfants', `${d.nbEnfants || 0} (dont ${d.enfantsCharge || 0} \u00e0 charge)`);
+    identite += tableClose;
+
+    let sitPro = sectionTitle('Situation professionnelle');
+    sitPro += tableOpen;
+    sitPro += row('Statut', d.statutPro || '\u2014');
+    sitPro += row('Profession', d.profession || '\u2014');
+    sitPro += row('Secteur', d.secteur || '\u2014');
+    sitPro += tableClose;
+
+    let revenus = sectionTitle('Revenus annuels');
+    revenus += tableOpen;
+    if (d.salairesClient) revenus += row('Salaires client', fmtEur(d.salairesClient));
+    if (d.salairesConjoint) revenus += row('Salaires conjoint', fmtEur(d.salairesConjoint));
+    if (d.revenusBIC) revenus += row('BIC / BNC', fmtEur(d.revenusBIC));
+    if (d.dividendes) revenus += row('Dividendes', fmtEur(d.dividendes));
+    if (d.revenusFonciers) revenus += row('Revenus fonciers', fmtEur(d.revenusFonciers));
+    if (d.pensions) revenus += row('Pensions', fmtEur(d.pensions));
+    if (d.autresRevenus) revenus += row('Autres revenus', fmtEur(d.autresRevenus));
+    revenus += totalRow('Total revenus', fmtEur(totalRevenus));
+    revenus += tableClose;
+
+    let charges = sectionTitle('Charges mensuelles');
+    charges += tableOpen;
+    if (d.loyer) charges += row('Loyer', fmtEur(d.loyer) + ' /mois');
+    if (d.creditRP) charges += row('Cr\u00e9dit r\u00e9sidence principale', fmtEur(d.creditRP) + ' /mois');
+    if (d.creditLocatif) charges += row('Cr\u00e9dits locatifs', fmtEur(d.creditLocatif) + ' /mois');
+    if (d.creditConso) charges += row('Cr\u00e9dits consommation', fmtEur(d.creditConso) + ' /mois');
+    if (d.pensionAlim) charges += row('Pension alimentaire', fmtEur(d.pensionAlim) + ' /mois');
+    if (d.autresCharges) charges += row('Autres charges', fmtEur(d.autresCharges) + ' /mois');
+    charges += totalRow('Total charges', fmtEur(totalCharges) + ' /mois');
+    charges += row('Capacit\u00e9 d\u2019\u00e9pargne', fmtEur(Math.round(totalRevenus / 12 - totalCharges)) + ' /mois');
+    charges += tableClose;
+
+    let immo = sectionTitle('Patrimoine immobilier');
+    immo += tableOpen;
+    if (d.immoRP) immo += row('R\u00e9sidence principale', fmtEur(d.immoRP));
+    if (d.immoRS) immo += row('R\u00e9sidence secondaire', fmtEur(d.immoRS));
+    if (d.immoLoc1) immo += row('Locatif 1', fmtEur(d.immoLoc1));
+    if (d.immoLoc2) immo += row('Locatif 2', fmtEur(d.immoLoc2));
+    if (d.immoPro) immo += row('Immobilier professionnel', fmtEur(d.immoPro));
+    if (d.immoAutres) immo += row('Autres immobiliers', fmtEur(d.immoAutres));
+    immo += totalRow('Total immobilier', fmtEur(totalImmo));
+    immo += tableClose;
+
+    let fin = sectionTitle('Patrimoine financier');
+    fin += tableOpen;
+    if (d.livrets) fin += row('Livrets', fmtEur(d.livrets));
+    if (d.pel) fin += row('PEL', fmtEur(d.pel));
+    if (d.assuranceVie) fin += row('Assurance Vie', fmtEur(d.assuranceVie));
+    if (d.pea) fin += row('PEA', fmtEur(d.pea));
+    if (d.cto) fin += row('CTO', fmtEur(d.cto));
+    if (d.per) fin += row('PER', fmtEur(d.per));
+    if (d.epargneSalariale) fin += row('\u00c9pargne salariale', fmtEur(d.epargneSalariale));
+    if (d.autresPlacement) fin += row('Autres placements', fmtEur(d.autresPlacement));
+    fin += totalRow('Total financier', fmtEur(totalFin));
+    fin += tableClose;
+
+    let synthese = sectionTitle('Synth\u00e8se patrimoniale');
+    synthese += `<div style="background:linear-gradient(135deg,#f8f6f0,#fff);border:2px solid #c8a94e;border-radius:10px;padding:20px;margin:12px 0;">`;
+    synthese += tableOpen;
+    synthese += row('Patrimoine brut', fmtEur(patriBrut));
+    synthese += row('Dettes', fmtEur(dettes));
+    synthese += `<tr><td style="padding:12px;border-top:2px solid #c8a94e;font-size:16px;font-weight:700;color:#254a65;">Patrimoine net</td><td style="padding:12px;border-top:2px solid #c8a94e;text-align:right;font-size:18px;font-weight:700;color:#c8a94e;">${fmtEur(patriNet)}</td></tr>`;
+    synthese += tableClose;
+    synthese += tableOpen;
+    synthese += row('TMI', d.tmi ? (parseFloat(d.tmi) * 100) + ' %' : '\u2014');
+    synthese += row('Parts fiscales', d.partsFiscales || '\u2014');
+    synthese += tableClose;
+    synthese += '</div>';
+
+    let objectifs = sectionTitle('Objectifs');
+    objectifs += tableOpen;
+    objectifs += row('Objectif principal', d.objectifPrincipal || '\u2014');
+    objectifs += row('Profil de risque', d.profilRisque || '\u2014');
+    objectifs += row('Horizon', `${d.horizon || '\u2014'} (${d.horizonAnnees || '\u2014'} ans)`);
+    objectifs += row('Apport disponible', fmtEur(d.apportDispo || 0));
+    objectifs += row('\u00c9pargne mensuelle', fmtEur(d.epargneMensuelle || 0));
+    objectifs += row('Besoin de revenus', d.besoinRevenus || 'Non');
+    objectifs += row('Pr\u00e9occupation succession', d.preoccSucc || 'Non');
+    objectifs += tableClose;
+
+    let simulations = '';
+    if (Object.keys(r).length > 0) {
+        simulations = sectionTitle('R\u00e9sultats des simulations');
+        simulations += tableOpen;
+        simulations += `<tr style="background:#254a65;color:#fff;"><th style="padding:8px 12px;text-align:left;">Enveloppe</th><th style="padding:8px 12px;text-align:right;">Capital net</th><th style="padding:8px 12px;text-align:right;">TRI</th></tr>`;
+        if (r.immo) simulations += `<tr><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;">Immobilier</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${fmtEur(Math.round(r.immo.capitalNet))}</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${(r.immo.tri * 100).toFixed(1)} %</td></tr>`;
+        if (r.av) simulations += `<tr><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;">Assurance Vie</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${fmtEur(Math.round(r.av.capitalNet))}</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${(r.av.tri * 100).toFixed(1)} %</td></tr>`;
+        if (r.peaLibre) simulations += `<tr><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;">PEA Libre</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${fmtEur(Math.round(r.peaLibre.capitalNet))}</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${(r.peaLibre.tri * 100).toFixed(1)} %</td></tr>`;
+        if (r.peaMandat) simulations += `<tr><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;">PEA Mandat</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${fmtEur(Math.round(r.peaMandat.capitalNet))}</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${(r.peaMandat.tri * 100).toFixed(1)} %</td></tr>`;
+        if (r.cto) simulations += `<tr><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;">CTO</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${fmtEur(Math.round(r.cto.capitalNet))}</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${(r.cto.tri * 100).toFixed(1)} %</td></tr>`;
+        simulations += tableClose;
+    }
+
+    // Full HTML document
+    const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Bilan Patrimonial \u2014 ${clientName}</title>
+<style>
+    @page {
+        size: A4;
+        margin: 20mm 18mm 25mm 18mm;
+    }
+    @media print {
+        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .no-print { display: none; }
+    }
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        color: #2c2c2c;
+        line-height: 1.5;
+        margin: 0;
+        padding: 0;
+        font-size: 13px;
+    }
+    .page-wrapper {
+        max-width: 750px;
+        margin: 0 auto;
+        padding: 10px 0;
+    }
+    .header {
+        text-align: center;
+        padding-bottom: 16px;
+        margin-bottom: 10px;
+    }
+    .header img {
+        max-height: 70px;
+        margin-bottom: 8px;
+    }
+    .header h1 {
+        font-family: 'Georgia', serif;
+        font-size: 22px;
+        letter-spacing: 6px;
+        color: #254a65;
+        margin: 0 0 4px 0;
+        font-weight: 400;
+    }
+    .header .gold-line {
+        width: 120px;
+        height: 2px;
+        background: #c8a94e;
+        margin: 10px auto;
+    }
+    .subtitle {
+        text-align: center;
+        font-size: 15px;
+        color: #555;
+        margin-bottom: 6px;
+    }
+    .date-line {
+        text-align: center;
+        font-size: 12px;
+        color: #888;
+        margin-bottom: 24px;
+    }
+    table { page-break-inside: avoid; }
+    h2 { page-break-after: avoid; }
+    .footer {
+        margin-top: 40px;
+        padding-top: 12px;
+        border-top: 1px solid #ccc;
+        text-align: center;
+        font-size: 10px;
+        color: #999;
+    }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+    <div class="header">
+        <img src="logo.png" alt="Patria Capital">
+        <h1>PATRIA CAPITAL</h1>
+        <div class="gold-line"></div>
+    </div>
+    <div class="subtitle">Bilan Patrimonial \u2014 ${clientName}</div>
+    <div class="date-line">${dateStr}</div>
+    ${identite}
+    ${sitPro}
+    ${revenus}
+    ${charges}
+    ${immo}
+    ${fin}
+    ${synthese}
+    ${objectifs}
+    ${simulations}
+    <div class="footer">
+        Document confidentiel \u2014 Patria Capital \u2014 ${dateStr}
+    </div>
+</div>
+</body>
+</html>`;
+
+    // Create hidden iframe and trigger print
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+    document.body.appendChild(iframe);
+
+    const iframeDoc = iframe.contentWindow.document;
+    iframeDoc.open();
+    iframeDoc.write(html);
+    iframeDoc.close();
+
+    // Wait for content (especially logo image) to load before printing
+    iframe.contentWindow.onafterprint = () => {
+        document.body.removeChild(iframe);
+    };
+
+    setTimeout(() => {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+        // Fallback cleanup after 60s if onafterprint doesn't fire
+        setTimeout(() => {
+            if (iframe.parentNode) {
+                document.body.removeChild(iframe);
+            }
+        }, 60000);
+    }, 500);
+}
+
 function prendreRDV() {
     const d = collectFormData();
     const subject = encodeURIComponent(`Demande de RDV - ${d.prenom || ''} ${d.nom || ''} - Mise en place recommandations`);
