@@ -18,6 +18,7 @@
                 <div class="landing-logo" style="font-family:'Playfair Display',serif;font-weight:700;letter-spacing:0.02em;">Patria Capital</div>
                 <div class="landing-nav-links">
                     <a href="#features">Notre approche</a>
+                    <a href="offre.html">Notre offre</a>
                     <a href="#cabinet">Le cabinet</a>
                     <a href="#simulator">Simulateur</a>
                     <a href="#" onclick="showAuthScreen('login')" style="text-decoration:none;">Connexion</a>
@@ -51,6 +52,9 @@
                     <div class="hero-stat-value">500M+</div>
                 </div>
             </div>
+            <div class="scroll-indicator">
+                <span></span>
+            </div>
         </section>
 
         <!-- TRUST BAR -->
@@ -69,22 +73,22 @@
             <h2 class="landing-section-title">Notre methode d'accompagnement</h2>
             <p class="landing-section-subtitle">Une approche structuree, transparente et personnalisee.</p>
             <div class="features-grid">
-                <div class="feature-card">
+                <div class="feature-card animate-on-scroll">
                     <div class="feature-number">01</div>
                     <h3>Bilan patrimonial</h3>
                     <p>Nous analysons l'ensemble de votre situation : actifs, revenus, charges, fiscalite et objectifs de vie.</p>
                 </div>
-                <div class="feature-card">
+                <div class="feature-card animate-on-scroll">
                     <div class="feature-number">02</div>
                     <h3>Strategie sur-mesure</h3>
                     <p>Nos conseillers elaborent des recommandations adaptees a votre profil et vos ambitions.</p>
                 </div>
-                <div class="feature-card">
+                <div class="feature-card animate-on-scroll">
                     <div class="feature-number">03</div>
                     <h3>Simulations detaillees</h3>
                     <p>Immobilier, assurance vie, PEA, defiscalisation : visualisez l'impact de chaque strategie.</p>
                 </div>
-                <div class="feature-card">
+                <div class="feature-card animate-on-scroll">
                     <div class="feature-number">04</div>
                     <h3>Suivi et accompagnement</h3>
                     <p>Un interlocuteur dedie vous accompagne dans la mise en place et le suivi de vos investissements.</p>
@@ -129,15 +133,15 @@
         <section class="landing-section">
             <h2 class="landing-section-title">Ce que disent nos clients</h2>
             <div class="testimonials-grid">
-                <div class="testimonial-card">
+                <div class="testimonial-card animate-on-scroll">
                     <div class="testimonial-quote">"Grace a Patria Capital, j'ai enfin une vision claire de mon patrimoine et une strategie fiscale qui me fait economiser plus de 8 000 euros par an."</div>
                     <div class="testimonial-author"><strong>Laurent M.</strong><br>Cadre dirigeant</div>
                 </div>
-                <div class="testimonial-card">
+                <div class="testimonial-card animate-on-scroll">
                     <div class="testimonial-quote">"Un accompagnement remarquable. En moins d'une heure, j'avais un bilan complet et des recommandations concretes."</div>
                     <div class="testimonial-author"><strong>Sophie D.</strong><br>Medecin liberale</div>
                 </div>
-                <div class="testimonial-card">
+                <div class="testimonial-card animate-on-scroll">
                     <div class="testimonial-quote">"Le comparatif entre les differentes enveloppes m'a permis de faire le bon choix. Tres professionnel et a l'ecoute."</div>
                     <div class="testimonial-author"><strong>Thomas R.</strong><br>Entrepreneur</div>
                 </div>
@@ -733,5 +737,17 @@
     <script src="auth.js"></script>
     <script src="engine.js"></script>
     <script src="app.js"></script>
+    <script>
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    </script>
 </body>
 </html>
