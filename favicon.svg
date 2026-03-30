@@ -1,11 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#0c0f1a"/>
-  <text x="256" y="380" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-weight="400" font-size="420" fill="url(#gold)">P</text>
+  <rect width="512" height="512" rx="108" fill="#0c0f1a"/>
   <defs>
-    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#c1925e"/>
-      <stop offset="50%" stop-color="#dbb88a"/>
-      <stop offset="100%" stop-color="#c1925e"/>
+    <linearGradient id="g" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#d4a94e"/>
+      <stop offset="45%" stop-color="#e8c87a"/>
+      <stop offset="100%" stop-color="#b8893e"/>
     </linearGradient>
   </defs>
+  <!-- Elegant script P -->
+  <path d="
+    M 155 400
+    C 155 400 170 395 175 380
+    Q 195 310 215 230
+    Q 225 190 240 160
+    Q 255 130 280 115
+    Q 300 103 325 103
+    Q 360 103 380 120
+    Q 400 137 395 165
+    Q 390 195 365 215
+    Q 340 235 305 240
+    Q 280 243 255 243
+    L 248 245
+    Q 235 295 220 350
+    Q 210 385 195 398
+    C 185 408 170 405 155 400
+    Z
+    M 260 215
+    Q 275 213 295 208
+    Q 325 198 345 178
+    Q 362 160 365 142
+    Q 368 125 355 116
+    Q 342 107 325 112
+    Q 305 118 292 138
+    Q 278 160 268 190
+    Z
+  " fill="url(#g)"/>
+  <!-- Elegant swoosh underline -->
+  <path d="M 140 408 Q 175 425 230 428 Q 275 428 300 412" fill="none" stroke="url(#g)" stroke-width="5" stroke-linecap="round"/>
 </svg>
