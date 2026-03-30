@@ -566,6 +566,41 @@ body {
     transform: translateY(-1px);
 }
 
+.btn-green {
+    background: var(--green);
+    color: #fff;
+    border: none;
+}
+
+.btn-green:hover {
+    background: #047857;
+    transform: translateY(-1px);
+}
+
+.action-buttons-row {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    padding: 14px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    flex: 1;
+    min-width: 240px;
+    text-align: center;
+}
+
+.btn-action:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+}
+
 /* ===== RECOMMENDATION CARD ===== */
 .recommendation-card {
     border: 2px solid var(--accent);

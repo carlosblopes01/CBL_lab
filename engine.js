@@ -1,3 +1,7 @@
+// ===== CONFIGURATION CGP =====
+const CGP_EMAIL = 'contact@cabinet-cgp.fr'; // <-- Remplacez par votre email professionnel
+const CGP_NOM = 'Cabinet CGP';
+
 // ===== CALCULATION ENGINE =====
 
 function fmt(n) {
@@ -103,6 +107,12 @@ function saveAndCalculate() {
 
     // Generate recommendation
     generateRecommendation(data);
+
+    // Show action buttons
+    const dashActions = document.getElementById('dash-actions');
+    if (dashActions) dashActions.classList.remove('hidden');
+    const recoActions = document.getElementById('reco-actions');
+    if (recoActions) recoActions.classList.remove('hidden');
 
     // Switch to dashboard
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -931,6 +941,117 @@ function calculateFiscalite(d, patriNet, totalFin) {
             </div>
         `;
     }
+}
+
+// ===== ENVOYER BILAN PAR EMAIL =====
+function generateBilanText() {
+    const d = collectFormData();
+    const r = getSimResults();
+    const totalRevenus = (d.salairesClient || 0) + (d.salairesConjoint || 0) + (d.revenusBIC || 0) + (d.dividendes || 0) + (d.revenusFonciers || 0) + (d.pensions || 0) + (d.autresRevenus || 0);
+    const totalCharges = (d.loyer || 0) + (d.creditRP || 0) + (d.creditLocatif || 0) + (d.creditConso || 0) + (d.pensionAlim || 0) + (d.autresCharges || 0);
+    const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
+    const totalFin = (d.livrets || 0) + (d.pel || 0) + (d.assuranceVie || 0) + (d.pea || 0) + (d.cto || 0) + (d.per || 0) + (d.epargneSalariale || 0) + (d.autresPlacement || 0);
+    const patriBrut = totalImmo + totalFin;
+    const dettes = d.capitalRestantRP || 0;
+    const patriNet = patriBrut - dettes;
+
+    let text = `BILAN PATRIMONIAL - ${d.prenom || ''} ${d.nom || ''}\n`;
+    text += `Date : ${new Date().toLocaleDateString('fr-FR')}\n`;
+    text += `${'='.repeat(50)}\n\n`;
+
+    text += `IDENTITE\n`;
+    text += `Nom : ${d.nom || ''} ${d.prenom || ''}\n`;
+    text += `Date de naissance : ${d.dateNaissance || '—'}\n`;
+    text += `Situation : ${d.situationMatri || '—'}\n`;
+    text += `Regime matrimonial : ${d.regimeMatri || '—'}\n`;
+    text += `Enfants : ${d.nbEnfants || 0} (dont ${d.enfantsCharge || 0} a charge)\n\n`;
+
+    text += `SITUATION PROFESSIONNELLE\n`;
+    text += `Statut : ${d.statutPro || '—'}\n`;
+    text += `Profession : ${d.profession || '—'}\n`;
+    text += `Secteur : ${d.secteur || '—'}\n\n`;
+
+    text += `REVENUS ANNUELS\n`;
+    if (d.salairesClient) text += `Salaires client : ${d.salairesClient} EUR\n`;
+    if (d.salairesConjoint) text += `Salaires conjoint : ${d.salairesConjoint} EUR\n`;
+    if (d.revenusBIC) text += `BIC/BNC : ${d.revenusBIC} EUR\n`;
+    if (d.dividendes) text += `Dividendes : ${d.dividendes} EUR\n`;
+    if (d.revenusFonciers) text += `Revenus fonciers : ${d.revenusFonciers} EUR\n`;
+    if (d.pensions) text += `Pensions : ${d.pensions} EUR\n`;
+    text += `TOTAL REVENUS : ${totalRevenus} EUR\n\n`;
+
+    text += `CHARGES MENSUELLES\n`;
+    if (d.loyer) text += `Loyer : ${d.loyer} EUR/mois\n`;
+    if (d.creditRP) text += `Credit RP : ${d.creditRP} EUR/mois\n`;
+    if (d.creditLocatif) text += `Credits locatifs : ${d.creditLocatif} EUR/mois\n`;
+    if (d.creditConso) text += `Credits conso : ${d.creditConso} EUR/mois\n`;
+    text += `TOTAL CHARGES : ${totalCharges} EUR/mois\n`;
+    text += `Capacite epargne : ${Math.round(totalRevenus / 12 - totalCharges)} EUR/mois\n\n`;
+
+    text += `PATRIMOINE IMMOBILIER\n`;
+    if (d.immoRP) text += `Residence principale : ${d.immoRP} EUR\n`;
+    if (d.immoRS) text += `Residence secondaire : ${d.immoRS} EUR\n`;
+    if (d.immoLoc1) text += `Locatif 1 : ${d.immoLoc1} EUR\n`;
+    if (d.immoLoc2) text += `Locatif 2 : ${d.immoLoc2} EUR\n`;
+    text += `Total immobilier : ${totalImmo} EUR\n\n`;
+
+    text += `PATRIMOINE FINANCIER\n`;
+    if (d.livrets) text += `Livrets : ${d.livrets} EUR\n`;
+    if (d.assuranceVie) text += `Assurance Vie : ${d.assuranceVie} EUR\n`;
+    if (d.pea) text += `PEA : ${d.pea} EUR\n`;
+    if (d.cto) text += `CTO : ${d.cto} EUR\n`;
+    if (d.per) text += `PER : ${d.per} EUR\n`;
+    text += `Total financier : ${totalFin} EUR\n\n`;
+
+    text += `SYNTHESE\n`;
+    text += `Patrimoine brut : ${patriBrut} EUR\n`;
+    text += `Dettes : ${dettes} EUR\n`;
+    text += `Patrimoine net : ${patriNet} EUR\n`;
+    text += `TMI : ${d.tmi ? (parseFloat(d.tmi) * 100) + '%' : '—'}\n`;
+    text += `Parts fiscales : ${d.partsFiscales || '—'}\n\n`;
+
+    text += `OBJECTIFS\n`;
+    text += `Objectif principal : ${d.objectifPrincipal || '—'}\n`;
+    text += `Profil de risque : ${d.profilRisque || '—'}\n`;
+    text += `Horizon : ${d.horizon || '—'} (${d.horizonAnnees || '—'} ans)\n`;
+    text += `Apport disponible : ${d.apportDispo || 0} EUR\n`;
+    text += `Epargne mensuelle : ${d.epargneMensuelle || 0} EUR\n`;
+    text += `Besoin revenus : ${d.besoinRevenus || 'Non'}\n`;
+    text += `Preoccupation succession : ${d.preoccSucc || 'Non'}\n\n`;
+
+    if (Object.keys(r).length > 0) {
+        text += `RESULTATS SIMULATIONS\n`;
+        if (r.immo) text += `Immobilier : Capital net ${Math.round(r.immo.capitalNet)} EUR / TRI ${(r.immo.tri * 100).toFixed(1)}%\n`;
+        if (r.av) text += `Assurance Vie : Capital net ${Math.round(r.av.capitalNet)} EUR / TRI ${(r.av.tri * 100).toFixed(1)}%\n`;
+        if (r.peaLibre) text += `PEA Libre : Capital net ${Math.round(r.peaLibre.capitalNet)} EUR / TRI ${(r.peaLibre.tri * 100).toFixed(1)}%\n`;
+        if (r.peaMandat) text += `PEA Mandat : Capital net ${Math.round(r.peaMandat.capitalNet)} EUR / TRI ${(r.peaMandat.tri * 100).toFixed(1)}%\n`;
+        if (r.cto) text += `CTO : Capital net ${Math.round(r.cto.capitalNet)} EUR / TRI ${(r.cto.tri * 100).toFixed(1)}%\n`;
+    }
+
+    return text;
+}
+
+function sendBilan() {
+    const d = collectFormData();
+    const subject = encodeURIComponent(`Bilan Patrimonial - ${d.prenom || ''} ${d.nom || ''} - ${new Date().toLocaleDateString('fr-FR')}`);
+    const body = encodeURIComponent(generateBilanText());
+    window.location.href = `mailto:${CGP_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+function prendreRDV() {
+    const d = collectFormData();
+    const subject = encodeURIComponent(`Demande de RDV - ${d.prenom || ''} ${d.nom || ''} - Mise en place recommandations`);
+    const body = encodeURIComponent(
+        `Bonjour,\n\n` +
+        `Je souhaite prendre rendez-vous pour la mise en place des recommandations issues de mon bilan patrimonial.\n\n` +
+        `Nom : ${d.prenom || ''} ${d.nom || ''}\n` +
+        `Email : ${getCurrentUser()?.email || '—'}\n` +
+        `Objectif : ${d.objectifPrincipal || '—'}\n` +
+        `Profil : ${d.profilRisque || '—'}\n\n` +
+        `Merci de me proposer un creneau.\n\n` +
+        `Cordialement`
+    );
+    window.location.href = `mailto:${CGP_EMAIL}?subject=${subject}&body=${body}`;
 }
 
 // ===== LIVE FORM UPDATES =====
