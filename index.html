@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBL Advisory | Gestion de Patrimoine</title>
+    <title>Patria Capital | Gestion de Patrimoine</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 </head>
@@ -15,11 +15,12 @@
         <!-- NAV -->
         <nav class="landing-nav">
             <div class="landing-nav-inner">
-                <div class="landing-logo"><span class="logo-icon">&#9670;</span> CBL Advisory</div>
+                <div class="landing-logo" style="font-family:'Playfair Display',serif;font-weight:700;letter-spacing:0.02em;">Patria Capital</div>
                 <div class="landing-nav-links">
                     <a href="#features">Notre approche</a>
+                    <a href="#cabinet">Le cabinet</a>
                     <a href="#simulator">Simulateur</a>
-                    <button class="btn btn-outline btn-sm" onclick="showAuthScreen('login')">Connexion</button>
+                    <a href="#" onclick="showAuthScreen('login')" style="text-decoration:none;">Connexion</a>
                     <button class="btn btn-gold btn-sm" onclick="showAuthScreen('signup')">Commencer</button>
                 </div>
             </div>
@@ -28,70 +29,73 @@
         <!-- HERO -->
         <section class="landing-hero">
             <div class="hero-content">
-                <div class="hero-badge">Plateforme de conseil patrimonial</div>
-                <h1 class="hero-title">Optimisez votre patrimoine.<br>En toute clarte.</h1>
-                <p class="hero-subtitle">Analyse personnalisee, simulations avancees et recommandations sur-mesure. CBL Advisory met l'ingenierie patrimoniale a votre service.</p>
+                <div class="hero-badge">Cabinet de conseil en gestion de patrimoine</div>
+                <h1 class="hero-title">Votre patrimoine merite une attention sur-mesure.</h1>
+                <p class="hero-subtitle">Analyse patrimoniale, simulations avancees et strategies personnalisees. Patria Capital vous accompagne a chaque etape de votre vie financiere.</p>
                 <div class="hero-ctas">
-                    <button class="btn btn-gold btn-lg" onclick="showAuthScreen('signup')">Demarrer mon analyse gratuite</button>
-                    <a href="#simulator" class="btn btn-outline-light btn-lg">Simuler un placement</a>
+                    <button class="btn btn-gold btn-lg" onclick="showAuthScreen('signup')">Realiser mon bilan gratuit</button>
+                    <a href="#features" class="btn btn-outline-light btn-lg">Decouvrir notre approche</a>
                 </div>
             </div>
-            <div class="hero-visual">
+            <div class="hero-stats">
                 <div class="hero-stat-card">
-                    <div class="hero-stat-label">Rendement net projete</div>
-                    <div class="hero-stat-value">+5.6%<span>/an</span></div>
+                    <div class="hero-stat-label">Clients accompagnes</div>
+                    <div class="hero-stat-value">350+</div>
                 </div>
                 <div class="hero-stat-card">
-                    <div class="hero-stat-label">Economie fiscale moyenne</div>
-                    <div class="hero-stat-value">12 400 <span>&euro;</span></div>
+                    <div class="hero-stat-label">Satisfaction client</div>
+                    <div class="hero-stat-value">98%</div>
                 </div>
                 <div class="hero-stat-card">
-                    <div class="hero-stat-label">Capital a 10 ans</div>
-                    <div class="hero-stat-value">+72%</div>
+                    <div class="hero-stat-label">Patrimoine analyse</div>
+                    <div class="hero-stat-value">500M+</div>
                 </div>
             </div>
         </section>
 
         <!-- TRUST BAR -->
-        <div class="trust-bar">
-            <div class="trust-item"><span class="trust-icon">&#9888;</span> Donnees 100% confidentielles</div>
-            <div class="trust-item"><span class="trust-icon">&#10003;</span> Sans engagement</div>
-            <div class="trust-item"><span class="trust-icon">&#9733;</span> Analyse en 3 minutes</div>
-            <div class="trust-item"><span class="trust-icon">&#128274;</span> Heberge en France</div>
+        <div class="trust-bar trust-bar-modern">
+            <div class="trust-item">Conseil independant</div>
+            <span class="trust-sep"></span>
+            <div class="trust-item">Sans engagement</div>
+            <span class="trust-sep"></span>
+            <div class="trust-item">100% confidentiel</div>
+            <span class="trust-sep"></span>
+            <div class="trust-item">Bilan offert</div>
         </div>
 
         <!-- FEATURES -->
         <section class="landing-section" id="features">
-            <h2 class="landing-section-title">Une methode structuree en 4 etapes</h2>
-            <p class="landing-section-subtitle">De l'analyse a la mise en place, nous vous guidons a chaque etape.</p>
+            <h2 class="landing-section-title">Notre methode d'accompagnement</h2>
+            <p class="landing-section-subtitle">Une approche structuree, transparente et personnalisee.</p>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-number">01</div>
                     <h3>Bilan patrimonial</h3>
-                    <p>Cartographiez l'ensemble de vos actifs, revenus, charges et dettes en quelques minutes.</p>
+                    <p>Nous analysons l'ensemble de votre situation : actifs, revenus, charges, fiscalite et objectifs de vie.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-number">02</div>
-                    <h3>Simulations avancees</h3>
-                    <p>Immobilier, Assurance Vie, PEA, CTO : comparez les strategies avec des projections detaillees.</p>
+                    <h3>Strategie sur-mesure</h3>
+                    <p>Nos conseillers elaborent des recommandations adaptees a votre profil et vos ambitions.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-number">03</div>
-                    <h3>Recommandation sur-mesure</h3>
-                    <p>Notre algorithme analyse 7 criteres pour identifier la strategie optimale selon votre profil.</p>
+                    <h3>Simulations detaillees</h3>
+                    <p>Immobilier, assurance vie, PEA, defiscalisation : visualisez l'impact de chaque strategie.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-number">04</div>
-                    <h3>Accompagnement expert</h3>
-                    <p>Un conseiller dedie valide l'analyse et vous accompagne dans la mise en place.</p>
+                    <h3>Suivi et accompagnement</h3>
+                    <p>Un interlocuteur dedie vous accompagne dans la mise en place et le suivi de vos investissements.</p>
                 </div>
             </div>
         </section>
 
         <!-- MINI SIMULATOR -->
         <section class="landing-section landing-section-dark" id="simulator">
-            <h2 class="landing-section-title light">Simulez en 30 secondes</h2>
-            <p class="landing-section-subtitle light">Decouvrez le potentiel de votre epargne.</p>
+            <h2 class="landing-section-title light">Estimez le potentiel de votre epargne</h2>
+            <p class="landing-section-subtitle light">Un premier apercu en quelques secondes.</p>
             <div class="mini-sim">
                 <div class="mini-sim-form">
                     <div class="form-group">
@@ -118,45 +122,48 @@
                 </div>
                 <div id="mini-result" class="mini-result"></div>
             </div>
-            <p class="mini-sim-cta">Envie d'aller plus loin ? <a href="#" onclick="showAuthScreen('signup')">Creez votre compte gratuit</a></p>
+            <p class="mini-sim-cta">Pour une analyse complete, <a href="#" onclick="showAuthScreen('signup')">creez votre espace personnel</a></p>
         </section>
 
         <!-- TESTIMONIALS -->
         <section class="landing-section">
-            <h2 class="landing-section-title">Ils nous font confiance</h2>
+            <h2 class="landing-section-title">Ce que disent nos clients</h2>
             <div class="testimonials-grid">
                 <div class="testimonial-card">
-                    <div class="testimonial-quote">"L'analyse m'a permis de comprendre que je sous-optimisais completement ma fiscalite. Resultat : 8 000 euros d'economie par an."</div>
-                    <div class="testimonial-author"><strong>Laurent M.</strong> — Cadre dirigeant, 52 ans</div>
+                    <div class="testimonial-quote">"Grace a Patria Capital, j'ai enfin une vision claire de mon patrimoine et une strategie fiscale qui me fait economiser plus de 8 000 euros par an."</div>
+                    <div class="testimonial-author"><strong>Laurent M.</strong><br>Cadre dirigeant</div>
                 </div>
                 <div class="testimonial-card">
-                    <div class="testimonial-quote">"En 10 minutes, j'avais une vision claire de mon patrimoine et des strategies adaptees. Tres professionnel."</div>
-                    <div class="testimonial-author"><strong>Sophie D.</strong> — Medecin liberale, 44 ans</div>
+                    <div class="testimonial-quote">"Un accompagnement remarquable. En moins d'une heure, j'avais un bilan complet et des recommandations concretes."</div>
+                    <div class="testimonial-author"><strong>Sophie D.</strong><br>Medecin liberale</div>
                 </div>
                 <div class="testimonial-card">
-                    <div class="testimonial-quote">"Le comparatif entre PEA et Assurance Vie m'a aide a prendre la bonne decision. Je recommande sans hesiter."</div>
-                    <div class="testimonial-author"><strong>Thomas R.</strong> — Entrepreneur, 38 ans</div>
+                    <div class="testimonial-quote">"Le comparatif entre les differentes enveloppes m'a permis de faire le bon choix. Tres professionnel et a l'ecoute."</div>
+                    <div class="testimonial-author"><strong>Thomas R.</strong><br>Entrepreneur</div>
                 </div>
             </div>
         </section>
 
         <!-- CTA FINAL -->
-        <section class="landing-cta">
-            <h2>Pret a optimiser votre patrimoine ?</h2>
-            <p>Creez votre compte gratuitement et obtenez votre analyse patrimoniale en moins de 5 minutes.</p>
-            <button class="btn btn-gold btn-lg" onclick="showAuthScreen('signup')">Commencer maintenant</button>
+        <section class="landing-cta landing-cta-dark">
+            <h2>Prenez les bonnes decisions pour votre avenir</h2>
+            <p>Beneficiez d'un bilan patrimonial offert et sans engagement. Nos conseillers sont a votre disposition.</p>
+            <p class="cta-social-proof">Rejoignez plus de 350 clients qui nous font confiance</p>
+            <button class="btn btn-gold btn-lg" onclick="showAuthScreen('signup')">Commencer mon bilan gratuit</button>
+            <p style="margin-top:16px;font-size:0.9rem;opacity:0.7;">Ou contactez-nous directement au 01 XX XX XX XX</p>
         </section>
 
         <!-- FOOTER -->
         <footer class="landing-footer">
             <div class="footer-inner">
-                <div class="footer-brand"><span class="logo-icon">&#9670;</span> CBL Advisory</div>
+                <div class="footer-brand" style="font-family:'Playfair Display',serif;font-weight:700;">Patria Capital</div>
+                <div style="font-size:0.85rem;opacity:0.6;margin-top:4px;">Cabinet de conseil en gestion de patrimoine</div>
                 <div class="footer-links">
                     <a href="#">Mentions legales</a>
                     <a href="#">Confidentialite</a>
                     <a href="#">Contact</a>
                 </div>
-                <div class="footer-copy">&copy; 2026 CBL Advisory. Tous droits reserves.</div>
+                <div class="footer-copy">&copy; 2026 Patria Capital. Tous droits reserves.</div>
             </div>
         </footer>
     </div>
@@ -167,7 +174,7 @@
             <button class="auth-back" onclick="showLanding()">&larr; Retour</button>
             <div class="auth-logo">
                 <span class="logo-icon">&#9670;</span>
-                <h1>CBL Advisory</h1>
+                <h1>Patria Capital</h1>
                 <p>Gestion de Patrimoine</p>
             </div>
 
@@ -225,7 +232,7 @@
         <div class="sidebar-header">
             <div class="logo">
                 <span class="logo-icon">&#9670;</span>
-                <span class="logo-text">CBL Advisory</span>
+                <span class="logo-text">Patria Capital</span>
             </div>
         </div>
         <div class="user-info">
@@ -253,7 +260,7 @@
         </ul>
         <div class="sidebar-footer">
             <button class="btn btn-gold btn-full btn-sm" onclick="prendreRDV()">Prendre rendez-vous</button>
-            <p class="version">CBL Advisory v3.0</p>
+            <p class="version">Patria Capital v3.0</p>
         </div>
     </nav>
 

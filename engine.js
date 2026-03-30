@@ -1,6 +1,6 @@
 // ===== CONFIGURATION CGP =====
 const CGP_EMAIL = 'carlosblopes01@gmail.com'; // <-- Remplacez par votre email professionnel
-const CGP_NOM = 'CBL_Lab';
+const CGP_NOM = 'Patria Capital';
 
 // ===== CALCULATION ENGINE =====
 
