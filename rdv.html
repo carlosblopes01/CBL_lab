@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rendez-vous | Patria Capital — Accompagnement Complet</title>
+    <link rel="icon" type="image/png" href="icone.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icone.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ====================================================
+           RDV PAGE — Page-specific styles
+           ==================================================== */
+
+        body {
+            display: block;
+            background: #0c0f1a;
+        }
+
+        /* --- Nav active state --- */
+        .landing-nav-links a.nav-active {
+            color: #fff;
+            position: relative;
+        }
+        .landing-nav-links a.nav-active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-gradient);
+            border-radius: 1px;
+        }
+        .landing-nav.scrolled .landing-nav-links a.nav-active {
+            color: var(--primary);
+        }
+
+        /* --- Hero RDV --- */
+        .rdv-hero {
+            position: relative;
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 160px 48px 100px;
+            background: #0c0f1a;
+            overflow: hidden;
+        }
+
+        .rdv-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(90, 126, 194, 0.10) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .rdv-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 60%;
+            height: 160%;
+            background: radial-gradient(ellipse at 70% 50%, rgba(193, 146, 94, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .rdv-hero .hero-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3.5px;
+            text-transform: uppercase;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .rdv-hero .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 4vw, 52px);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.15;
+            max-width: 750px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .rdv-hero .hero-subtitle {
+            font-size: clamp(15px, 1.6vw, 18px);
+            color: rgba(255, 255, 255, 0.50);
+            max-width: 580px;
+            line-height: 1.75;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- Main Content Section --- */
+        .rdv-main {
+            background: var(--bg);
+            padding: 100px 48px 120px;
+            position: relative;
+        }
+
+        .rdv-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* --- Info Card --- */
+        .rdv-info-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 48px 40px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid #ede9e5;
+        }
+
+        .rdv-info-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 32px;
+        }
+
+        .rdv-info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 32px;
+        }
+
+        .rdv-info-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            font-size: 15px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .rdv-info-list li::before {
+            content: '';
+            flex-shrink: 0;
+            width: 20px;
+            height: 2px;
+            background: var(--gold);
+            margin-top: 10px;
+            border-radius: 1px;
+        }
+
+        .rdv-divider {
+            height: 1px;
+            background: linear-gradient(90deg, var(--gold-light), transparent);
+            margin: 32px 0;
+        }
+
+        .rdv-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .rdv-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .rdv-meta-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--gold-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .rdv-meta-icon svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--gold);
+        }
+
+        .rdv-meta-item strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .rdv-contact-block {
+            margin-top: 28px;
+            padding: 20px 24px;
+            background: var(--gold-bg);
+            border-radius: 12px;
+            border: 1px solid rgba(193, 146, 94, 0.15);
+        }
+
+        .rdv-contact-block p {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 6px;
+            line-height: 1.6;
+        }
+
+        .rdv-contact-block a {
+            color: var(--gold-dark);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .rdv-contact-block a:hover {
+            text-decoration: underline;
+        }
+
+        /* --- Booking Form Card --- */
+        .rdv-form-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 48px 40px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid #ede9e5;
+        }
+
+        .rdv-form-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .rdv-form-card .form-intro {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group label .required {
+            color: var(--gold);
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: #fff;
+            border: 1.5px solid #e0dcd8;
+            border-radius: 8px;
+            padding: 12px 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            width: 100%;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(193, 146, 94, 0.10);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #bbb;
+        }
+
+        .form-group select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%239ca3af' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 38px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* --- Day pill checkboxes --- */
+        .days-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .days-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .day-pill {
+            position: relative;
+        }
+
+        .day-pill input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .day-pill label {
+            display: inline-block;
+            padding: 8px 18px;
+            border: 1.5px solid #e0dcd8;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .day-pill label:hover {
+            border-color: var(--gold-light);
+            background: var(--gold-bg);
+        }
+
+        .day-pill input:checked + label {
+            border-color: var(--gold);
+            background: var(--gold-bg);
+            color: var(--gold-dark);
+            font-weight: 600;
+            box-shadow: 0 0 0 3px rgba(193, 146, 94, 0.10);
+        }
+
+        /* --- Submit button --- */
+        .rdv-submit-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px 32px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            background: var(--gold-gradient);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 8px;
+        }
+
+        .rdv-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(193, 146, 94, 0.3);
+        }
+
+        .rdv-submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .rdv-submit-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* --- Success state --- */
+        .rdv-success {
+            display: none;
+            text-align: center;
+            padding: 60px 32px;
+        }
+
+        .rdv-success.visible {
+            display: block;
+        }
+
+        .success-check {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(193, 146, 94, 0.12), rgba(193, 146, 94, 0.04));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 28px;
+            border: 2px solid rgba(193, 146, 94, 0.25);
+        }
+
+        .success-check svg {
+            width: 32px;
+            height: 32px;
+            stroke: var(--gold);
+        }
+
+        .rdv-success h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 14px;
+        }
+
+        .rdv-success p {
+            font-size: 15px;
+            color: var(--text-light);
+            line-height: 1.7;
+            max-width: 400px;
+            margin: 0 auto 32px;
+        }
+
+        .rdv-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gold-dark);
+            background: var(--gold-bg);
+            border: 1.5px solid rgba(193, 146, 94, 0.25);
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .rdv-back-btn:hover {
+            background: rgba(193, 146, 94, 0.12);
+            border-color: var(--gold);
+        }
+
+        /* --- Form validation --- */
+        .form-group input.error,
+        .form-group select.error {
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
+        }
+
+        .form-error-msg {
+            font-size: 12px;
+            color: var(--red);
+            margin-top: 4px;
+            display: none;
+        }
+
+        .form-error-msg.visible {
+            display: block;
+        }
+
+        /* --- Reveal animations --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.15s; }
+        .reveal-delay-2 { transition-delay: 0.3s; }
+        .reveal-delay-3 { transition-delay: 0.45s; }
+
+        /* --- Responsive --- */
+        @media (max-width: 900px) {
+            .rdv-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rdv-hero {
+                padding: 140px 24px 80px;
+                min-height: auto;
+            }
+
+            .rdv-main {
+                padding: 60px 20px 80px;
+            }
+
+            .rdv-info-card,
+            .rdv-form-card {
+                padding: 32px 24px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .rdv-hero {
+                padding: 120px 16px 60px;
+            }
+
+            .rdv-main {
+                padding: 40px 14px 60px;
+            }
+
+            .rdv-info-card,
+            .rdv-form-card {
+                padding: 28px 20px;
+            }
+
+            .days-grid {
+                gap: 6px;
+            }
+
+            .day-pill label {
+                padding: 7px 14px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== NAV ========== -->
+    <nav class="landing-nav" id="rdv-nav">
+        <div class="landing-nav-inner">
+            <a href="/" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img"></a>
+            <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+            <div class="landing-nav-links" id="nav-links">
+                <a href="/">Accueil</a>
+                <a href="/offre.html">Notre offre</a>
+                <a href="/#simulator">Simulateur</a>
+                <a href="#" onclick="window.location.href='/'">Connexion</a>
+                <button class="btn btn-gold btn-sm" onclick="window.location.href='/'">Commencer</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== HERO ========== -->
+    <section class="rdv-hero">
+        <div class="hero-badge reveal">OFFRE 03 — ACCOMPAGNEMENT COMPLET</div>
+        <h1 class="hero-title reveal reveal-delay-1">Planifiez votre rendez-vous decouverte</h1>
+        <p class="hero-subtitle reveal reveal-delay-2">Un entretien de 30 minutes pour comprendre votre situation et definir un accompagnement sur-mesure.</p>
+    </section>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <section class="rdv-main">
+        <div class="rdv-grid">
+
+            <!-- Left column — Info Card -->
+            <div class="rdv-info-card reveal">
+                <h2>Ce que nous aborderons</h2>
+                <ul class="rdv-info-list">
+                    <li>Votre situation patrimoniale actuelle</li>
+                    <li>Vos objectifs a court et long terme</li>
+                    <li>Les axes d'optimisation possibles</li>
+                    <li>Le cadre de notre accompagnement</li>
+                    <li>La definition d'un devis personnalise</li>
+                </ul>
+
+                <div class="rdv-divider"></div>
+
+                <div class="rdv-meta">
+                    <div class="rdv-meta-item">
+                        <div class="rdv-meta-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <span><strong>Duree estimee :</strong> 30 minutes</span>
+                    </div>
+                    <div class="rdv-meta-item">
+                        <div class="rdv-meta-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                        </div>
+                        <span><strong>Format :</strong> Visio ou telephone</span>
+                    </div>
+                </div>
+
+                <div class="rdv-contact-block">
+                    <p>Ou appelez-nous directement :</p>
+                    <p><a href="tel:+33100000000">01 XX XX XX XX</a></p>
+                    <p style="margin-top:8px;"><a href="mailto:contact@patriacapital.fr">contact@patriacapital.fr</a></p>
+                </div>
+            </div>
+
+            <!-- Right column — Booking Form -->
+            <div class="rdv-form-card reveal reveal-delay-1">
+                <h2>Reserver un creneau</h2>
+                <p class="form-intro">Remplissez le formulaire ci-dessous et nous vous recontacterons sous 24h.</p>
+
+                <form id="rdv-form" novalidate>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nom <span class="required">*</span></label>
+                            <input type="text" id="rdv-nom" placeholder="Dupont" required>
+                            <span class="form-error-msg" id="err-nom">Veuillez renseigner votre nom.</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Prenom <span class="required">*</span></label>
+                            <input type="text" id="rdv-prenom" placeholder="Jean" required>
+                            <span class="form-error-msg" id="err-prenom">Veuillez renseigner votre prenom.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email <span class="required">*</span></label>
+                            <input type="email" id="rdv-email" placeholder="jean.dupont@email.com" required>
+                            <span class="form-error-msg" id="err-email">Veuillez renseigner un email valide.</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Telephone <span class="required">*</span></label>
+                            <input type="tel" id="rdv-tel" placeholder="06 12 34 56 78" required>
+                            <span class="form-error-msg" id="err-tel">Veuillez renseigner votre telephone.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Format prefere</label>
+                        <select id="rdv-format">
+                            <option value="Visioconference">Visioconference</option>
+                            <option value="Telephone">Telephone</option>
+                            <option value="En personne — Paris">En personne — Paris</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Disponibilites preferees</label>
+                        <select id="rdv-dispo">
+                            <option value="Matin (9h-12h)">Matin (9h-12h)</option>
+                            <option value="Apres-midi (14h-18h)">Apres-midi (14h-18h)</option>
+                            <option value="Soiree (18h-20h)">Soiree (18h-20h)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:4px;">
+                        <label class="days-label">Jour(s) prefere(s)</label>
+                    </div>
+                    <div class="days-grid">
+                        <div class="day-pill">
+                            <input type="checkbox" id="day-lun" value="Lundi">
+                            <label for="day-lun">Lundi</label>
+                        </div>
+                        <div class="day-pill">
+                            <input type="checkbox" id="day-mar" value="Mardi">
+                            <label for="day-mar">Mardi</label>
+                        </div>
+                        <div class="day-pill">
+                            <input type="checkbox" id="day-mer" value="Mercredi">
+                            <label for="day-mer">Mercredi</label>
+                        </div>
+                        <div class="day-pill">
+                            <input type="checkbox" id="day-jeu" value="Jeudi">
+                            <label for="day-jeu">Jeudi</label>
+                        </div>
+                        <div class="day-pill">
+                            <input type="checkbox" id="day-ven" value="Vendredi">
+                            <label for="day-ven">Vendredi</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Message / precisions</label>
+                        <textarea id="rdv-message" rows="3" placeholder="Decrivez brievement votre situation ou vos attentes..."></textarea>
+                    </div>
+
+                    <button type="submit" class="rdv-submit-btn">
+                        Demander un rendez-vous
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
+                </form>
+
+                <!-- Success state -->
+                <div class="rdv-success" id="rdv-success">
+                    <div class="success-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <h3>Demande envoyee</h3>
+                    <p>Votre demande de rendez-vous a ete envoyee ! Nous vous confirmerons un creneau sous 24h.</p>
+                    <a href="/" class="rdv-back-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                        Retour a l'accueil
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="landing-footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:36px;"></div>
+            <div style="font-size:0.85rem;opacity:0.6;margin-top:4px;">Cabinet de conseil en gestion de patrimoine</div>
+            <div class="footer-links">
+                <a href="#">Mentions legales</a>
+                <a href="#">Confidentialite</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-copy">&copy; 2026 Patria Capital. Tous droits reserves.</div>
+        </div>
+    </footer>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script>
+        // --- Nav scroll behavior ---
+        const nav = document.getElementById('rdv-nav');
+        function updateNav() {
+            if (window.scrollY > 60) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        }
+        window.addEventListener('scroll', updateNav, { passive: true });
+        updateNav();
+
+        // --- Mobile nav toggle ---
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const navLinks = document.getElementById('nav-links');
+        mobileToggle.addEventListener('click', function() {
+            navLinks.classList.toggle('open');
+            mobileToggle.innerHTML = navLinks.classList.contains('open') ? '&times;' : '&#9776;';
+        });
+
+        // --- Scroll reveal animations (IntersectionObserver) ---
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.12,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        revealElements.forEach(function(el) {
+            revealObserver.observe(el);
+        });
+
+        // --- Form submission ---
+        const form = document.getElementById('rdv-form');
+        const successEl = document.getElementById('rdv-success');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Gather values
+            const nom = document.getElementById('rdv-nom').value.trim();
+            const prenom = document.getElementById('rdv-prenom').value.trim();
+            const email = document.getElementById('rdv-email').value.trim();
+            const tel = document.getElementById('rdv-tel').value.trim();
+            const format = document.getElementById('rdv-format').value;
+            const dispo = document.getElementById('rdv-dispo').value;
+            const message = document.getElementById('rdv-message').value.trim();
+
+            // Collect checked days
+            const days = [];
+            document.querySelectorAll('.days-grid input[type="checkbox"]:checked').forEach(function(cb) {
+                days.push(cb.value);
+            });
+            const joursStr = days.length > 0 ? days.join(', ') : 'Non precise';
+
+            // Validate required fields
+            let valid = true;
+
+            function validateField(id, errId, condition) {
+                const input = document.getElementById(id);
+                const err = document.getElementById(errId);
+                if (!condition) {
+                    input.classList.add('error');
+                    err.classList.add('visible');
+                    valid = false;
+                } else {
+                    input.classList.remove('error');
+                    err.classList.remove('visible');
+                }
+            }
+
+            validateField('rdv-nom', 'err-nom', nom.length > 0);
+            validateField('rdv-prenom', 'err-prenom', prenom.length > 0);
+            validateField('rdv-email', 'err-email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+            validateField('rdv-tel', 'err-tel', tel.length >= 6);
+
+            if (!valid) return;
+
+            // Build email body
+            const subject = encodeURIComponent('Demande RDV Accompagnement — ' + prenom + ' ' + nom);
+            const body = encodeURIComponent(
+                'Demande de rendez-vous — Accompagnement Complet\n' +
+                '================================================\n\n' +
+                'Nom : ' + nom + '\n' +
+                'Prenom : ' + prenom + '\n' +
+                'Email : ' + email + '\n' +
+                'Telephone : ' + tel + '\n\n' +
+                'Format prefere : ' + format + '\n' +
+                'Disponibilites : ' + dispo + '\n' +
+                'Jours preferes : ' + joursStr + '\n\n' +
+                'Message :\n' + (message || '(aucun)') + '\n'
+            );
+
+            // Open mailto
+            window.location.href = 'mailto:carlosblopes01@gmail.com?subject=' + subject + '&body=' + body;
+
+            // Show success state
+            form.style.display = 'none';
+            successEl.classList.add('visible');
+        });
+
+        // Clear error on input
+        document.querySelectorAll('#rdv-form input, #rdv-form select, #rdv-form textarea').forEach(function(el) {
+            el.addEventListener('input', function() {
+                this.classList.remove('error');
+                const errEl = this.parentElement.querySelector('.form-error-msg');
+                if (errEl) errEl.classList.remove('visible');
+            });
+        });
+    </script>
+
+</body>
+</html>

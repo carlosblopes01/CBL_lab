@@ -140,6 +140,12 @@ function enterApp() {
     const user = getCurrentUser();
     if (!user) return;
 
+    // Check URL param for offer type
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('offer')) {
+        localStorage.setItem('cgp_offer_type', urlParams.get('offer'));
+    }
+
     document.getElementById('landing-page').classList.add('hidden');
     document.getElementById('auth-screen').classList.add('hidden');
     document.getElementById('sidebar').classList.remove('hidden');
@@ -148,6 +154,18 @@ function enterApp() {
     // Set user info in sidebar
     document.getElementById('user-name').textContent = user.prenom + ' ' + user.nom;
     document.getElementById('user-avatar').textContent = (user.prenom[0] || 'U').toUpperCase();
+
+    // Restrict sidebar for diagnostic offer
+    const offerType = localStorage.getItem('cgp_offer_type');
+    if (offerType === 'diagnostic') {
+        const allowedSections = ['accueil', 'profil', 'immobilier', 'assurance-vie', 'pea', 'cto', 'comparatif', 'recommandation'];
+        document.querySelectorAll('.nav-link[data-section]').forEach(link => {
+            const section = link.getAttribute('data-section');
+            if (!allowedSections.includes(section)) {
+                link.closest('li').style.display = 'none';
+            }
+        });
+    }
 
     // Load saved data into forms
     loadFormData();

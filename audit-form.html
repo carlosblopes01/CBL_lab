@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Strategique | Patria Capital — Gestion de Patrimoine</title>
+    <link rel="icon" type="image/png" href="icone.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icone.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ====================================================
+           AUDIT FORM PAGE — Page-specific styles
+           ==================================================== */
+
+        body {
+            display: block;
+            background: #0c0f1a;
+        }
+
+        /* --- Nav active state --- */
+        .landing-nav-links a.nav-active {
+            color: #fff;
+            position: relative;
+        }
+        .landing-nav-links a.nav-active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-gradient);
+            border-radius: 1px;
+        }
+        .landing-nav.scrolled .landing-nav-links a.nav-active {
+            color: var(--primary);
+        }
+
+        /* --- Hero Audit --- */
+        .audit-hero {
+            position: relative;
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 160px 48px 100px;
+            background: #0c0f1a;
+            overflow: hidden;
+        }
+
+        .audit-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(90, 126, 194, 0.10) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .audit-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 60%;
+            height: 160%;
+            background: radial-gradient(ellipse at 70% 50%, rgba(193, 146, 94, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .audit-hero .hero-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3.5px;
+            text-transform: uppercase;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .audit-hero .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 4vw, 52px);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.15;
+            max-width: 750px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .audit-hero .hero-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.55);
+            max-width: 580px;
+            line-height: 1.75;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- Form Section --- */
+        .audit-form-section {
+            background: #f2efec;
+            padding: 100px 48px 120px;
+            position: relative;
+        }
+
+        .form-card {
+            background: #fff;
+            border-radius: 16px;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 56px 52px 48px;
+            box-shadow: 0 8px 40px rgba(37, 74, 101, 0.08);
+            position: relative;
+        }
+
+        /* --- Section Headers --- */
+        .form-section-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary, #1a2332);
+            margin: 0 0 28px;
+            padding-left: 18px;
+            border-left: 3px solid #c1925e;
+            line-height: 1.3;
+        }
+
+        .form-section-header:not(:first-child) {
+            margin-top: 48px;
+        }
+
+        /* --- Form Grid --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 28px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #7a8599;
+            margin-bottom: 8px;
+        }
+
+        .form-group label .required {
+            color: #c1925e;
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            color: #1a2332;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 13px 16px;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #b0b8c8;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #c1925e;
+            box-shadow: 0 0 0 3px rgba(193, 146, 94, 0.12);
+        }
+
+        .form-group select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a8599' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* --- Error state --- */
+        .form-group.error input,
+        .form-group.error select {
+            border-color: #d9534f;
+            box-shadow: 0 0 0 3px rgba(217, 83, 79, 0.12);
+        }
+
+        .form-group .error-msg {
+            font-size: 12px;
+            color: #d9534f;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .form-group.error .error-msg {
+            display: block;
+        }
+
+        /* --- Submit Button --- */
+        .form-submit-wrap {
+            text-align: center;
+            margin-top: 44px;
+        }
+
+        .btn-submit-audit {
+            display: inline-block;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #fff;
+            background: linear-gradient(135deg, #c1925e, #a97b4e);
+            border: none;
+            border-radius: 40px;
+            padding: 17px 44px;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+            box-shadow: 0 4px 20px rgba(193, 146, 94, 0.3);
+        }
+
+        .btn-submit-audit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(193, 146, 94, 0.4);
+        }
+
+        .btn-submit-audit:active {
+            transform: translateY(0);
+        }
+
+        /* --- Success State --- */
+        .success-overlay {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 80px 40px;
+        }
+
+        .success-overlay.visible {
+            display: flex;
+        }
+
+        .success-check {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c1925e, #a97b4e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 32px;
+            animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .success-check svg {
+            width: 36px;
+            height: 36px;
+            stroke: #fff;
+            stroke-width: 3;
+            fill: none;
+        }
+
+        .success-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary, #1a2332);
+            margin-bottom: 16px;
+        }
+
+        .success-text {
+            font-size: 15px;
+            color: #7a8599;
+            line-height: 1.75;
+            max-width: 480px;
+            margin-bottom: 36px;
+        }
+
+        .btn-back-home {
+            display: inline-block;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #c1925e;
+            border: 2px solid #c1925e;
+            border-radius: 40px;
+            padding: 13px 36px;
+            text-decoration: none;
+            transition: background 0.25s ease, color 0.25s ease;
+        }
+
+        .btn-back-home:hover {
+            background: #c1925e;
+            color: #fff;
+        }
+
+        /* --- Scroll Animations --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+
+        /* --- Mobile Nav Toggle --- */
+        .mobile-nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+        }
+
+        .landing-nav.scrolled .mobile-nav-toggle {
+            color: var(--primary);
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 900px) {
+            .audit-hero {
+                padding: 130px 24px 70px;
+                min-height: auto;
+            }
+
+            .audit-form-section {
+                padding: 60px 20px 80px;
+            }
+
+            .form-card {
+                padding: 36px 24px 32px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .landing-nav-links {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(12, 15, 26, 0.97);
+                backdrop-filter: blur(12px);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 32px;
+                z-index: 999;
+            }
+
+            .landing-nav-links.open {
+                display: flex;
+            }
+
+            .landing-nav-links.open a {
+                font-size: 18px;
+                color: rgba(255,255,255,0.85);
+            }
+
+            .mobile-nav-toggle {
+                display: block;
+                z-index: 1000;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .form-section-header {
+                font-size: 19px;
+            }
+
+            .btn-submit-audit {
+                width: 100%;
+                padding: 16px 24px;
+            }
+
+            .success-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== NAV ========== -->
+    <nav class="landing-nav" id="audit-nav">
+        <div class="landing-nav-inner">
+            <a href="/" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img"></a>
+            <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+            <div class="landing-nav-links" id="nav-links">
+                <a href="index.html#features">Notre approche</a>
+                <a href="offre.html" class="nav-active">Notre offre</a>
+                <a href="index.html#cabinet">Le cabinet</a>
+                <a href="index.html#simulator">Simulateur</a>
+                <a href="index.html">Connexion</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== HERO ========== -->
+    <section class="audit-hero">
+        <div class="hero-badge reveal">OFFRE 02 &mdash; AUDIT STRATEGIQUE</div>
+        <h1 class="hero-title reveal reveal-delay-1">Demandez votre audit patrimonial</h1>
+        <p class="hero-subtitle reveal reveal-delay-2">Remplissez le formulaire ci-dessous. Nos conseillers analysent votre situation et vous remettent un plan d'action personnalise sous 48h.</p>
+    </section>
+
+    <!-- ========== FORM SECTION ========== -->
+    <section class="audit-form-section">
+        <div class="form-card reveal">
+
+            <!-- The Form -->
+            <form id="audit-form" novalidate>
+
+                <!-- Section 1 — Identite -->
+                <h3 class="form-section-header">Identite</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nom">Nom <span class="required">*</span></label>
+                        <input type="text" id="nom" name="nom" required placeholder="Dupont">
+                        <span class="error-msg">Ce champ est requis</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="prenom">Prenom <span class="required">*</span></label>
+                        <input type="text" id="prenom" name="prenom" required placeholder="Jean">
+                        <span class="error-msg">Ce champ est requis</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email <span class="required">*</span></label>
+                        <input type="email" id="email" name="email" required placeholder="jean.dupont@email.com">
+                        <span class="error-msg">Veuillez entrer un email valide</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="telephone">Telephone</label>
+                        <input type="tel" id="telephone" name="telephone" placeholder="06 12 34 56 78">
+                    </div>
+                    <div class="form-group">
+                        <label for="date_naissance">Date de naissance</label>
+                        <input type="date" id="date_naissance" name="date_naissance">
+                    </div>
+                    <div class="form-group">
+                        <label for="situation_familiale">Situation familiale</label>
+                        <select id="situation_familiale" name="situation_familiale">
+                            <option value="" disabled selected>Selectionnez</option>
+                            <option value="Celibataire">Celibataire</option>
+                            <option value="Marie(e)">Marie(e)</option>
+                            <option value="Pacse(e)">Pacse(e)</option>
+                            <option value="Divorce(e)">Divorce(e)</option>
+                            <option value="Veuf/Veuve">Veuf/Veuve</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="enfants">Nombre d'enfants</label>
+                        <input type="number" id="enfants" name="enfants" min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="profession">Profession</label>
+                        <input type="text" id="profession" name="profession" placeholder="Ex: Cadre superieur">
+                    </div>
+                </div>
+
+                <!-- Section 2 — Situation patrimoniale -->
+                <h3 class="form-section-header">Situation patrimoniale</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="revenus">Revenus annuels nets (&euro;)</label>
+                        <input type="number" id="revenus" name="revenus" placeholder="Ex: 65 000">
+                    </div>
+                    <div class="form-group">
+                        <label for="patrimoine_immo">Patrimoine immobilier estime (&euro;)</label>
+                        <input type="number" id="patrimoine_immo" name="patrimoine_immo" placeholder="Ex: 350 000">
+                    </div>
+                    <div class="form-group">
+                        <label for="patrimoine_fi">Patrimoine financier estime (&euro;)</label>
+                        <input type="number" id="patrimoine_fi" name="patrimoine_fi" placeholder="Ex: 120 000">
+                    </div>
+                    <div class="form-group">
+                        <label for="charges">Charges mensuelles (&euro;)</label>
+                        <input type="number" id="charges" name="charges" placeholder="Ex: 2 500">
+                    </div>
+                    <div class="form-group">
+                        <label for="tmi">TMI actuelle</label>
+                        <select id="tmi" name="tmi">
+                            <option value="" disabled selected>Selectionnez</option>
+                            <option value="0%">0%</option>
+                            <option value="11%">11%</option>
+                            <option value="30%">30%</option>
+                            <option value="41%">41%</option>
+                            <option value="45%">45%</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Section 3 — Objectifs -->
+                <h3 class="form-section-header">Objectifs</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="objectif">Objectif principal</label>
+                        <select id="objectif" name="objectif">
+                            <option value="" disabled selected>Selectionnez</option>
+                            <option value="Valoriser mon patrimoine">Valoriser mon patrimoine</option>
+                            <option value="Generer des revenus">Generer des revenus</option>
+                            <option value="Preparer ma retraite">Preparer ma retraite</option>
+                            <option value="Optimiser ma fiscalite">Optimiser ma fiscalite</option>
+                            <option value="Transmettre mon patrimoine">Transmettre mon patrimoine</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="horizon">Horizon d'investissement</label>
+                        <select id="horizon" name="horizon">
+                            <option value="" disabled selected>Selectionnez</option>
+                            <option value="Court terme (1-3 ans)">Court terme (1-3 ans)</option>
+                            <option value="Moyen terme (3-7 ans)">Moyen terme (3-7 ans)</option>
+                            <option value="Long terme (7-15 ans)">Long terme (7-15 ans)</option>
+                            <option value="Tres long terme (15+ ans)">Tres long terme (15+ ans)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="risque">Profil de risque</label>
+                        <select id="risque" name="risque">
+                            <option value="" disabled selected>Selectionnez</option>
+                            <option value="Securitaire">Securitaire</option>
+                            <option value="Prudent">Prudent</option>
+                            <option value="Equilibre">Equilibre</option>
+                            <option value="Dynamique">Dynamique</option>
+                            <option value="Offensif">Offensif</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="message">Precisions / message</label>
+                        <textarea id="message" name="message" rows="4" placeholder="Toute information complementaire utile pour votre audit..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="form-submit-wrap">
+                    <button type="submit" class="btn-submit-audit">Envoyer ma demande d'audit</button>
+                </div>
+
+            </form>
+
+            <!-- Success State -->
+            <div class="success-overlay" id="success-state">
+                <div class="success-check">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <h2 class="success-title">Votre demande a ete transmise !</h2>
+                <p class="success-text">Nos conseillers vous contacteront sous 48h pour finaliser votre audit patrimonial. Vous recevrez un plan d'action personnalise adapte a votre situation.</p>
+                <a href="index.html" class="btn-back-home">Retour a l'accueil</a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="landing-footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:36px;"></div>
+            <div style="font-size:0.85rem;opacity:0.6;margin-top:4px;">Cabinet de conseil en gestion de patrimoine</div>
+            <div class="footer-links">
+                <a href="#">Mentions legales</a>
+                <a href="#">Confidentialite</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-copy">&copy; 2026 Patria Capital. Tous droits reserves.</div>
+        </div>
+    </footer>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script>
+        // --- Nav scroll behavior ---
+        const nav = document.getElementById('audit-nav');
+        function updateNav() {
+            if (window.scrollY > 60) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        }
+        window.addEventListener('scroll', updateNav, { passive: true });
+        updateNav();
+
+        // --- Mobile nav toggle ---
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const navLinks = document.getElementById('nav-links');
+        mobileToggle.addEventListener('click', function() {
+            navLinks.classList.toggle('open');
+            mobileToggle.innerHTML = navLinks.classList.contains('open') ? '&times;' : '&#9776;';
+        });
+
+        // --- Scroll reveal animations (IntersectionObserver) ---
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.12,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        revealElements.forEach(function(el) {
+            revealObserver.observe(el);
+        });
+
+        // --- Form Validation & Submission ---
+        const form = document.getElementById('audit-form');
+        const successState = document.getElementById('success-state');
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.form-group.error').forEach(function(g) {
+                g.classList.remove('error');
+            });
+        }
+
+        function getValue(id) {
+            var el = document.getElementById(id);
+            return el ? el.value.trim() : '';
+        }
+
+        function formatNumber(val) {
+            if (!val) return 'Non renseigne';
+            return Number(val).toLocaleString('fr-FR') + ' \u20AC';
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            clearErrors();
+
+            var hasError = false;
+
+            // Validate required fields
+            ['nom', 'prenom', 'email'].forEach(function(id) {
+                var val = getValue(id);
+                if (!val || (id === 'email' && !validateEmail(val))) {
+                    document.getElementById(id).closest('.form-group').classList.add('error');
+                    hasError = true;
+                }
+            });
+
+            if (hasError) {
+                // Scroll to first error
+                var firstError = document.querySelector('.form-group.error');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return;
+            }
+
+            // Gather all data
+            var prenom = getValue('prenom');
+            var nom = getValue('nom');
+            var email = getValue('email');
+            var telephone = getValue('telephone');
+            var dateNaissance = getValue('date_naissance');
+            var situation = getValue('situation_familiale');
+            var enfants = getValue('enfants');
+            var profession = getValue('profession');
+
+            var revenus = getValue('revenus');
+            var patrimoineImmo = getValue('patrimoine_immo');
+            var patrimoineFi = getValue('patrimoine_fi');
+            var charges = getValue('charges');
+            var tmi = getValue('tmi');
+
+            var objectif = getValue('objectif');
+            var horizon = getValue('horizon');
+            var risque = getValue('risque');
+            var message = getValue('message');
+
+            // Build formatted email body
+            var today = new Date();
+            var dateStr = today.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+            var body = '';
+            body += '=== DEMANDE D\'AUDIT STRATEGIQUE ===' + '\n';
+            body += 'Date : ' + dateStr + '\n\n';
+
+            body += '--- IDENTITE ---' + '\n';
+            body += 'Nom : ' + nom + '\n';
+            body += 'Prenom : ' + prenom + '\n';
+            body += 'Email : ' + email + '\n';
+            body += 'Telephone : ' + (telephone || 'Non renseigne') + '\n';
+            body += 'Date de naissance : ' + (dateNaissance || 'Non renseigne') + '\n';
+            body += 'Situation familiale : ' + (situation || 'Non renseigne') + '\n';
+            body += 'Nombre d\'enfants : ' + (enfants || 'Non renseigne') + '\n';
+            body += 'Profession : ' + (profession || 'Non renseigne') + '\n\n';
+
+            body += '--- SITUATION PATRIMONIALE ---' + '\n';
+            body += 'Revenus annuels nets : ' + formatNumber(revenus) + '\n';
+            body += 'Patrimoine immobilier : ' + formatNumber(patrimoineImmo) + '\n';
+            body += 'Patrimoine financier : ' + formatNumber(patrimoineFi) + '\n';
+            body += 'Charges mensuelles : ' + formatNumber(charges) + '\n';
+            body += 'TMI actuelle : ' + (tmi || 'Non renseigne') + '\n\n';
+
+            body += '--- OBJECTIFS ---' + '\n';
+            body += 'Objectif principal : ' + (objectif || 'Non renseigne') + '\n';
+            body += 'Horizon d\'investissement : ' + (horizon || 'Non renseigne') + '\n';
+            body += 'Profil de risque : ' + (risque || 'Non renseigne') + '\n';
+            body += 'Precisions : ' + (message || 'Aucune') + '\n';
+
+            // Build subject
+            var subject = 'Demande Audit Strategique — ' + prenom + ' ' + nom + ' — ' + dateStr;
+
+            // Open mailto
+            var mailtoUrl = 'mailto:carlosblopes01@gmail.com'
+                + '?subject=' + encodeURIComponent(subject)
+                + '&body=' + encodeURIComponent(body);
+
+            window.location.href = mailtoUrl;
+
+            // Show success state after a short delay
+            setTimeout(function() {
+                form.style.display = 'none';
+                successState.classList.add('visible');
+                successState.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 500);
+        });
+    </script>
+
+</body>
+</html>

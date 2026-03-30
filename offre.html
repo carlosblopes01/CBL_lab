@@ -343,11 +343,36 @@
             margin-top: auto;
         }
 
-        .niveau-card.highlighted .niveau-badge {
-            background: rgba(193, 146, 94, 0.08);
-            border-color: var(--gold-light);
-            color: var(--gold-dark);
-            font-weight: 700;
+        .niveau-cta {
+            display: block;
+            text-decoration: none;
+            background: linear-gradient(135deg, #c1925e, #dbb88a);
+            color: #fff;
+            border: none;
+            border-radius: 40px;
+            padding: 14px 24px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .niveau-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(193, 146, 94, 0.3);
+        }
+
+        .niveau-price {
+            font-size: 11px;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .niveau-card.highlighted .niveau-cta {
+            background: linear-gradient(135deg, #c1925e, #e8c87a);
+            box-shadow: 0 4px 16px rgba(193, 146, 94, 0.2);
         }
 
         /* --- Focus Section (Dark) --- */
@@ -878,7 +903,7 @@
                     <li>Premiers axes d'optimisation cibles</li>
                     <li>Approche selfcare — a votre rythme</li>
                 </ul>
-                <div class="niveau-badge">Point de depart</div>
+                <a href="commande-diagnostic.html" class="niveau-badge niveau-cta">Commencer mon diagnostic</a>
             </div>
 
             <!-- Card 2 -->
@@ -894,7 +919,7 @@
                     <li>Plan d'action formalise</li>
                     <li>Partiellement deductible si mise en place</li>
                 </ul>
-                <div class="niveau-badge">Diagnostic + Strategie</div>
+                <a href="audit-form.html" class="niveau-badge niveau-cta">Demander un audit</a>
             </div>
 
             <!-- Card 3 (highlighted) -->
@@ -911,7 +936,8 @@
                     <li>Optimisation des frais d'entree et de gestion</li>
                     <li>Alignement des interets — honoraires integres</li>
                 </ul>
-                <div class="niveau-badge">A partir de 1 000 &euro;</div>
+                <a href="rdv.html" class="niveau-badge niveau-cta">Prendre rendez-vous</a>
+                <div class="niveau-price">A partir de 1 000 &euro;</div>
             </div>
 
         </div>
