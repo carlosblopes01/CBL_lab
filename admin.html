@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBL Advisory | Espace Administrateur</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1a1f36; --accent: #4f6ef7; --accent-light: #6c8cff;
+            --green: #059669; --red: #dc2626; --orange: #d97706; --blue: #2563eb;
+            --bg: #f8f9fc; --card-bg: #fff; --border: #e5e7eb;
+            --text: #1f2937; --text-light: #6b7280;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* Login */
+        .admin-login { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .admin-login-box { background: var(--card-bg); padding: 40px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.1); width: 400px; text-align: center; }
+        .admin-login-box h1 { font-size: 22px; margin-bottom: 8px; color: var(--primary); }
+        .admin-login-box p { color: var(--text-light); font-size: 14px; margin-bottom: 24px; }
+        .admin-login-box input { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; margin-bottom: 16px; }
+        .admin-login-box button { width: 100%; padding: 12px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .admin-login-box button:hover { background: var(--accent); }
+        .admin-error { color: var(--red); font-size: 13px; margin-bottom: 12px; }
+        .logo-icon { font-size: 28px; color: var(--accent); }
+
+        /* Dashboard */
+        .admin-dashboard { display: none; }
+        .admin-header { background: var(--primary); color: #fff; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+        .admin-header h1 { font-size: 20px; }
+        .admin-header .badge { background: var(--accent); padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .btn-logout { background: rgba(255,255,255,0.15); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+        .btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+        .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; padding: 24px 32px; }
+        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .stat-label { font-size: 12px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 28px; font-weight: 700; margin-top: 4px; }
+        .stat-value.blue { color: var(--blue); }
+        .stat-value.green { color: var(--green); }
+        .stat-value.orange { color: var(--orange); }
+
+        .admin-content { padding: 0 32px 32px; }
+        .admin-content h2 { font-size: 18px; margin-bottom: 16px; }
+
+        /* Table */
+        .clients-table { width: 100%; background: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .clients-table table { width: 100%; border-collapse: collapse; }
+        .clients-table th { background: #f9fafb; padding: 12px 16px; text-align: left; font-size: 12px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 2px solid var(--border); }
+        .clients-table td { padding: 12px 16px; border-bottom: 1px solid #f3f4f6; font-size: 14px; }
+        .clients-table tr:hover { background: #f8fafc; }
+        .clients-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .badge-sm { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+        .badge-green { background: #d1fae5; color: #059669; }
+        .badge-orange { background: #fef3c7; color: #d97706; }
+        .badge-red { background: #fee2e2; color: #dc2626; }
+        .badge-blue { background: #dbeafe; color: #2563eb; }
+        .btn-view { background: var(--accent); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 500; }
+        .btn-view:hover { background: var(--accent-light); }
+        .btn-delete { background: var(--red); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 500; margin-left: 6px; }
+        .btn-delete:hover { opacity: 0.85; }
+        .empty-msg { text-align: center; padding: 40px; color: var(--text-light); }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: var(--card-bg); border-radius: 16px; width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; padding: 32px; }
+        .modal h2 { font-size: 20px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--border); }
+        .modal-close { float: right; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-light); }
+        .modal-close:hover { color: var(--text); }
+        .detail-section { margin-bottom: 20px; }
+        .detail-section h3 { font-size: 14px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
+        .detail-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+        .detail-row .label { color: var(--text-light); }
+        .detail-row .value { font-weight: 500; }
+        .btn-export { background: var(--green); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 600; margin-top: 16px; }
+        .btn-export:hover { opacity: 0.9; }
+
+        @media (max-width: 768px) {
+            .admin-stats { grid-template-columns: 1fr 1fr; padding: 16px; }
+            .admin-content { padding: 0 16px 16px; }
+            .modal { width: 95%; padding: 20px; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .clients-table { overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN -->
+    <div class="admin-login" id="admin-login">
+        <div class="admin-login-box">
+            <div class="logo-icon">&#9670;</div>
+            <h1>CBL Advisory</h1>
+            <p>Espace Administrateur</p>
+            <div id="admin-error" class="admin-error"></div>
+            <input type="password" id="admin-password" placeholder="Mot de passe administrateur" onkeydown="if(event.key==='Enter') adminLogin()">
+            <button onclick="adminLogin()">Acceder</button>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="admin-dashboard" id="admin-dashboard">
+        <div class="admin-header">
+            <div>
+                <h1>&#9670; CBL Advisory — Administration</h1>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;">
+                <span class="badge" id="admin-badge">Admin</span>
+                <button class="btn-logout" onclick="adminLogout()">Deconnexion</button>
+            </div>
+        </div>
+
+        <div class="admin-stats" id="admin-stats"></div>
+
+        <div class="admin-content">
+            <h2>Dossiers Clients</h2>
+            <div class="clients-table" id="clients-table"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DETAIL -->
+    <div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+        <div class="modal" id="modal-content"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        // ===== ADMIN CONFIG =====
+        const ADMIN_PASSWORD = 'CBL2026!';
+
+        function fmt(n) {
+            return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n || 0);
+        }
+
+        // ===== LOGIN =====
+        function adminLogin() {
+            const pw = document.getElementById('admin-password').value;
+            if (pw === ADMIN_PASSWORD) {
+                sessionStorage.setItem('admin_auth', 'true');
+                showDashboard();
+            } else {
+                document.getElementById('admin-error').textContent = 'Mot de passe incorrect.';
+            }
+        }
+
+        function adminLogout() {
+            sessionStorage.removeItem('admin_auth');
+            document.getElementById('admin-dashboard').style.display = 'none';
+            document.getElementById('admin-login').style.display = 'flex';
+            document.getElementById('admin-password').value = '';
+        }
+
+        function showDashboard() {
+            document.getElementById('admin-login').style.display = 'none';
+            document.getElementById('admin-dashboard').style.display = 'block';
+            loadClients();
+        }
+
+        // ===== LOAD CLIENTS =====
+        function getLocalUsers() {
+            return JSON.parse(localStorage.getItem('cgp_users') || '[]');
+        }
+
+        function getLocalUserData(userId) {
+            return JSON.parse(localStorage.getItem('cgp_data_' + userId) || '{}');
+        }
+
+        async function loadClients() {
+            // Try cloud first, fallback to localStorage
+            let cloudClients = null;
+            if (typeof getAllClientsFromCloud === 'function') {
+                cloudClients = await getAllClientsFromCloud();
+            }
+
+            let users;
+            let getDataFn;
+
+            if (cloudClients && cloudClients.length > 0) {
+                document.getElementById('admin-badge').textContent = 'Admin — Cloud';
+                renderClients(cloudClients.map(c => ({ user: c.user, data: c.data })));
+                return;
+            }
+
+            // Fallback to localStorage
+            document.getElementById('admin-badge').textContent = 'Admin — Local';
+            users = getLocalUsers();
+            const clientsRaw = users.map(u => ({ user: u, data: getLocalUserData(u.id) }));
+            renderClients(clientsRaw);
+        }
+
+        function renderClients(clientsRaw) {
+            let totalPatri = 0;
+            let totalRevenus = 0;
+            let clientsComplets = 0;
+
+            const clientsData = clientsRaw.map(c => {
+                const u = c.user;
+                const d = c.data;
+                const revenus = (d.salairesClient || 0) + (d.salairesConjoint || 0) + (d.revenusBIC || 0) + (d.dividendes || 0) + (d.revenusFonciers || 0) + (d.pensions || 0) + (d.autresRevenus || 0);
+                const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
+                const totalFin = (d.livrets || 0) + (d.pel || 0) + (d.assuranceVie || 0) + (d.pea || 0) + (d.cto || 0) + (d.per || 0) + (d.epargneSalariale || 0) + (d.autresPlacement || 0);
+                const patriBrut = totalImmo + totalFin;
+                const dettes = d.capitalRestantRP || 0;
+                const patriNet = patriBrut - dettes;
+                const isComplet = d.objectifPrincipal && d.profilRisque && revenus > 0;
+
+                totalPatri += patriNet;
+                totalRevenus += revenus;
+                if (isComplet) clientsComplets++;
+
+                return { user: u, data: d, revenus, patriNet, totalImmo, totalFin, dettes, isComplet };
+            });
+
+            const users = clientsData.map(c => c.user);
+
+            // Stats
+            document.getElementById('admin-stats').innerHTML = `
+                <div class="stat-card"><div class="stat-label">Clients inscrits</div><div class="stat-value blue">${users.length}</div></div>
+                <div class="stat-card"><div class="stat-label">Dossiers complets</div><div class="stat-value green">${clientsComplets}</div></div>
+                <div class="stat-card"><div class="stat-label">Patrimoine total gere</div><div class="stat-value orange">${fmt(totalPatri)}</div></div>
+                <div class="stat-card"><div class="stat-label">Revenus cumules clients</div><div class="stat-value">${fmt(totalRevenus)}</div></div>
+            `;
+
+            // Table
+            if (users.length === 0) {
+                document.getElementById('clients-table').innerHTML = '<div class="empty-msg">Aucun client inscrit pour le moment.</div>';
+                return;
+            }
+
+            let html = `<table><thead><tr>
+                <th>Client</th><th>Email</th><th>Inscription</th><th>Profil</th><th>Patrimoine Net</th><th>Revenus</th><th>Objectif</th><th>Statut</th><th>Actions</th>
+            </tr></thead><tbody>`;
+
+            clientsData.forEach((c, i) => {
+                const date = c.user.createdAt ? new Date(c.user.createdAt).toLocaleDateString('fr-FR') : '—';
+                const statut = c.isComplet
+                    ? '<span class="badge-sm badge-green">Complet</span>'
+                    : '<span class="badge-sm badge-orange">Incomplet</span>';
+
+                html += `<tr>
+                    <td><strong>${c.user.prenom || ''} ${c.user.nom || ''}</strong></td>
+                    <td>${c.user.email || '—'}</td>
+                    <td>${date}</td>
+                    <td>${c.data.profilRisque || '—'}</td>
+                    <td class="num">${fmt(c.patriNet)}</td>
+                    <td class="num">${fmt(c.revenus)}</td>
+                    <td>${c.data.objectifPrincipal || '—'}</td>
+                    <td>${statut}</td>
+                    <td>
+                        <button class="btn-view" onclick='viewClient(${i})'>Voir</button>
+                        <button class="btn-delete" onclick='deleteClient("${c.user.id}", "${c.user.prenom} ${c.user.nom}")'>Suppr.</button>
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('clients-table').innerHTML = html;
+
+            window._clientsData = clientsData;
+        }
+
+        // ===== VIEW CLIENT DETAIL =====
+        function viewClient(index) {
+            const c = window._clientsData[index];
+            if (!c) return;
+            const d = c.data;
+            const u = c.user;
+            const totalCharges = (d.loyer || 0) + (d.creditRP || 0) + (d.creditLocatif || 0) + (d.creditConso || 0) + (d.pensionAlim || 0) + (d.autresCharges || 0);
+            const capacite = Math.round(c.revenus / 12 - totalCharges);
+
+            let html = `
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <h2>Dossier — ${u.prenom || ''} ${u.nom || ''}</h2>
+
+                <div class="detail-section"><h3>Identite</h3><div class="detail-grid">
+                    <div class="detail-row"><span class="label">Nom</span><span class="value">${u.prenom || ''} ${u.nom || ''}</span></div>
+                    <div class="detail-row"><span class="label">Email</span><span class="value">${u.email || '—'}</span></div>
+                    <div class="detail-row"><span class="label">Date de naissance</span><span class="value">${d.dateNaissance || '—'}</span></div>
+                    <div class="detail-row"><span class="label">Situation</span><span class="value">${d.situationMatri || '—'}</span></div>
+                    <div class="detail-row"><span class="label">Regime matrimonial</span><span class="value">${d.regimeMatri || '—'}</span></div>
+                    <div class="detail-row"><span class="label">Enfants</span><span class="value">${d.nbEnfants || 0} (${d.enfantsCharge || 0} a charge)</span></div>
+                    <div class="detail-row"><span class="label">Profession</span><span class="value">${d.statutPro || '—'} — ${d.profession || '—'}</span></div>
+                    <div class="detail-row"><span class="label">Secteur</span><span class="value">${d.secteur || '—'}</span></div>
+                </div></div>
+
+                <div class="detail-section"><h3>Revenus annuels</h3><div class="detail-grid">
+                    <div class="detail-row"><span class="label">Salaires client</span><span class="value">${fmt(d.salairesClient)}</span></div>
+                    <div class="detail-row"><span class="label">Salaires conjoint</span><span class="value">${fmt(d.salairesConjoint)}</span></div>
+                    <div class="detail-row"><span class="label">BIC/BNC</span><span class="value">${fmt(d.revenusBIC)}</span></div>
+                    <div class="detail-row"><span class="label">Dividendes</span><span class="value">${fmt(d.dividendes)}</span></div>
+                    <div class="detail-row"><span class="label">Revenus fonciers</span><span class="value">${fmt(d.revenusFonciers)}</span></div>
+                    <div class="detail-row"><span class="label">Pensions</span><span class="value">${fmt(d.pensions)}</span></div>
+                    <div class="detail-row"><span class="label"><strong>TOTAL REVENUS</strong></span><span class="value"><strong>${fmt(c.revenus)}</strong></span></div>
+                </div></div>
+
+                <div class="detail-section"><h3>Charges mensuelles</h3><div class="detail-grid">
+                    <div class="detail-row"><span class="label">Loyer</span><span class="value">${fmt(d.loyer)}/mois</span></div>
+                    <div class="detail-row"><span class="label">Credit RP</span><span class="value">${fmt(d.creditRP)}/mois</span></div>
+                    <div class="detail-row"><span class="label">Credits locatifs</span><span class="value">${fmt(d.creditLocatif)}/mois</span></div>
+                    <div class="detail-row"><span class="label">Credits conso</span><span class="value">${fmt(d.creditConso)}/mois</span></div>
+                    <div class="detail-row"><span class="label"><strong>TOTAL CHARGES</strong></span><span class="value"><strong>${fmt(totalCharges)}/mois</strong></span></div>
+                    <div class="detail-row"><span class="label"><strong>CAPACITE EPARGNE</strong></span><span class="value"><strong>${fmt(capacite)}/mois</strong></span></div>
+                </div></div>
+
+                <div class="detail-section"><h3>Patrimoine immobilier</h3><div class="detail-grid">
+                    <div class="detail-row"><span class="label">Residence principale</span><span class="value">${fmt(d.immoRP)}</span></div>
+                    <div class="detail-row"><span class="label">Residence secondaire</span><span class="value">${fmt(d.immoRS)}</span></div>
+                    <div class="detail-row"><span class="label">Locatif 1</span><span class="value">${fmt(d.immoLoc1)}</span></div>
+                    <div class="detail-row"><span class="label">Locatif 2</span><span class="value">${fmt(d.immoLoc2)}</span></div>
+                    <div class="detail-row"><span class="label"><strong>TOTAL IMMOBILIER</strong></span><span class="value"><strong>${fmt(c.totalImmo)}</strong></span></div>
+                </div></div>
+
+                <div class="detail-section"><h3>Patrimoine financier</h3><div class="detail-grid">
+                    <div class="detail-row"><span class="label">Livrets</span><span class="value">${fmt(d.livrets)}</span></div>
+                    <div class="detail-row"><span class="label">Assurance Vie</span><span class="value">${fmt(d.assuranceVie)}</span></div>
+                    <div class="detail-row"><span class="label">PEA</span><span class="value">${fmt(d.pea)}</span></div>
+                    <div class="detail-row"><span class="label">CTO</span><span class="value">${fmt(d.cto)}</span></div>
+                    <div class="detail-row"><span class="label">PER</span><span class="value">${fmt(d.per)}</span></div>
+                    <div class="detail-row"><span class="label"><strong>TOTAL FINANCIER</strong></span><span class="value"><strong>${fmt(c.totalFin)}</strong></span></div>
+                </div></div>
+
+                <div class="detail-section"><h3>Synthese</h3><div class="detail-grid">
+                    <div class="detail-row"><span class="label">Patrimoine net</span><span class="value"><strong>${fmt(c.patriNet)}</strong></span></div>
+                    <div class="detail-row"><span class="label">Dettes</span><span class="value">${fmt(c.dettes)}</span></div>
+                    <div class="detail-row"><span class="label">TMI</span><span class="value">${d.tmi ? (parseFloat(d.tmi) * 100) + '%' : '—'}</span></div>
+                    <div class="detail-row"><span class="label">Parts fiscales</span><span class="value">${d.partsFiscales || '—'}</span></div>
+                </div></div>
+
+                <div class="detail-section"><h3>Objectifs</h3><div class="detail-grid">
+                    <div class="detail-row"><span class="label">Objectif principal</span><span class="value">${d.objectifPrincipal || '—'}</span></div>
+                    <div class="detail-row"><span class="label">Profil de risque</span><span class="value">${d.profilRisque || '—'}</span></div>
+                    <div class="detail-row"><span class="label">Horizon</span><span class="value">${d.horizon || '—'} (${d.horizonAnnees || '—'} ans)</span></div>
+                    <div class="detail-row"><span class="label">Apport disponible</span><span class="value">${fmt(d.apportDispo)}</span></div>
+                    <div class="detail-row"><span class="label">Epargne mensuelle</span><span class="value">${fmt(d.epargneMensuelle)}</span></div>
+                    <div class="detail-row"><span class="label">Besoin revenus</span><span class="value">${d.besoinRevenus || '—'}</span></div>
+                    <div class="detail-row"><span class="label">Preoccupation succession</span><span class="value">${d.preoccSucc || '—'}</span></div>
+                </div></div>
+
+                <button class="btn-export" onclick="exportClient(${index})">Exporter en texte</button>
+            `;
+
+            document.getElementById('modal-content').innerHTML = html;
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+        }
+
+        // ===== DELETE CLIENT =====
+        async function deleteClient(userId, name) {
+            if (!confirm('Supprimer definitivement le dossier de ' + name + ' ?')) return;
+            // Delete from localStorage
+            let users = getLocalUsers();
+            users = users.filter(u => u.id !== userId);
+            localStorage.setItem('cgp_users', JSON.stringify(users));
+            localStorage.removeItem('cgp_data_' + userId);
+            // Delete from cloud
+            if (typeof deleteClientFromCloud === 'function') await deleteClientFromCloud(userId);
+            loadClients();
+        }
+
+        // ===== EXPORT =====
+        function exportClient(index) {
+            const c = window._clientsData[index];
+            if (!c) return;
+            const d = c.data;
+            const u = c.user;
+            const totalCharges = (d.loyer || 0) + (d.creditRP || 0) + (d.creditLocatif || 0) + (d.creditConso || 0) + (d.pensionAlim || 0) + (d.autresCharges || 0);
+
+            let text = `BILAN PATRIMONIAL - ${u.prenom || ''} ${u.nom || ''}\n`;
+            text += `Date : ${new Date().toLocaleDateString('fr-FR')}\n`;
+            text += `${'='.repeat(50)}\n\n`;
+            text += `IDENTITE\nNom : ${u.prenom || ''} ${u.nom || ''}\nEmail : ${u.email || '—'}\nDate naissance : ${d.dateNaissance || '—'}\nSituation : ${d.situationMatri || '—'}\nEnfants : ${d.nbEnfants || 0}\nProfession : ${d.statutPro || '—'} - ${d.profession || '—'}\n\n`;
+            text += `REVENUS ANNUELS : ${c.revenus} EUR\nCHARGES MENSUELLES : ${totalCharges} EUR\nCAPACITE EPARGNE : ${Math.round(c.revenus / 12 - totalCharges)} EUR/mois\n\n`;
+            text += `PATRIMOINE\nImmobilier : ${c.totalImmo} EUR\nFinancier : ${c.totalFin} EUR\nDettes : ${c.dettes} EUR\nNet : ${c.patriNet} EUR\n\n`;
+            text += `OBJECTIFS\nObjectif : ${d.objectifPrincipal || '—'}\nProfil risque : ${d.profilRisque || '—'}\nHorizon : ${d.horizon || '—'}\nApport : ${d.apportDispo || 0} EUR\n`;
+
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `bilan_${(u.nom || 'client').toLowerCase()}_${(u.prenom || '').toLowerCase()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Auto-check session
+        if (sessionStorage.getItem('admin_auth') === 'true') {
+            showDashboard();
+        }
+    </script>
+</body>
+</html>

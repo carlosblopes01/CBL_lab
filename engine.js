@@ -1,6 +1,6 @@
 // ===== CONFIGURATION CGP =====
-const CGP_EMAIL = 'contact@cabinet-cgp.fr'; // <-- Remplacez par votre email professionnel
-const CGP_NOM = 'Cabinet CGP';
+const CGP_EMAIL = 'carlosblopes01@gmail.com'; // <-- Remplacez par votre email professionnel
+const CGP_NOM = 'CBL_Lab';
 
 // ===== CALCULATION ENGINE =====
 
@@ -120,6 +120,9 @@ function saveAndCalculate() {
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
     document.querySelector('[data-section="accueil"]').classList.add('active');
     window.scrollTo(0, 0);
+
+    // Update contextual dashboard
+    updateDashboardContext();
 
     // Reinit charts
     setTimeout(() => initCharts(), 200);
@@ -1052,6 +1055,191 @@ function prendreRDV() {
         `Cordialement`
     );
     window.location.href = `mailto:${CGP_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+// ===== ONBOARDING WIZARD =====
+// NOTE: Also update enterApp() in auth.js to call updateDashboardContext()
+const ONBOARDING_STEPS = [
+    { id: 1, title: 'Identite & Revenus', fields: ['nom','prenom','dateNaissance','situationMatri','regimeMatri','nbEnfants','enfantsCharge','statutPro','profession','secteur','salairesClient','salairesConjoint','revenusBIC','dividendes','revenusFonciers','pensions','autresRevenus','loyer','creditRP','capitalRestantRP','echeanceRP','creditLocatif','creditConso','pensionAlim','autresCharges'] },
+    { id: 2, title: 'Patrimoine', fields: ['immoRP','immoRS','immoLoc1','immoLoc2','immoPro','immoAutres','livrets','pel','assuranceVie','pea','cto','per','epargneSalariale','autresPlacement','partsFiscales','tmi'] },
+    { id: 3, title: 'Objectifs & Strategie', fields: ['objectifPrincipal','horizon','horizonAnnees','apportDispo','epargneMensuelle','profilRisque','besoinRevenus','preoccSucc'] }
+];
+
+let currentStep = 1;
+
+function initOnboarding() {
+    showStep(1);
+    updateStepProgress();
+}
+
+function showStep(step) {
+    currentStep = step;
+    // Hide all step contents
+    document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+    const stepEl = document.getElementById('step-' + step);
+    if (stepEl) stepEl.classList.add('active');
+
+    // Update progress indicators
+    updateStepProgress();
+
+    // Update nav buttons
+    const backBtn = document.getElementById('step-back');
+    const nextBtn = document.getElementById('step-next');
+    if (backBtn) backBtn.style.display = step === 1 ? 'none' : 'inline-flex';
+    if (nextBtn) {
+        if (step === 3) {
+            nextBtn.textContent = 'Lancer mon analyse';
+            nextBtn.className = 'btn btn-gold';
+        } else {
+            nextBtn.textContent = 'Continuer';
+            nextBtn.className = 'btn btn-primary';
+        }
+    }
+
+    // Show step result if previous steps completed
+    updateStepResults();
+
+    window.scrollTo(0, 0);
+}
+
+function updateStepProgress() {
+    for (let i = 1; i <= 3; i++) {
+        const indicator = document.getElementById('indicator-' + i);
+        if (!indicator) continue;
+        indicator.classList.remove('active', 'completed');
+        if (i === currentStep) indicator.classList.add('active');
+        else if (i < currentStep) indicator.classList.add('completed');
+    }
+    // Update progress bar fill
+    const fill = document.getElementById('progress-fill');
+    if (fill) fill.style.width = ((currentStep - 1) / 2 * 100) + '%';
+}
+
+function nextStep() {
+    recalcAll();
+    if (currentStep === 3) {
+        // Final step: save and launch analysis
+        saveAndCalculate();
+        return;
+    }
+    showStep(currentStep + 1);
+}
+
+function prevStep() {
+    if (currentStep > 1) showStep(currentStep - 1);
+}
+
+function updateStepResults() {
+    const d = collectFormData();
+
+    // Step 1 result: revenus + capacité épargne
+    const totalRevenus = (d.salairesClient || 0) + (d.salairesConjoint || 0) + (d.revenusBIC || 0) + (d.dividendes || 0) + (d.revenusFonciers || 0) + (d.pensions || 0) + (d.autresRevenus || 0);
+    const totalCharges = (d.loyer || 0) + (d.creditRP || 0) + (d.creditLocatif || 0) + (d.creditConso || 0) + (d.pensionAlim || 0) + (d.autresCharges || 0);
+    const capacite = Math.round(totalRevenus / 12 - totalCharges);
+
+    const result1 = document.getElementById('step-result-1');
+    if (result1 && totalRevenus > 0 && currentStep > 1) {
+        result1.classList.add('visible');
+        result1.innerHTML = '<div class="result-grid"><div class="result-item"><span class="result-label">Revenus annuels</span><span class="result-value">' + fmt(totalRevenus) + '</span></div><div class="result-item"><span class="result-label">Capacite d\'epargne</span><span class="result-value">' + fmt(capacite) + '/mois</span></div></div>';
+    }
+
+    // Step 2 result: patrimoine + classe
+    const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
+    const totalFin = (d.livrets || 0) + (d.pel || 0) + (d.assuranceVie || 0) + (d.pea || 0) + (d.cto || 0) + (d.per || 0) + (d.epargneSalariale || 0) + (d.autresPlacement || 0);
+    const patriNet = totalImmo + totalFin - (d.capitalRestantRP || 0);
+
+    let classe = 'En construction';
+    if (patriNet >= 5000000) classe = 'Grande fortune';
+    else if (patriNet >= 1000000) classe = 'Patrimoine > 1M';
+    else if (patriNet >= 500000) classe = 'Patrimoine aise';
+    else if (patriNet >= 100000) classe = 'Patrimoine moyen';
+
+    const result2 = document.getElementById('step-result-2');
+    if (result2 && (totalImmo + totalFin) > 0 && currentStep > 2) {
+        result2.classList.add('visible');
+        result2.innerHTML = '<div class="result-grid"><div class="result-item"><span class="result-label">Patrimoine net</span><span class="result-value">' + fmt(patriNet) + '</span></div><div class="result-item"><span class="result-label">Classe</span><span class="result-value">' + classe + '</span></div></div>';
+    }
+}
+
+// ===== CONTEXTUAL DASHBOARD =====
+function updateDashboardContext() {
+    const d = collectFormData();
+    const totalRevenus = (d.salairesClient || 0) + (d.salairesConjoint || 0) + (d.revenusBIC || 0) + (d.dividendes || 0) + (d.revenusFonciers || 0) + (d.pensions || 0) + (d.autresRevenus || 0);
+    const hasProfile = totalRevenus > 0 && d.objectifPrincipal;
+
+    const completionBanner = document.getElementById('completion-banner');
+    const dashboardFull = document.getElementById('dashboard-full');
+    const dashInsights = document.getElementById('dash-insights');
+
+    if (!hasProfile) {
+        // Show completion guide
+        if (completionBanner) completionBanner.classList.remove('hidden');
+        if (dashboardFull) dashboardFull.classList.add('hidden');
+    } else {
+        if (completionBanner) completionBanner.classList.add('hidden');
+        if (dashboardFull) dashboardFull.classList.remove('hidden');
+
+        // Generate insights
+        if (dashInsights) {
+            let insights = [];
+            const totalCharges = (d.loyer || 0) + (d.creditRP || 0) + (d.creditLocatif || 0) + (d.creditConso || 0);
+            const capacite = totalRevenus / 12 - totalCharges;
+            const tauxEpargne = totalRevenus > 0 ? (capacite * 12 / totalRevenus) : 0;
+
+            if (tauxEpargne > 0.3) insights.push({icon: '&#9650;', text: 'Votre taux d\'epargne de ' + (tauxEpargne * 100).toFixed(0) + '% est excellent. Vous avez une forte capacite d\'investissement.', type: 'positive'});
+            else if (tauxEpargne > 0.15) insights.push({icon: '&#9644;', text: 'Votre taux d\'epargne de ' + (tauxEpargne * 100).toFixed(0) + '% est correct. Des optimisations sont possibles.', type: 'neutral'});
+            else insights.push({icon: '&#9660;', text: 'Votre taux d\'epargne de ' + (tauxEpargne * 100).toFixed(0) + '% est faible. Privilegiez la reduction de charges.', type: 'warning'});
+
+            const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0);
+            const totalFin = (d.livrets || 0) + (d.assuranceVie || 0) + (d.pea || 0) + (d.cto || 0) + (d.per || 0);
+            const patriBrut = totalImmo + totalFin;
+            if (patriBrut > 0) {
+                const pctImmo = totalImmo / patriBrut;
+                if (pctImmo > 0.7) insights.push({icon: '&#9888;', text: 'Votre patrimoine est concentre a ' + (pctImmo * 100).toFixed(0) + '% en immobilier. Diversifiez vers des actifs financiers.', type: 'warning'});
+                else if (pctImmo < 0.3 && totalImmo > 0) insights.push({icon: '&#9733;', text: 'Bonne diversification patrimoine immobilier / financier.', type: 'positive'});
+            }
+
+            if (d.tmi && parseFloat(d.tmi) >= 0.30) insights.push({icon: '&#9879;', text: 'Avec une TMI a ' + (parseFloat(d.tmi) * 100) + '%, privilegiez les enveloppes fiscales (PEA, Assurance Vie).', type: 'neutral'});
+
+            dashInsights.innerHTML = insights.map(i => '<div class="insight-card insight-' + i.type + '"><span class="insight-icon">' + i.icon + '</span><p>' + i.text + '</p></div>').join('');
+        }
+    }
+}
+
+// ===== MINI SIMULATOR (LANDING) =====
+function runMiniSim() {
+    const objectif = document.getElementById('mini-objectif')?.value;
+    const montant = parseFloat(document.getElementById('mini-montant')?.value) || 0;
+    const horizon = parseInt(document.getElementById('mini-horizon')?.value) || 8;
+    const resultEl = document.getElementById('mini-result');
+
+    if (!objectif || montant <= 0 || !resultEl) return;
+
+    // Simple projections
+    const projections = {
+        'valorisation': { vehicle: 'PEA (ETF)', rdt: 0.056, label: 'Valorisation du capital' },
+        'revenus': { vehicle: 'Immobilier locatif', rdt: 0.045, label: 'Revenus complementaires' },
+        'transmission': { vehicle: 'Assurance Vie', rdt: 0.035, label: 'Transmission patrimoniale' },
+        'fiscal': { vehicle: 'PEA + Assurance Vie', rdt: 0.048, label: 'Optimisation fiscale' },
+        'retraite': { vehicle: 'Assurance Vie + PER', rdt: 0.04, label: 'Preparation retraite' },
+        'epargne': { vehicle: 'Assurance Vie', rdt: 0.032, label: 'Constitution d\'epargne' }
+    };
+
+    const p = projections[objectif] || projections['valorisation'];
+    const capitalFinal = montant * Math.pow(1 + p.rdt, horizon);
+    const gain = capitalFinal - montant;
+
+    resultEl.classList.add('visible');
+    resultEl.innerHTML = '<div class="mini-result-content">' +
+        '<h3>Votre projection</h3>' +
+        '<p class="mini-result-objectif">' + p.label + '</p>' +
+        '<div class="mini-result-grid">' +
+        '<div class="mini-result-item"><span class="mini-result-label">Capital projete a ' + horizon + ' ans</span><span class="mini-result-value">' + fmt(capitalFinal) + '</span></div>' +
+        '<div class="mini-result-item"><span class="mini-result-label">Gain estime</span><span class="mini-result-value green">' + fmt(gain) + '</span></div>' +
+        '<div class="mini-result-item"><span class="mini-result-label">Vehicule recommande</span><span class="mini-result-value">' + p.vehicle + '</span></div>' +
+        '</div>' +
+        '<p class="mini-result-cta-text">Creez votre compte pour acceder a votre analyse personnalisee complete.</p>' +
+        '</div>';
 }
 
 // ===== LIVE FORM UPDATES =====

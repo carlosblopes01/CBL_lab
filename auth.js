@@ -28,6 +28,9 @@ function saveUserData(data) {
     const user = getCurrentUser();
     if (!user) return;
     localStorage.setItem('cgp_data_' + user.id, JSON.stringify(data));
+
+    // Sync to cloud
+    if (typeof syncClientDataToCloud === 'function') syncClientDataToCloud(user.id, data);
 }
 
 function showLogin() {
@@ -40,6 +43,24 @@ function showSignup() {
     document.getElementById('signup-form').classList.add('active');
     document.getElementById('login-form').classList.remove('active');
     clearErrors();
+}
+
+function showAuthScreen(type) {
+    document.getElementById('landing-page').classList.add('hidden');
+    document.getElementById('auth-screen').classList.remove('hidden');
+    document.getElementById('sidebar').classList.add('hidden');
+    document.getElementById('main-content').classList.add('hidden');
+    if (type === 'signup') showSignup();
+    else showLogin();
+}
+
+function showLanding() {
+    document.getElementById('landing-page').classList.remove('hidden');
+    document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('sidebar').classList.add('hidden');
+    document.getElementById('main-content').classList.add('hidden');
+    const mt = document.querySelector('.menu-toggle');
+    if (mt) mt.style.display = 'none';
 }
 
 function clearErrors() {
@@ -75,8 +96,12 @@ function handleSignup() {
     }
 
     const id = 'user_' + Date.now();
-    users.push({ id, nom, prenom, email, password: pw, createdAt: new Date().toISOString() });
+    const newUser = { id, nom, prenom, email, password: pw, createdAt: new Date().toISOString() };
+    users.push(newUser);
     saveUsers(users);
+
+    // Sync to cloud
+    if (typeof syncUserToCloud === 'function') syncUserToCloud(newUser);
 
     // Pre-fill profile with signup data
     setCurrentUser(id);
@@ -108,16 +133,14 @@ function handleLogin() {
 
 function handleLogout() {
     localStorage.removeItem('cgp_current_user');
-    document.getElementById('auth-screen').classList.remove('hidden');
-    document.getElementById('sidebar').classList.add('hidden');
-    document.getElementById('main-content').classList.add('hidden');
-    showLogin();
+    showLanding();
 }
 
 function enterApp() {
     const user = getCurrentUser();
     if (!user) return;
 
+    document.getElementById('landing-page').classList.add('hidden');
     document.getElementById('auth-screen').classList.add('hidden');
     document.getElementById('sidebar').classList.remove('hidden');
     document.getElementById('main-content').classList.remove('hidden');
@@ -131,6 +154,9 @@ function enterApp() {
 
     // Recalculate
     recalcAll();
+
+    // Update contextual dashboard
+    if (typeof updateDashboardContext === 'function') updateDashboardContext();
 
     // Init charts after DOM is visible
     setTimeout(() => {
@@ -166,5 +192,15 @@ function collectFormData() {
 document.addEventListener('DOMContentLoaded', () => {
     if (getCurrentUser()) {
         enterApp();
+    } else {
+        showLanding();
     }
+
+    // Landing nav scroll effect
+    window.addEventListener('scroll', () => {
+        const nav = document.querySelector('.landing-nav');
+        if (nav) {
+            nav.classList.toggle('scrolled', window.scrollY > 50);
+        }
+    });
 });

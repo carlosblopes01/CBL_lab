@@ -3,22 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulateur Patrimonial | Cabinet CGP</title>
+    <title>CBL Advisory | Gestion de Patrimoine</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- AUTH SCREEN -->
-    <div id="auth-screen">
+    <!-- ========== LANDING PAGE (PUBLIC) ========== -->
+    <div id="landing-page" class="landing">
+
+        <!-- NAV -->
+        <nav class="landing-nav">
+            <div class="landing-nav-inner">
+                <div class="landing-logo"><span class="logo-icon">&#9670;</span> CBL Advisory</div>
+                <div class="landing-nav-links">
+                    <a href="#features">Notre approche</a>
+                    <a href="#simulator">Simulateur</a>
+                    <button class="btn btn-outline btn-sm" onclick="showAuthScreen('login')">Connexion</button>
+                    <button class="btn btn-gold btn-sm" onclick="showAuthScreen('signup')">Commencer</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- HERO -->
+        <section class="landing-hero">
+            <div class="hero-content">
+                <div class="hero-badge">Plateforme de conseil patrimonial</div>
+                <h1 class="hero-title">Optimisez votre patrimoine.<br>En toute clarte.</h1>
+                <p class="hero-subtitle">Analyse personnalisee, simulations avancees et recommandations sur-mesure. CBL Advisory met l'ingenierie patrimoniale a votre service.</p>
+                <div class="hero-ctas">
+                    <button class="btn btn-gold btn-lg" onclick="showAuthScreen('signup')">Demarrer mon analyse gratuite</button>
+                    <a href="#simulator" class="btn btn-outline-light btn-lg">Simuler un placement</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-stat-card">
+                    <div class="hero-stat-label">Rendement net projete</div>
+                    <div class="hero-stat-value">+5.6%<span>/an</span></div>
+                </div>
+                <div class="hero-stat-card">
+                    <div class="hero-stat-label">Economie fiscale moyenne</div>
+                    <div class="hero-stat-value">12 400 <span>&euro;</span></div>
+                </div>
+                <div class="hero-stat-card">
+                    <div class="hero-stat-label">Capital a 10 ans</div>
+                    <div class="hero-stat-value">+72%</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRUST BAR -->
+        <div class="trust-bar">
+            <div class="trust-item"><span class="trust-icon">&#9888;</span> Donnees 100% confidentielles</div>
+            <div class="trust-item"><span class="trust-icon">&#10003;</span> Sans engagement</div>
+            <div class="trust-item"><span class="trust-icon">&#9733;</span> Analyse en 3 minutes</div>
+            <div class="trust-item"><span class="trust-icon">&#128274;</span> Heberge en France</div>
+        </div>
+
+        <!-- FEATURES -->
+        <section class="landing-section" id="features">
+            <h2 class="landing-section-title">Une methode structuree en 4 etapes</h2>
+            <p class="landing-section-subtitle">De l'analyse a la mise en place, nous vous guidons a chaque etape.</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-number">01</div>
+                    <h3>Bilan patrimonial</h3>
+                    <p>Cartographiez l'ensemble de vos actifs, revenus, charges et dettes en quelques minutes.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">02</div>
+                    <h3>Simulations avancees</h3>
+                    <p>Immobilier, Assurance Vie, PEA, CTO : comparez les strategies avec des projections detaillees.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">03</div>
+                    <h3>Recommandation sur-mesure</h3>
+                    <p>Notre algorithme analyse 7 criteres pour identifier la strategie optimale selon votre profil.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">04</div>
+                    <h3>Accompagnement expert</h3>
+                    <p>Un conseiller dedie valide l'analyse et vous accompagne dans la mise en place.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MINI SIMULATOR -->
+        <section class="landing-section landing-section-dark" id="simulator">
+            <h2 class="landing-section-title light">Simulez en 30 secondes</h2>
+            <p class="landing-section-subtitle light">Decouvrez le potentiel de votre epargne.</p>
+            <div class="mini-sim">
+                <div class="mini-sim-form">
+                    <div class="form-group">
+                        <label>Votre objectif</label>
+                        <select id="mini-objectif">
+                            <option value="">Selectionnez</option>
+                            <option value="valorisation">Valoriser mon capital</option>
+                            <option value="revenus">Generer des revenus</option>
+                            <option value="transmission">Transmettre mon patrimoine</option>
+                            <option value="fiscal">Optimiser ma fiscalite</option>
+                            <option value="retraite">Preparer ma retraite</option>
+                            <option value="epargne">Constituer une epargne</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Montant a investir</label>
+                        <input type="number" id="mini-montant" placeholder="60 000" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Horizon (annees)</label>
+                        <input type="number" id="mini-horizon" value="8" min="1" max="30">
+                    </div>
+                    <button class="btn btn-gold btn-full" onclick="runMiniSim()">Voir ma projection</button>
+                </div>
+                <div id="mini-result" class="mini-result"></div>
+            </div>
+            <p class="mini-sim-cta">Envie d'aller plus loin ? <a href="#" onclick="showAuthScreen('signup')">Creez votre compte gratuit</a></p>
+        </section>
+
+        <!-- TESTIMONIALS -->
+        <section class="landing-section">
+            <h2 class="landing-section-title">Ils nous font confiance</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">"L'analyse m'a permis de comprendre que je sous-optimisais completement ma fiscalite. Resultat : 8 000 euros d'economie par an."</div>
+                    <div class="testimonial-author"><strong>Laurent M.</strong> — Cadre dirigeant, 52 ans</div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">"En 10 minutes, j'avais une vision claire de mon patrimoine et des strategies adaptees. Tres professionnel."</div>
+                    <div class="testimonial-author"><strong>Sophie D.</strong> — Medecin liberale, 44 ans</div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">"Le comparatif entre PEA et Assurance Vie m'a aide a prendre la bonne decision. Je recommande sans hesiter."</div>
+                    <div class="testimonial-author"><strong>Thomas R.</strong> — Entrepreneur, 38 ans</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA FINAL -->
+        <section class="landing-cta">
+            <h2>Pret a optimiser votre patrimoine ?</h2>
+            <p>Creez votre compte gratuitement et obtenez votre analyse patrimoniale en moins de 5 minutes.</p>
+            <button class="btn btn-gold btn-lg" onclick="showAuthScreen('signup')">Commencer maintenant</button>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="landing-footer">
+            <div class="footer-inner">
+                <div class="footer-brand"><span class="logo-icon">&#9670;</span> CBL Advisory</div>
+                <div class="footer-links">
+                    <a href="#">Mentions legales</a>
+                    <a href="#">Confidentialite</a>
+                    <a href="#">Contact</a>
+                </div>
+                <div class="footer-copy">&copy; 2026 CBL Advisory. Tous droits reserves.</div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ========== AUTH SCREEN ========== -->
+    <div id="auth-screen" class="hidden">
         <div class="auth-container">
+            <button class="auth-back" onclick="showLanding()">&larr; Retour</button>
             <div class="auth-logo">
                 <span class="logo-icon">&#9670;</span>
-                <h1>Cabinet CGP</h1>
-                <p>Simulateur Patrimonial</p>
+                <h1>CBL Advisory</h1>
+                <p>Gestion de Patrimoine</p>
             </div>
 
-            <!-- LOGIN FORM -->
+            <!-- LOGIN -->
             <div id="login-form" class="auth-form active">
                 <h2>Connexion</h2>
                 <div class="form-group">
@@ -30,13 +183,13 @@
                     <input type="password" id="login-password" placeholder="Votre mot de passe">
                 </div>
                 <div id="login-error" class="auth-error"></div>
-                <button class="btn btn-primary btn-full" onclick="handleLogin()">Se connecter</button>
+                <button class="btn btn-gold btn-full" onclick="handleLogin()">Se connecter</button>
                 <p class="auth-switch">Pas encore de compte ? <a href="#" onclick="showSignup()">Creer un compte</a></p>
             </div>
 
-            <!-- SIGNUP FORM -->
+            <!-- SIGNUP -->
             <div id="signup-form" class="auth-form">
-                <h2>Creer un compte</h2>
+                <h2>Creer votre compte</h2>
                 <div class="form-row">
                     <div class="form-group">
                         <label>Nom</label>
@@ -60,20 +213,20 @@
                     <input type="password" id="signup-password2" placeholder="Confirmer">
                 </div>
                 <div id="signup-error" class="auth-error"></div>
-                <button class="btn btn-primary btn-full" onclick="handleSignup()">Creer mon compte</button>
+                <button class="btn btn-gold btn-full" onclick="handleSignup()">Creer mon compte</button>
                 <p class="auth-switch">Deja un compte ? <a href="#" onclick="showLogin()">Se connecter</a></p>
+                <p class="auth-trust">&#128274; Vos donnees sont chiffrees et confidentielles</p>
             </div>
         </div>
     </div>
 
-    <!-- SIDEBAR -->
+    <!-- ========== SIDEBAR ========== -->
     <nav id="sidebar" class="hidden">
         <div class="sidebar-header">
             <div class="logo">
                 <span class="logo-icon">&#9670;</span>
-                <span class="logo-text">Cabinet CGP</span>
+                <span class="logo-text">CBL Advisory</span>
             </div>
-            <p class="logo-sub">Gestion de Fortune</p>
         </div>
         <div class="user-info">
             <div class="user-avatar" id="user-avatar">U</div>
@@ -84,12 +237,14 @@
         </div>
         <ul class="nav-links">
             <li><a href="#" class="nav-link active" data-section="accueil"><span class="nav-icon">&#9737;</span> Tableau de bord</a></li>
-            <li><a href="#" class="nav-link" data-section="profil"><span class="nav-icon">&#9823;</span> Profil Client</a></li>
+            <li><a href="#" class="nav-link" data-section="profil"><span class="nav-icon">&#9823;</span> Mon profil</a></li>
             <li><a href="#" class="nav-link" data-section="patrimoine"><span class="nav-icon">&#9961;</span> Patrimoine</a></li>
+            <li class="nav-separator">Simulations</li>
             <li><a href="#" class="nav-link" data-section="immobilier"><span class="nav-icon">&#8962;</span> Immobilier</a></li>
             <li><a href="#" class="nav-link" data-section="assurance-vie"><span class="nav-icon">&#9878;</span> Assurance Vie</a></li>
             <li><a href="#" class="nav-link" data-section="pea"><span class="nav-icon">&#9650;</span> PEA</a></li>
             <li><a href="#" class="nav-link" data-section="cto"><span class="nav-icon">&#9632;</span> CTO</a></li>
+            <li class="nav-separator">Analyse</li>
             <li><a href="#" class="nav-link" data-section="comparatif"><span class="nav-icon">&#8644;</span> Comparatif</a></li>
             <li><a href="#" class="nav-link" data-section="recommandation"><span class="nav-icon">&#9733;</span> Recommandation</a></li>
             <li><a href="#" class="nav-link" data-section="fiscalite"><span class="nav-icon">&#9879;</span> Fiscalite</a></li>
@@ -97,282 +252,343 @@
             <li><a href="#" class="nav-link" data-section="demembrement"><span class="nav-icon">&#9883;</span> Demembrement</a></li>
         </ul>
         <div class="sidebar-footer">
-            <p>Donnees confidentielles</p>
-            <p class="version">v2.0 — 2026</p>
+            <button class="btn btn-gold btn-full btn-sm" onclick="prendreRDV()">Prendre rendez-vous</button>
+            <p class="version">CBL Advisory v3.0</p>
         </div>
     </nav>
 
-    <!-- MAIN -->
+    <!-- ========== MAIN APP ========== -->
     <main id="main-content" class="hidden">
 
-        <!-- ACCUEIL -->
+        <!-- FLOATING CTA -->
+        <div class="cta-floating" id="cta-floating" onclick="prendreRDV()">
+            <span>&#128197;</span> Prendre RDV
+        </div>
+
+        <!-- ===== DASHBOARD ===== -->
         <section id="accueil" class="section active">
             <div class="section-header">
-                <h1>Tableau de Bord Patrimonial</h1>
-                <p class="section-subtitle">Vue d'ensemble — <span id="dash-client-name">Client</span></p>
+                <h1>Tableau de Bord</h1>
+                <p class="section-subtitle">Bienvenue, <span id="dash-client-name">Client</span></p>
             </div>
-            <div class="kpi-grid">
-                <div class="kpi-card kpi-primary"><div class="kpi-label">Patrimoine Net</div><div class="kpi-value" id="kpi-patri-net">— &euro;</div><div class="kpi-detail" id="kpi-patri-brut">Brut : — &euro;</div></div>
-                <div class="kpi-card kpi-green"><div class="kpi-label">Revenus Annuels</div><div class="kpi-value" id="kpi-revenus">— &euro;</div><div class="kpi-detail" id="kpi-revenus-detail"></div></div>
-                <div class="kpi-card kpi-blue"><div class="kpi-label">Capacite d'Epargne</div><div class="kpi-value" id="kpi-epargne">— &euro;/mois</div><div class="kpi-detail" id="kpi-epargne-pct"></div></div>
-                <div class="kpi-card kpi-orange"><div class="kpi-label">Taux d'Endettement</div><div class="kpi-value" id="kpi-endettement">—%</div><div class="kpi-detail" id="kpi-dette-detail"></div></div>
-            </div>
-            <div class="dashboard-grid">
-                <div class="card"><h3>Repartition du Patrimoine</h3><div class="chart-container"><canvas id="patrimoineChart"></canvas></div></div>
-                <div class="card">
-                    <h3>Synthese Rapide</h3>
-                    <div class="summary-list">
-                        <div class="summary-item"><span class="summary-label">Classe patrimoniale</span><span class="summary-value badge badge-gold" id="dash-classe">—</span></div>
-                        <div class="summary-item"><span class="summary-label">Profil de risque</span><span class="summary-value badge badge-blue" id="dash-risque">—</span></div>
-                        <div class="summary-item"><span class="summary-label">Objectif principal</span><span class="summary-value" id="dash-objectif">—</span></div>
-                        <div class="summary-item"><span class="summary-label">Horizon</span><span class="summary-value" id="dash-horizon">—</span></div>
-                        <div class="summary-item"><span class="summary-label">TMI</span><span class="summary-value" id="dash-tmi">—</span></div>
-                        <div class="summary-item"><span class="summary-label">IFI</span><span class="summary-value badge badge-red" id="dash-ifi">—</span></div>
-                        <div class="summary-item"><span class="summary-label">Impot net IR</span><span class="summary-value" id="dash-ir">—</span></div>
-                        <div class="summary-item"><span class="summary-label">Apport disponible</span><span class="summary-value" id="dash-apport">—</span></div>
+
+            <!-- COMPLETION BANNER (shown when profile incomplete) -->
+            <div id="completion-banner" class="completion-banner">
+                <div class="completion-icon">&#9733;</div>
+                <div class="completion-content">
+                    <h3>Completez votre profil pour debloquer votre analyse</h3>
+                    <p>En 3 etapes simples, obtenez votre bilan patrimonial complet et des recommandations personnalisees.</p>
+                    <div class="completion-steps">
+                        <div class="completion-step"><span>1</span> Identite &amp; Revenus</div>
+                        <div class="completion-step"><span>2</span> Patrimoine</div>
+                        <div class="completion-step"><span>3</span> Objectifs</div>
                     </div>
                 </div>
+                <a href="#" class="btn btn-gold nav-link" data-section="profil">Completer mon profil</a>
             </div>
-            <div class="card recommendation-banner">
-                <div class="rec-icon">&#9733;</div>
-                <div class="rec-content">
-                    <h3>Recommandation Automatique</h3>
-                    <p id="dash-reco-text">Remplissez votre profil pour obtenir une recommandation personnalisee.</p>
+
+            <!-- DASHBOARD FULL (shown when profile complete) -->
+            <div id="dashboard-full" class="hidden">
+                <div class="kpi-grid">
+                    <div class="kpi-card kpi-primary"><div class="kpi-label">Patrimoine Net</div><div class="kpi-value" id="kpi-patri-net">— &euro;</div><div class="kpi-detail" id="kpi-patri-brut">Brut : — &euro;</div></div>
+                    <div class="kpi-card kpi-green"><div class="kpi-label">Revenus Annuels</div><div class="kpi-value" id="kpi-revenus">— &euro;</div><div class="kpi-detail" id="kpi-revenus-detail"></div></div>
+                    <div class="kpi-card kpi-blue"><div class="kpi-label">Capacite d'Epargne</div><div class="kpi-value" id="kpi-epargne">— &euro;/mois</div><div class="kpi-detail" id="kpi-epargne-pct"></div></div>
+                    <div class="kpi-card kpi-orange"><div class="kpi-label">Taux d'Endettement</div><div class="kpi-value" id="kpi-endettement">—%</div><div class="kpi-detail" id="kpi-dette-detail"></div></div>
                 </div>
-                <a href="#" class="btn btn-primary nav-link" data-section="profil">Remplir mon profil</a>
-            </div>
-            <div id="dash-actions" class="action-buttons-row hidden">
-                <button class="btn btn-primary btn-action" onclick="sendBilan()">&#9993; Envoyer mon bilan au conseiller</button>
-                <button class="btn btn-green btn-action" onclick="prendreRDV()">&#128197; Prendre rendez-vous</button>
+
+                <!-- INSIGHTS -->
+                <div id="dash-insights" class="insights-row"></div>
+
+                <div class="dashboard-grid">
+                    <div class="card"><h3>Repartition du Patrimoine</h3><div class="chart-container"><canvas id="patrimoineChart"></canvas></div></div>
+                    <div class="card">
+                        <h3>Synthese</h3>
+                        <div class="summary-list">
+                            <div class="summary-item"><span class="summary-label">Classe patrimoniale</span><span class="summary-value badge badge-gold" id="dash-classe">—</span></div>
+                            <div class="summary-item"><span class="summary-label">Profil de risque</span><span class="summary-value badge badge-blue" id="dash-risque">—</span></div>
+                            <div class="summary-item"><span class="summary-label">Objectif principal</span><span class="summary-value" id="dash-objectif">—</span></div>
+                            <div class="summary-item"><span class="summary-label">Horizon</span><span class="summary-value" id="dash-horizon">—</span></div>
+                            <div class="summary-item"><span class="summary-label">TMI</span><span class="summary-value" id="dash-tmi">—</span></div>
+                            <div class="summary-item"><span class="summary-label">IFI</span><span class="summary-value badge badge-red" id="dash-ifi">—</span></div>
+                            <div class="summary-item"><span class="summary-label">Impot net IR</span><span class="summary-value" id="dash-ir">—</span></div>
+                            <div class="summary-item"><span class="summary-label">Apport disponible</span><span class="summary-value" id="dash-apport">—</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card recommendation-banner">
+                    <div class="rec-icon">&#9733;</div>
+                    <div class="rec-content">
+                        <h3>Recommandation</h3>
+                        <p id="dash-reco-text">Remplissez votre profil pour obtenir une recommandation personnalisee.</p>
+                    </div>
+                    <a href="#" class="btn btn-gold nav-link" data-section="recommandation">Voir le detail</a>
+                </div>
+
+                <div id="dash-actions" class="action-buttons-row">
+                    <button class="btn btn-primary btn-action" onclick="sendBilan()">&#9993; Envoyer mon bilan</button>
+                    <button class="btn btn-gold btn-action" onclick="prendreRDV()">&#128197; Prendre rendez-vous</button>
+                </div>
             </div>
         </section>
 
-        <!-- PROFIL CLIENT (FORMULAIRE) -->
+        <!-- ===== PROFIL (ONBOARDING WIZARD) ===== -->
         <section id="profil" class="section">
             <div class="section-header">
                 <h1>Mon Profil</h1>
-                <p class="section-subtitle">Remplissez vos informations pour generer votre analyse patrimoniale</p>
+                <p class="section-subtitle">Completez vos informations en 3 etapes</p>
             </div>
 
-            <div class="card">
-                <h3>1. Identite &amp; Situation Civile</h3>
-                <div class="form-grid">
-                    <div class="form-group"><label>Nom</label><input type="text" data-field="nom" placeholder="Votre nom"></div>
-                    <div class="form-group"><label>Prenom</label><input type="text" data-field="prenom" placeholder="Votre prenom"></div>
-                    <div class="form-group"><label>Date de naissance</label><input type="date" data-field="dateNaissance"></div>
-                    <div class="form-group">
-                        <label>Situation matrimoniale</label>
-                        <select data-field="situationMatri">
-                            <option value="">Selectionnez</option>
-                            <option value="Celibataire">Celibataire</option>
-                            <option value="Marie(e)">Marie(e)</option>
-                            <option value="Pacse(e)">Pacse(e)</option>
-                            <option value="Divorce(e)">Divorce(e)</option>
-                            <option value="Veuf(ve)">Veuf(ve)</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Regime matrimonial</label><input type="text" data-field="regimeMatri" placeholder="Communaute reduite aux acquets..."></div>
-                    <div class="form-group"><label>Nombre d'enfants</label><input type="number" data-field="nbEnfants" min="0" value="0"></div>
-                    <div class="form-group"><label>Dont enfants a charge</label><input type="number" data-field="enfantsCharge" min="0" value="0"></div>
+            <!-- PROGRESS BAR -->
+            <div class="step-progress">
+                <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+                <div class="step-indicators">
+                    <div class="step-indicator active" id="indicator-1" onclick="showStep(1)"><span class="step-num">1</span><span class="step-label">Identite &amp; Revenus</span></div>
+                    <div class="step-indicator" id="indicator-2" onclick="showStep(2)"><span class="step-num">2</span><span class="step-label">Patrimoine</span></div>
+                    <div class="step-indicator" id="indicator-3" onclick="showStep(3)"><span class="step-num">3</span><span class="step-label">Objectifs</span></div>
                 </div>
             </div>
 
-            <div class="card">
-                <h3>2. Situation Professionnelle</h3>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Statut professionnel</label>
-                        <select data-field="statutPro">
-                            <option value="">Selectionnez</option>
-                            <option value="Salarie cadre">Salarie cadre</option>
-                            <option value="Salarie non-cadre">Salarie non-cadre</option>
-                            <option value="TNS / Independant">TNS / Independant</option>
-                            <option value="Profession liberale">Profession liberale</option>
-                            <option value="Chef d'entreprise">Chef d'entreprise</option>
-                            <option value="Fonctionnaire">Fonctionnaire</option>
-                            <option value="Retraite">Retraite</option>
-                            <option value="Sans activite">Sans activite</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Profession / Fonction</label><input type="text" data-field="profession" placeholder="Votre profession"></div>
-                    <div class="form-group"><label>Secteur d'activite</label><input type="text" data-field="secteur" placeholder="Secteur"></div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>3. Revenus Annuels Nets</h3>
-                <div class="form-grid">
-                    <div class="form-group"><label>Salaires nets (client, &euro;/an)</label><input type="number" data-field="salairesClient" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Salaires nets (conjoint, &euro;/an)</label><input type="number" data-field="salairesConjoint" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Revenus BIC/BNC (&euro;/an)</label><input type="number" data-field="revenusBIC" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Dividendes percus (&euro;/an)</label><input type="number" data-field="dividendes" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Revenus fonciers bruts (&euro;/an)</label><input type="number" data-field="revenusFonciers" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Pensions / Retraites (&euro;/an)</label><input type="number" data-field="pensions" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Autres revenus (&euro;/an)</label><input type="number" data-field="autresRevenus" min="0" value="0" class="input-currency"></div>
-                </div>
-                <div class="computed-row">
-                    <span>TOTAL REVENUS ANNUELS NETS</span>
-                    <span class="computed-value" id="total-revenus">0 &euro;</span>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>4. Charges &amp; Engagements Mensuels</h3>
-                <div class="form-grid">
-                    <div class="form-group"><label>Loyer RP (&euro;/mois)</label><input type="number" data-field="loyer" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Credit immobilier RP (&euro;/mois)</label><input type="number" data-field="creditRP" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Capital restant du RP (&euro;)</label><input type="number" data-field="capitalRestantRP" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Echeance credit RP</label><input type="date" data-field="echeanceRP"></div>
-                    <div class="form-group"><label>Credits locatifs (&euro;/mois)</label><input type="number" data-field="creditLocatif" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Credits conso/auto (&euro;/mois)</label><input type="number" data-field="creditConso" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Pension alimentaire (&euro;/mois)</label><input type="number" data-field="pensionAlim" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Autres charges (&euro;/mois)</label><input type="number" data-field="autresCharges" min="0" value="0" class="input-currency"></div>
-                </div>
-                <div class="computed-row">
-                    <span>TOTAL CHARGES MENSUELLES</span>
-                    <span class="computed-value" id="total-charges">0 &euro;</span>
-                </div>
-                <div class="computed-row highlight">
-                    <span>CAPACITE D'EPARGNE MENSUELLE</span>
-                    <span class="computed-value" id="capacite-epargne">0 &euro;</span>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>5. Patrimoine Immobilier</h3>
-                <div class="form-grid">
-                    <div class="form-group"><label>Residence principale (&euro;)</label><input type="number" data-field="immoRP" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Residence secondaire (&euro;)</label><input type="number" data-field="immoRS" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Investissement locatif 1 (&euro;)</label><input type="number" data-field="immoLoc1" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Investissement locatif 2 (&euro;)</label><input type="number" data-field="immoLoc2" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Immobilier professionnel (&euro;)</label><input type="number" data-field="immoPro" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Autres biens immobiliers (&euro;)</label><input type="number" data-field="immoAutres" min="0" value="0" class="input-currency"></div>
-                </div>
-                <div class="computed-row">
-                    <span>TOTAL PATRIMOINE IMMOBILIER</span>
-                    <span class="computed-value" id="total-immo">0 &euro;</span>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>6. Patrimoine Financier &amp; Epargne</h3>
-                <div class="form-grid">
-                    <div class="form-group"><label>Livret A / LDDS / LEP (&euro;)</label><input type="number" data-field="livrets" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>PEL / CEL (&euro;)</label><input type="number" data-field="pel" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Assurance Vie (&euro;)</label><input type="number" data-field="assuranceVie" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>PEA (&euro;)</label><input type="number" data-field="pea" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Compte-titres CTO (&euro;)</label><input type="number" data-field="cto" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>PER (&euro;)</label><input type="number" data-field="per" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Epargne salariale (&euro;)</label><input type="number" data-field="epargneSalariale" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Autres placements (&euro;)</label><input type="number" data-field="autresPlacement" min="0" value="0" class="input-currency"></div>
-                </div>
-                <div class="computed-row">
-                    <span>TOTAL PATRIMOINE FINANCIER</span>
-                    <span class="computed-value" id="total-financier">0 &euro;</span>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>7. Situation Fiscale</h3>
-                <div class="form-grid">
-                    <div class="form-group"><label>Nombre de parts fiscales</label><input type="number" data-field="partsFiscales" min="1" step="0.5" value="1"></div>
-                    <div class="form-group">
-                        <label>TMI (Tranche Marginale)</label>
-                        <select data-field="tmi">
-                            <option value="0">0%</option>
-                            <option value="0.11">11%</option>
-                            <option value="0.30">30%</option>
-                            <option value="0.41">41%</option>
-                            <option value="0.45">45%</option>
-                        </select>
+            <!-- STEP 1: Identite & Revenus -->
+            <div class="step-content active" id="step-1">
+                <div class="card">
+                    <h3>Identite &amp; Situation Civile</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Nom</label><input type="text" data-field="nom" placeholder="Votre nom"></div>
+                        <div class="form-group"><label>Prenom</label><input type="text" data-field="prenom" placeholder="Votre prenom"></div>
+                        <div class="form-group"><label>Date de naissance</label><input type="date" data-field="dateNaissance"></div>
+                        <div class="form-group">
+                            <label>Situation matrimoniale</label>
+                            <select data-field="situationMatri">
+                                <option value="">Selectionnez</option>
+                                <option value="Celibataire">Celibataire</option>
+                                <option value="Marie(e)">Marie(e)</option>
+                                <option value="Pacse(e)">Pacse(e)</option>
+                                <option value="Divorce(e)">Divorce(e)</option>
+                                <option value="Veuf(ve)">Veuf(ve)</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Regime matrimonial</label><input type="text" data-field="regimeMatri" placeholder="Communaute reduite aux acquets..."></div>
+                        <div class="form-group"><label>Nombre d'enfants</label><input type="number" data-field="nbEnfants" min="0" value="0"></div>
+                        <div class="form-group"><label>Dont enfants a charge</label><input type="number" data-field="enfantsCharge" min="0" value="0"></div>
                     </div>
                 </div>
+
+                <div class="card">
+                    <h3>Situation Professionnelle</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Statut professionnel</label>
+                            <select data-field="statutPro">
+                                <option value="">Selectionnez</option>
+                                <option value="Salarie cadre">Salarie cadre</option>
+                                <option value="Salarie non-cadre">Salarie non-cadre</option>
+                                <option value="TNS / Independant">TNS / Independant</option>
+                                <option value="Profession liberale">Profession liberale</option>
+                                <option value="Chef d'entreprise">Chef d'entreprise</option>
+                                <option value="Fonctionnaire">Fonctionnaire</option>
+                                <option value="Retraite">Retraite</option>
+                                <option value="Sans activite">Sans activite</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Profession / Fonction</label><input type="text" data-field="profession" placeholder="Votre profession"></div>
+                        <div class="form-group"><label>Secteur d'activite</label><input type="text" data-field="secteur" placeholder="Secteur"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Revenus Annuels Nets</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Salaires nets (client, &euro;/an)</label><input type="number" data-field="salairesClient" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Salaires nets (conjoint, &euro;/an)</label><input type="number" data-field="salairesConjoint" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Revenus BIC/BNC (&euro;/an)</label><input type="number" data-field="revenusBIC" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Dividendes percus (&euro;/an)</label><input type="number" data-field="dividendes" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Revenus fonciers bruts (&euro;/an)</label><input type="number" data-field="revenusFonciers" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Pensions / Retraites (&euro;/an)</label><input type="number" data-field="pensions" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Autres revenus (&euro;/an)</label><input type="number" data-field="autresRevenus" min="0" value="0" class="input-currency"></div>
+                    </div>
+                    <div class="computed-row">
+                        <span>TOTAL REVENUS ANNUELS NETS</span>
+                        <span class="computed-value" id="total-revenus">0 &euro;</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Charges &amp; Engagements Mensuels</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Loyer RP (&euro;/mois)</label><input type="number" data-field="loyer" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Credit immobilier RP (&euro;/mois)</label><input type="number" data-field="creditRP" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Capital restant du RP (&euro;)</label><input type="number" data-field="capitalRestantRP" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Echeance credit RP</label><input type="date" data-field="echeanceRP"></div>
+                        <div class="form-group"><label>Credits locatifs (&euro;/mois)</label><input type="number" data-field="creditLocatif" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Credits conso/auto (&euro;/mois)</label><input type="number" data-field="creditConso" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Pension alimentaire (&euro;/mois)</label><input type="number" data-field="pensionAlim" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Autres charges (&euro;/mois)</label><input type="number" data-field="autresCharges" min="0" value="0" class="input-currency"></div>
+                    </div>
+                    <div class="computed-row">
+                        <span>TOTAL CHARGES MENSUELLES</span>
+                        <span class="computed-value" id="total-charges">0 &euro;</span>
+                    </div>
+                    <div class="computed-row highlight">
+                        <span>CAPACITE D'EPARGNE MENSUELLE</span>
+                        <span class="computed-value" id="capacite-epargne">0 &euro;</span>
+                    </div>
+                </div>
+
+                <div id="step-result-1" class="step-result"></div>
             </div>
 
-            <div class="card">
-                <h3>8. Objectifs d'Investissement &amp; Profil de Risque</h3>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Objectif patrimonial principal</label>
-                        <select data-field="objectifPrincipal">
-                            <option value="">Selectionnez</option>
-                            <option value="Valorisation du capital">Valorisation du capital</option>
-                            <option value="Revenus complementaires">Revenus complementaires</option>
-                            <option value="Transmission patrimoniale">Transmission patrimoniale</option>
-                            <option value="Optimisation fiscale">Optimisation fiscale</option>
-                            <option value="Constitution d'epargne">Constitution d'epargne</option>
-                            <option value="Preparation retraite">Preparation retraite</option>
-                        </select>
+            <!-- STEP 2: Patrimoine -->
+            <div class="step-content" id="step-2">
+                <div class="card">
+                    <h3>Patrimoine Immobilier</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Residence principale (&euro;)</label><input type="number" data-field="immoRP" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Residence secondaire (&euro;)</label><input type="number" data-field="immoRS" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Investissement locatif 1 (&euro;)</label><input type="number" data-field="immoLoc1" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Investissement locatif 2 (&euro;)</label><input type="number" data-field="immoLoc2" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Immobilier professionnel (&euro;)</label><input type="number" data-field="immoPro" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Autres biens immobiliers (&euro;)</label><input type="number" data-field="immoAutres" min="0" value="0" class="input-currency"></div>
                     </div>
-                    <div class="form-group">
-                        <label>Horizon d'investissement</label>
-                        <select data-field="horizon">
-                            <option value="">Selectionnez</option>
-                            <option value="Moins de 3 ans">Moins de 3 ans</option>
-                            <option value="3 a 5 ans">3 a 5 ans</option>
-                            <option value="5 a 8 ans">5 a 8 ans</option>
-                            <option value="8 a 10 ans">8 a 10 ans</option>
-                            <option value="Plus de 10 ans">Plus de 10 ans</option>
-                        </select>
+                    <div class="computed-row">
+                        <span>TOTAL PATRIMOINE IMMOBILIER</span>
+                        <span class="computed-value" id="total-immo">0 &euro;</span>
                     </div>
-                    <div class="form-group"><label>Horizon en annees</label><input type="number" data-field="horizonAnnees" min="1" max="30" value="8"></div>
-                    <div class="form-group"><label>Apport disponible immediatement (&euro;)</label><input type="number" data-field="apportDispo" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group"><label>Epargne mensuelle investissable (&euro;)</label><input type="number" data-field="epargneMensuelle" min="0" value="0" class="input-currency"></div>
-                    <div class="form-group">
-                        <label>Profil de risque</label>
-                        <select data-field="profilRisque">
-                            <option value="">Selectionnez</option>
-                            <option value="Securitaire (pas de risque)">Securitaire (pas de risque)</option>
-                            <option value="Prudent (risque faible)">Prudent (risque faible)</option>
-                            <option value="Equilibre (risque modere)">Equilibre (risque modere)</option>
-                            <option value="Dynamique (risque eleve)">Dynamique (risque eleve)</option>
-                            <option value="Offensif (risque tres eleve)">Offensif (risque tres eleve)</option>
-                        </select>
+                </div>
+
+                <div class="card">
+                    <h3>Patrimoine Financier &amp; Epargne</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Livret A / LDDS / LEP (&euro;)</label><input type="number" data-field="livrets" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>PEL / CEL (&euro;)</label><input type="number" data-field="pel" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Assurance Vie (&euro;)</label><input type="number" data-field="assuranceVie" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>PEA (&euro;)</label><input type="number" data-field="pea" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Compte-titres CTO (&euro;)</label><input type="number" data-field="cto" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>PER (&euro;)</label><input type="number" data-field="per" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Epargne salariale (&euro;)</label><input type="number" data-field="epargneSalariale" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Autres placements (&euro;)</label><input type="number" data-field="autresPlacement" min="0" value="0" class="input-currency"></div>
                     </div>
-                    <div class="form-group">
-                        <label>Besoin de revenus reguliers ?</label>
-                        <select data-field="besoinRevenus">
-                            <option value="Non">Non</option>
-                            <option value="Oui - immediatement">Oui - immediatement</option>
-                            <option value="Oui - a terme">Oui - a terme (5+ ans)</option>
-                        </select>
+                    <div class="computed-row">
+                        <span>TOTAL PATRIMOINE FINANCIER</span>
+                        <span class="computed-value" id="total-financier">0 &euro;</span>
                     </div>
-                    <div class="form-group">
-                        <label>Preoccupation successorale ?</label>
-                        <select data-field="preoccSucc">
-                            <option value="Non">Non</option>
-                            <option value="Oui - priorite">Oui - priorite</option>
-                            <option value="Oui - secondaire">Oui - secondaire</option>
-                        </select>
+                </div>
+
+                <div class="card">
+                    <h3>Situation Fiscale</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Nombre de parts fiscales</label><input type="number" data-field="partsFiscales" min="1" step="0.5" value="1"></div>
+                        <div class="form-group">
+                            <label>TMI (Tranche Marginale)</label>
+                            <select data-field="tmi">
+                                <option value="0">0%</option>
+                                <option value="0.11">11%</option>
+                                <option value="0.30">30%</option>
+                                <option value="0.41">41%</option>
+                                <option value="0.45">45%</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step-result-2" class="step-result"></div>
+            </div>
+
+            <!-- STEP 3: Objectifs -->
+            <div class="step-content" id="step-3">
+                <div class="card">
+                    <h3>Objectifs d'Investissement</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Objectif patrimonial principal</label>
+                            <select data-field="objectifPrincipal">
+                                <option value="">Selectionnez</option>
+                                <option value="Valorisation du capital">Valorisation du capital</option>
+                                <option value="Revenus complementaires">Revenus complementaires</option>
+                                <option value="Transmission patrimoniale">Transmission patrimoniale</option>
+                                <option value="Optimisation fiscale">Optimisation fiscale</option>
+                                <option value="Constitution d'epargne">Constitution d'epargne</option>
+                                <option value="Preparation retraite">Preparation retraite</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Horizon d'investissement</label>
+                            <select data-field="horizon">
+                                <option value="">Selectionnez</option>
+                                <option value="Moins de 3 ans">Moins de 3 ans</option>
+                                <option value="3 a 5 ans">3 a 5 ans</option>
+                                <option value="5 a 8 ans">5 a 8 ans</option>
+                                <option value="8 a 10 ans">8 a 10 ans</option>
+                                <option value="Plus de 10 ans">Plus de 10 ans</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Horizon en annees</label><input type="number" data-field="horizonAnnees" min="1" max="30" value="8"></div>
+                        <div class="form-group"><label>Apport disponible immediatement (&euro;)</label><input type="number" data-field="apportDispo" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Epargne mensuelle investissable (&euro;)</label><input type="number" data-field="epargneMensuelle" min="0" value="0" class="input-currency"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Profil de Risque</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Profil de risque</label>
+                            <select data-field="profilRisque">
+                                <option value="">Selectionnez</option>
+                                <option value="Securitaire (pas de risque)">Securitaire (pas de risque)</option>
+                                <option value="Prudent (risque faible)">Prudent (risque faible)</option>
+                                <option value="Equilibre (risque modere)">Equilibre (risque modere)</option>
+                                <option value="Dynamique (risque eleve)">Dynamique (risque eleve)</option>
+                                <option value="Offensif (risque tres eleve)">Offensif (risque tres eleve)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Besoin de revenus reguliers ?</label>
+                            <select data-field="besoinRevenus">
+                                <option value="Non">Non</option>
+                                <option value="Oui - immediatement">Oui - immediatement</option>
+                                <option value="Oui - a terme">Oui - a terme (5+ ans)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Preoccupation successorale ?</label>
+                            <select data-field="preoccSucc">
+                                <option value="Non">Non</option>
+                                <option value="Oui - priorite">Oui - priorite</option>
+                                <option value="Oui - secondaire">Oui - secondaire</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="computed-row computed-row-big">
+                    <div>
+                        <div class="computed-label">PATRIMOINE BRUT</div>
+                        <div class="computed-value big" id="synth-brut">0 &euro;</div>
+                    </div>
+                    <div>
+                        <div class="computed-label">PATRIMOINE NET</div>
+                        <div class="computed-value big" id="synth-net">0 &euro;</div>
+                    </div>
+                    <div>
+                        <div class="computed-label">ENDETTEMENT</div>
+                        <div class="computed-value big" id="synth-endettement">0%</div>
+                    </div>
+                    <div>
+                        <div class="computed-label">CLASSE</div>
+                        <div class="computed-value big" id="synth-classe">—</div>
                     </div>
                 </div>
             </div>
 
-            <div class="computed-row computed-row-big">
-                <div>
-                    <div class="computed-label">PATRIMOINE BRUT TOTAL</div>
-                    <div class="computed-value big" id="synth-brut">0 &euro;</div>
-                </div>
-                <div>
-                    <div class="computed-label">PATRIMOINE NET ESTIME</div>
-                    <div class="computed-value big" id="synth-net">0 &euro;</div>
-                </div>
-                <div>
-                    <div class="computed-label">TAUX D'ENDETTEMENT</div>
-                    <div class="computed-value big" id="synth-endettement">0%</div>
-                </div>
-                <div>
-                    <div class="computed-label">CLASSE PATRIMONIALE</div>
-                    <div class="computed-value big" id="synth-classe">—</div>
-                </div>
+            <!-- STEP NAVIGATION -->
+            <div class="step-nav">
+                <button class="btn btn-outline" id="step-back" onclick="prevStep()" style="display:none;">&larr; Retour</button>
+                <button class="btn btn-primary" id="step-next" onclick="nextStep()">Continuer</button>
             </div>
-
-            <button class="btn btn-primary btn-full btn-save" onclick="saveAndCalculate()">
-                Enregistrer et lancer l'analyse
-            </button>
         </section>
 
-        <!-- PATRIMOINE -->
+        <!-- ===== PATRIMOINE ===== -->
         <section id="patrimoine" class="section">
             <div class="section-header"><h1>Patrimoine Global</h1><p class="section-subtitle">Vue consolidee de tous les actifs et passifs</p></div>
             <div class="kpi-grid">
@@ -387,24 +603,24 @@
             </div>
         </section>
 
-        <!-- IMMOBILIER SIMULATION -->
+        <!-- ===== SIMULATIONS ===== -->
         <section id="immobilier" class="section">
             <div class="section-header"><h1>Simulation Immobilier Locatif</h1><p class="section-subtitle">Simulez un investissement locatif avec credit</p></div>
             <div class="card">
                 <h3>Parametres de l'acquisition</h3>
                 <div class="form-grid">
-                    <div class="form-group"><label>Prix acquisition net vendeur (&euro;)</label><input type="number" data-field="immo_prix" min="0" value="200000" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Prix acquisition (&euro;)</label><input type="number" data-field="immo_prix" min="0" value="200000" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Frais de notaire (%)</label><input type="number" data-field="immo_notaire" min="0" step="0.01" value="8" class="sim-input"></div>
-                    <div class="form-group"><label>Travaux / renovation (&euro;)</label><input type="number" data-field="immo_travaux" min="0" value="10000" class="input-currency sim-input"></div>
-                    <div class="form-group"><label>Frais garantie &amp; dossier (&euro;)</label><input type="number" data-field="immo_garantie" min="0" value="2000" class="input-currency sim-input"></div>
-                    <div class="form-group"><label>Apport personnel (&euro;)</label><input type="number" data-field="immo_apport" min="0" value="60000" class="input-currency sim-input"></div>
-                    <div class="form-group"><label>Taux d'interet annuel (%)</label><input type="number" data-field="immo_taux" min="0" step="0.1" value="3.8" class="sim-input"></div>
-                    <div class="form-group"><label>Duree du credit (ans)</label><input type="number" data-field="immo_duree" min="1" max="30" value="20" class="sim-input"></div>
-                    <div class="form-group"><label>Loyer mensuel CC (&euro;)</label><input type="number" data-field="immo_loyer" min="0" value="900" class="input-currency sim-input"></div>
-                    <div class="form-group"><label>Taux vacance (%)</label><input type="number" data-field="immo_vacance" min="0" max="100" value="5" class="sim-input"></div>
-                    <div class="form-group"><label>Charges non recup. (&euro;/an)</label><input type="number" data-field="immo_charges" min="0" value="1200" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Travaux (&euro;)</label><input type="number" data-field="immo_travaux" min="0" value="10000" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Frais garantie (&euro;)</label><input type="number" data-field="immo_garantie" min="0" value="2000" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Apport (&euro;)</label><input type="number" data-field="immo_apport" min="0" value="60000" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Taux (%)</label><input type="number" data-field="immo_taux" min="0" step="0.1" value="3.8" class="sim-input"></div>
+                    <div class="form-group"><label>Duree (ans)</label><input type="number" data-field="immo_duree" min="1" max="30" value="20" class="sim-input"></div>
+                    <div class="form-group"><label>Loyer CC (&euro;/mois)</label><input type="number" data-field="immo_loyer" min="0" value="900" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Vacance (%)</label><input type="number" data-field="immo_vacance" min="0" max="100" value="5" class="sim-input"></div>
+                    <div class="form-group"><label>Charges (&euro;/an)</label><input type="number" data-field="immo_charges" min="0" value="1200" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Taxe fonciere (&euro;/an)</label><input type="number" data-field="immo_taxe" min="0" value="800" class="input-currency sim-input"></div>
-                    <div class="form-group"><label>Revalorisation bien/an (%)</label><input type="number" data-field="immo_revalo" min="0" step="0.5" value="2" class="sim-input"></div>
+                    <div class="form-group"><label>Revalorisation (%/an)</label><input type="number" data-field="immo_revalo" min="0" step="0.5" value="2" class="sim-input"></div>
                 </div>
                 <button class="btn btn-primary" onclick="calculateImmo()" style="margin-top:16px;">Calculer la simulation</button>
             </div>
@@ -414,7 +630,6 @@
             </div>
         </section>
 
-        <!-- ASSURANCE VIE -->
         <section id="assurance-vie" class="section">
             <div class="section-header"><h1>Simulation Assurance Vie</h1><p class="section-subtitle">Multi-support — 4 poches complementaires</p></div>
             <div class="card">
@@ -435,7 +650,6 @@
             <div id="av-results" class="hidden"></div>
         </section>
 
-        <!-- PEA -->
         <section id="pea" class="section">
             <div class="section-header"><h1>Simulation PEA</h1><p class="section-subtitle">Gestion libre ETF vs Mandat titres vifs</p></div>
             <div class="card">
@@ -453,7 +667,6 @@
             <div id="pea-results" class="hidden"></div>
         </section>
 
-        <!-- CTO -->
         <section id="cto" class="section">
             <div class="section-header"><h1>Simulation CTO</h1><p class="section-subtitle">Compte-titres ordinaire — PFU 30%</p></div>
             <div class="card">
@@ -469,54 +682,47 @@
             <div id="cto-results" class="hidden"></div>
         </section>
 
-        <!-- COMPARATIF -->
+        <!-- ===== ANALYSE ===== -->
         <section id="comparatif" class="section">
-            <div class="section-header"><h1>Comparatif des Placements</h1><p class="section-subtitle">Vision 360 — Lancez chaque simulation pour voir le comparatif</p></div>
-            <div class="card"><h3>Performance</h3><div class="chart-container"><canvas id="comparatifChart"></canvas></div></div>
+            <div class="section-header"><h1>Comparatif des Placements</h1><p class="section-subtitle">Vision 360</p></div>
+            <div class="card"><h3>Performance comparee</h3><div class="chart-container"><canvas id="comparatifChart"></canvas></div></div>
             <div class="card" id="comparatif-table-container">
-                <p class="empty-state">Lancez les simulations Immobilier, Assurance Vie, PEA et CTO pour generer le comparatif automatique.</p>
+                <p class="empty-state">Lancez les simulations pour generer le comparatif automatique.</p>
             </div>
         </section>
 
-        <!-- RECOMMANDATION -->
         <section id="recommandation" class="section">
-            <div class="section-header"><h1>Recommandation Patrimoniale</h1><p class="section-subtitle">Selection automatique factuelle</p></div>
+            <div class="section-header"><h1>Recommandation Patrimoniale</h1><p class="section-subtitle">Analyse factuelle et personnalisee</p></div>
             <div id="reco-content">
-                <p class="empty-state">Remplissez votre profil et lancez les simulations pour obtenir une recommandation personnalisee.</p>
+                <p class="empty-state">Completez votre profil et lancez l'analyse pour obtenir votre recommandation.</p>
             </div>
             <div id="reco-actions" class="action-buttons-row hidden">
-                <button class="btn btn-primary btn-action" onclick="sendBilan()">&#9993; Envoyer mon bilan au conseiller</button>
-                <button class="btn btn-green btn-action" onclick="prendreRDV()">&#128197; Prendre rendez-vous</button>
+                <button class="btn btn-primary btn-action" onclick="sendBilan()">&#9993; Envoyer mon bilan</button>
+                <button class="btn btn-gold btn-action" onclick="prendreRDV()">&#128197; Prendre rendez-vous</button>
             </div>
         </section>
 
-        <!-- FISCALITE -->
         <section id="fiscalite" class="section">
-            <div class="section-header"><h1>Fiscalite &amp; Droits de Succession</h1><p class="section-subtitle">Simulation successorale et avantages AV</p></div>
-            <div id="fiscalite-content">
-                <p class="empty-state">Remplissez votre profil pour generer l'analyse fiscale et successorale.</p>
-            </div>
+            <div class="section-header"><h1>Fiscalite &amp; Succession</h1><p class="section-subtitle">Simulation successorale et avantages AV</p></div>
+            <div id="fiscalite-content"><p class="empty-state">Remplissez votre profil pour generer l'analyse fiscale.</p></div>
         </section>
 
-        <!-- IFI -->
         <section id="ifi" class="section">
-            <div class="section-header"><h1>IFI — Impot sur la Fortune Immobiliere</h1><p class="section-subtitle">Calcul IFI — Bareme progressif</p></div>
-            <div id="ifi-content">
-                <p class="empty-state">Remplissez votre patrimoine immobilier pour calculer l'IFI.</p>
-            </div>
+            <div class="section-header"><h1>IFI</h1><p class="section-subtitle">Impot sur la Fortune Immobiliere — Bareme progressif</p></div>
+            <div id="ifi-content"><p class="empty-state">Remplissez votre patrimoine immobilier pour calculer l'IFI.</p></div>
         </section>
 
-        <!-- DEMEMBREMENT -->
         <section id="demembrement" class="section">
-            <div class="section-header"><h1>Demembrement &amp; Optimisation</h1><p class="section-subtitle">Usufruit / Nue-propriete — Optimisation transmission</p></div>
-            <div id="demembrement-content">
-                <p class="empty-state">Remplissez votre profil pour generer l'analyse de demembrement.</p>
-            </div>
+            <div class="section-header"><h1>Demembrement</h1><p class="section-subtitle">Usufruit / Nue-propriete — Optimisation transmission</p></div>
+            <div id="demembrement-content"><p class="empty-state">Remplissez votre profil pour generer l'analyse de demembrement.</p></div>
         </section>
 
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
     <script src="auth.js"></script>
     <script src="engine.js"></script>
     <script src="app.js"></script>
