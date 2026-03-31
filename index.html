@@ -464,19 +464,64 @@
             <!-- STEP 2: Patrimoine -->
             <div class="step-content" id="step-2">
                 <div class="card">
-                    <h3>Patrimoine Immobilier</h3>
+                    <h3>Residence Principale</h3>
                     <div class="form-grid">
-                        <div class="form-group"><label>Residence principale (&euro;)</label><input type="number" data-field="immoRP" min="0" value="0" class="input-currency"></div>
-                        <div class="form-group"><label>Residence secondaire (&euro;)</label><input type="number" data-field="immoRS" min="0" value="0" class="input-currency"></div>
-                        <div class="form-group"><label>Investissement locatif 1 (&euro;)</label><input type="number" data-field="immoLoc1" min="0" value="0" class="input-currency"></div>
-                        <div class="form-group"><label>Investissement locatif 2 (&euro;)</label><input type="number" data-field="immoLoc2" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Valeur estimee (&euro;)</label><input type="number" data-field="immoRP" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Date d'acquisition</label><input type="date" data-field="immoRP_dateAcq"></div>
+                        <div class="form-group"><label>Prix d'acquisition (&euro;)</label><input type="number" data-field="immoRP_prixAcq" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Capital restant du (&euro;)</label><input type="number" data-field="immoRP_creditRestant" min="0" value="0" class="input-currency"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Residence Secondaire</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Valeur estimee (&euro;)</label><input type="number" data-field="immoRS" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Date d'acquisition</label><input type="date" data-field="immoRS_dateAcq"></div>
+                        <div class="form-group"><label>Prix d'acquisition (&euro;)</label><input type="number" data-field="immoRS_prixAcq" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Capital restant du (&euro;)</label><input type="number" data-field="immoRS_creditRestant" min="0" value="0" class="input-currency"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Investissement Locatif 1</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Valeur estimee (&euro;)</label><input type="number" data-field="immoLoc1" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Date d'acquisition</label><input type="date" data-field="immoLoc1_dateAcq"></div>
+                        <div class="form-group"><label>Prix d'acquisition (&euro;)</label><input type="number" data-field="immoLoc1_prixAcq" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Loyer mensuel (&euro;)</label><input type="number" data-field="immoLoc1_loyer" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Capital restant du (&euro;)</label><input type="number" data-field="immoLoc1_creditRestant" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Charges annuelles (&euro;)</label><input type="number" data-field="immoLoc1_charges" min="0" value="0" class="input-currency"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Investissement Locatif 2</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Valeur estimee (&euro;)</label><input type="number" data-field="immoLoc2" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Date d'acquisition</label><input type="date" data-field="immoLoc2_dateAcq"></div>
+                        <div class="form-group"><label>Prix d'acquisition (&euro;)</label><input type="number" data-field="immoLoc2_prixAcq" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Loyer mensuel (&euro;)</label><input type="number" data-field="immoLoc2_loyer" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Capital restant du (&euro;)</label><input type="number" data-field="immoLoc2_creditRestant" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Charges annuelles (&euro;)</label><input type="number" data-field="immoLoc2_charges" min="0" value="0" class="input-currency"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>SCPI</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Valeur totale parts (&euro;)</label><input type="number" data-field="immoSCPI" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Date de souscription</label><input type="date" data-field="immoSCPI_dateAcq"></div>
+                        <div class="form-group"><label>Prix de souscription (&euro;)</label><input type="number" data-field="immoSCPI_prixAcq" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group"><label>Revenus trimestriels (&euro;)</label><input type="number" data-field="immoSCPI_revenus" min="0" value="0" class="input-currency"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Autres Biens Immobiliers</h3>
+                    <div class="form-grid">
                         <div class="form-group"><label>Immobilier professionnel (&euro;)</label><input type="number" data-field="immoPro" min="0" value="0" class="input-currency"></div>
                         <div class="form-group"><label>Autres biens immobiliers (&euro;)</label><input type="number" data-field="immoAutres" min="0" value="0" class="input-currency"></div>
                     </div>
-                    <div class="computed-row">
-                        <span>TOTAL PATRIMOINE IMMOBILIER</span>
-                        <span class="computed-value" id="total-immo">0 &euro;</span>
-                    </div>
+                </div>
+                <div class="computed-row">
+                    <span>TOTAL PATRIMOINE IMMOBILIER</span>
+                    <span class="computed-value" id="total-immo">0 &euro;</span>
                 </div>
 
                 <div class="card">
@@ -1044,7 +1089,9 @@
                     <div class="form-group"><label>Structure d'accueil</label>
                         <select data-field="obo_structure">
                             <option value="sci_is">SCI a l'IS</option>
-                            <option value="holding">Holding + SCI</option>
+                            <option value="sci_ir">SCI a l'IR</option>
+                            <option value="sarl">SARL de famille</option>
+                            <option value="holding">Holding + SCI IS</option>
                         </select>
                     </div>
                     <div class="form-group"><label>Apport en capital (%)</label><input type="number" data-field="obo_apport_pct" min="10" max="50" value="20" class="sim-input"></div>
@@ -1054,7 +1101,9 @@
                 </div>
                 <button class="btn btn-primary" onclick="calculateOBO()" style="margin-top:16px;">Simuler l'OBO</button>
             </div>
+            <div id="obo-auto-reco" class="hidden"></div>
             <div id="obo-results" class="hidden"></div>
+            <div id="obo-structure-reco" class="hidden"></div>
         </section>
 
     </main>

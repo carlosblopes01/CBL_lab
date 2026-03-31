@@ -41,17 +41,19 @@ function recalcAll() {
     const capaciteEpargne = (totalRevenus / 12) - totalCharges;
     setHTML('capacite-epargne', fmt(capaciteEpargne));
 
-    // Immobilier
-    const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
+    // Immobilier (including SCPI)
+    const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoSCPI || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
     setHTML('total-immo', fmt(totalImmo));
 
     // Financier
     const totalFin = (d.livrets || 0) + (d.pel || 0) + (d.assuranceVie || 0) + (d.pea || 0) + (d.cto || 0) + (d.per || 0) + (d.epargneSalariale || 0) + (d.autresPlacement || 0);
     setHTML('total-financier', fmt(totalFin));
 
+    // Total dettes (capital restant du sur tous les biens + ancien champ capitalRestantRP)
+    const dettes = (d.capitalRestantRP || 0) + (d.immoRP_creditRestant || 0) + (d.immoRS_creditRestant || 0) + (d.immoLoc1_creditRestant || 0) + (d.immoLoc2_creditRestant || 0);
+
     // Synthese
     const patriBrut = totalImmo + totalFin;
-    const dettes = (d.capitalRestantRP || 0);
     const patriNet = patriBrut - dettes;
     const tauxEndettement = patriBrut > 0 ? dettes / patriBrut : 0;
 
@@ -99,13 +101,18 @@ function recalcAll() {
         setHTML('ir-estime', rev > 0 ? fmt(irEst) : '0 €');
     }
 
-    // OBO visibility: show if client has real estate with low/no debt
+    // OBO visibility: show if client has real estate > 150k with low debt ratio
+    const totalImmoHorsSCPI = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
     const oboNav = document.getElementById('nav-obo');
+    const oboEligible = totalImmoHorsSCPI >= 150000 && (dettes < totalImmoHorsSCPI * 0.4);
     if (oboNav) {
-        const hasImmoValue = totalImmo > 200000;
-        const lowDebt = dettes < totalImmo * 0.3;
-        if (hasImmoValue && lowDebt) oboNav.classList.remove('hidden');
+        if (oboEligible) oboNav.classList.remove('hidden');
         else oboNav.classList.add('hidden');
+    }
+
+    // Auto-simulate OBO if eligible and patrimoine data available
+    if (oboEligible) {
+        autoSimulateOBO(d);
     }
 
     // Patrimoine page
@@ -431,6 +438,25 @@ function updateCTODisplay(capital, horizon, finalBrut, gains, impot, capitalNet,
     `);
 }
 
+// ===== OBO RECO HELPER =====
+function getOBORecoHTML(d, tmi) {
+    const tImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
+    const tDettes = (d.capitalRestantRP || 0) + (d.immoRP_creditRestant || 0) + (d.immoRS_creditRestant || 0) + (d.immoLoc1_creditRestant || 0) + (d.immoLoc2_creditRestant || 0);
+    if (tImmo < 150000 || tDettes >= tImmo * 0.4) return '';
+    const tresoEstimee = (tImmo - tDettes) - tImmo * 0.20;
+    const structReco = tmi >= 0.30 ? 'SCI a l\'IS' : 'SCI a l\'IR';
+    const detail = tmi >= 0.30
+        ? "L'amortissement du bien reduit la base imposable et l'IS (15%/25%) est bien inferieur a votre TMI."
+        : "La transparence fiscale preserve le regime des PV des particuliers.";
+    return '<div class="card recommendation-card" style="border-left:4px solid var(--accent-gold, #c9a84c);">'
+        + '<div class="rec-badge">OBO Recommande</div>'
+        + '<h3>Monetisation via OBO immobilier</h3>'
+        + '<p>Votre patrimoine immobilier de <strong>' + fmt(tImmo) + '</strong> avec un endettement de seulement <strong>' + pct(tDettes / tImmo) + '</strong> est eligible a un OBO. Tresorerie potentielle : <strong>' + fmt(tresoEstimee) + '</strong>.</p>'
+        + '<p style="margin-top:8px;">Structure recommandee : <strong>' + structReco + '</strong> &mdash; ' + detail + '</p>'
+        + '<p style="margin-top:8px;"><a href="#" class="nav-link" data-section="obo" style="color:var(--accent-gold, #c9a84c); text-decoration:underline;">Acceder a la simulation OBO &rarr;</a></p>'
+        + '</div>';
+}
+
 // ===== RECOMMENDATION ENGINE =====
 function generateRecommendation(d) {
     const r = getSimResults();
@@ -619,6 +645,8 @@ function generateRecommendation(d) {
             </div>
         </div>
 
+        ${getOBORecoHTML(d, tmi)}
+
         <div class="card disclaimer-card">
             <p>Cette recommandation est generee automatiquement sur la base des informations collectees. Elle ne constitue pas un conseil en investissement au sens reglementaire. Le conseiller doit valider cette analyse avant toute souscription.</p>
         </div>
@@ -635,66 +663,49 @@ function updatePatrimoinePage(d, totalImmo, totalFin, dettes, brut, net) {
     setHTML('pat-immo-pct', brut > 0 ? pct(totalImmo / brut) : '0%');
 
     const immoItems = [
-        { label: 'Residence principale', value: d.immoRP, key: 'immoRP', locatif: false },
-        { label: 'Residence secondaire', value: d.immoRS, key: 'immoRS', locatif: false },
-        { label: 'Investissement locatif 1', value: d.immoLoc1, key: 'immoLoc1', locatif: true },
-        { label: 'Investissement locatif 2', value: d.immoLoc2, key: 'immoLoc2', locatif: true },
-        { label: 'Immobilier professionnel', value: d.immoPro, key: 'immoPro', locatif: false },
-        { label: 'Autres immobiliers', value: d.immoAutres, key: 'immoAutres', locatif: false }
+        { label: 'Residence principale', value: d.immoRP, key: 'immoRP', type: 'rp', credit: d.immoRP_creditRestant || 0, dateAcq: d.immoRP_dateAcq, prixAcq: d.immoRP_prixAcq || 0 },
+        { label: 'Residence secondaire', value: d.immoRS, key: 'immoRS', type: 'rs', credit: d.immoRS_creditRestant || 0, dateAcq: d.immoRS_dateAcq, prixAcq: d.immoRS_prixAcq || 0 },
+        { label: 'Investissement locatif 1', value: d.immoLoc1, key: 'immoLoc1', type: 'locatif', credit: d.immoLoc1_creditRestant || 0, dateAcq: d.immoLoc1_dateAcq, prixAcq: d.immoLoc1_prixAcq || 0, loyer: d.immoLoc1_loyer || 0, charges: d.immoLoc1_charges || 0 },
+        { label: 'Investissement locatif 2', value: d.immoLoc2, key: 'immoLoc2', type: 'locatif', credit: d.immoLoc2_creditRestant || 0, dateAcq: d.immoLoc2_dateAcq, prixAcq: d.immoLoc2_prixAcq || 0, loyer: d.immoLoc2_loyer || 0, charges: d.immoLoc2_charges || 0 },
+        { label: 'SCPI', value: d.immoSCPI, key: 'immoSCPI', type: 'scpi', credit: 0, dateAcq: d.immoSCPI_dateAcq, prixAcq: d.immoSCPI_prixAcq || 0, revenus: d.immoSCPI_revenus || 0 },
+        { label: 'Immobilier professionnel', value: d.immoPro, key: 'immoPro', type: 'pro', credit: 0 },
+        { label: 'Autres immobiliers', value: d.immoAutres, key: 'immoAutres', type: 'autres', credit: 0 }
     ].filter(x => x.value > 0);
 
-    // Build immobilier table with TRI for locatif items
-    let html = '<table class="data-table"><thead><tr><th>Bien</th><th>Valeur</th><th>Rdt locatif brut</th><th>TRI estime</th></tr></thead><tbody>';
+    // Build immobilier table with TRI/rendement
+    let html = '<table class="data-table"><thead><tr><th>Bien</th><th>Valeur</th><th>Credit restant</th><th>Valeur nette</th><th>Rdt brut</th><th>TRI estime</th></tr></thead><tbody>';
     immoItems.forEach(item => {
         let rdtBrut = '—';
         let triEstime = '—';
-        if (item.locatif) {
-            // Read stored inputs or use defaults
-            const storedLoyer = parseFloat(sessionStorage.getItem('pat_loyer_' + item.key)) || 0;
-            const storedPrixAcq = parseFloat(sessionStorage.getItem('pat_prix_acq_' + item.key)) || item.value;
+        const valNette = item.value - (item.credit || 0);
+
+        if (item.type === 'locatif' && item.loyer > 0) {
             const revalo = cfg.immobilier.parametresDefaut.revalorisationAnnuelle;
             const vacance = cfg.immobilier.parametresDefaut.tauxVacance;
-            const chargesPct = cfg.immobilier.parametresDefaut.chargesAnnuelles;
+            const loyerAnnuelNet = item.loyer * 12 * (1 - vacance);
+            const chargesAn = item.charges || (item.value * cfg.immobilier.parametresDefaut.chargesAnnuelles);
+            rdtBrut = pct(item.loyer * 12 / item.value);
 
-            if (storedLoyer > 0 && storedPrixAcq > 0) {
-                const loyerAnnuelNet = storedLoyer * 12 * (1 - vacance);
-                const charges = item.value * chargesPct;
-                rdtBrut = pct(storedLoyer * 12 / item.value);
-
-                // TRI simplifie sur 10 ans: (loyer net + revalo) vs prix achat
-                const horizon = 10;
-                let cashFlowsCumules = 0;
-                for (let y = 1; y <= horizon; y++) {
-                    cashFlowsCumules += (loyerAnnuelNet - charges) * Math.pow(1.02, y - 1);
-                }
-                const valeurFinale = item.value * Math.pow(1 + revalo, horizon);
-                const totalReturn = cashFlowsCumules + valeurFinale;
-                const tri = Math.pow(totalReturn / storedPrixAcq, 1 / horizon) - 1;
-                triEstime = pct(tri);
-            }
+            const prixAcq = item.prixAcq || item.value;
+            const horizon = 10;
+            let cf = 0;
+            for (let y = 1; y <= horizon; y++) cf += (loyerAnnuelNet - chargesAn) * Math.pow(1.02, y - 1);
+            const valFinale = item.value * Math.pow(1 + revalo, horizon);
+            const tri = Math.pow((cf + valFinale) / prixAcq, 1 / horizon) - 1;
+            triEstime = pct(tri);
+        } else if (item.type === 'scpi' && item.revenus > 0) {
+            rdtBrut = pct(item.revenus * 4 / item.value); // trimestriel * 4
+            const prixAcq = item.prixAcq || item.value;
+            const horizon = 10;
+            let cf = 0;
+            for (let y = 1; y <= horizon; y++) cf += item.revenus * 4 * Math.pow(1.01, y - 1);
+            const valFinale = item.value * Math.pow(1.01, horizon);
+            const tri = Math.pow((cf + valFinale) / prixAcq, 1 / horizon) - 1;
+            triEstime = pct(tri);
         }
-        html += `<tr><td>${item.label}</td><td class="num">${fmt(item.value)}</td><td class="num">${rdtBrut}</td><td class="num">${triEstime}</td></tr>`;
+        html += `<tr><td>${item.label}</td><td class="num">${fmt(item.value)}</td><td class="num">${item.credit > 0 ? fmt(item.credit) : '—'}</td><td class="num">${fmt(valNette)}</td><td class="num">${rdtBrut}</td><td class="num">${triEstime}</td></tr>`;
     });
-    html += `<tr class="total-row"><td><strong>TOTAL</strong></td><td class="num strong">${fmt(totalImmo)}</td><td></td><td></td></tr></tbody></table>`;
-
-    // Add input fields for locatif items
-    const locatifItems = immoItems.filter(x => x.locatif);
-    if (locatifItems.length > 0) {
-        html += '<div class="card" style="margin-top:16px;"><h3>Parametres des biens locatifs</h3>';
-        html += '<p style="font-size:12px;color:#6b7280;margin-bottom:12px;">Renseignez les informations pour calculer le rendement et le TRI de chaque bien.</p>';
-        locatifItems.forEach(item => {
-            const storedDate = sessionStorage.getItem('pat_date_acq_' + item.key) || '';
-            const storedPrix = sessionStorage.getItem('pat_prix_acq_' + item.key) || '';
-            const storedLoyer = sessionStorage.getItem('pat_loyer_' + item.key) || '';
-            html += `<div class="data-grid" style="margin-bottom:12px;">
-                <div class="data-row"><span class="data-label"><strong>${item.label}</strong></span><span class="data-value"></span></div>
-                <div class="data-row"><span class="data-label">Date d'acquisition</span><span class="data-value"><input type="date" class="input-field" style="width:160px" value="${storedDate}" onchange="sessionStorage.setItem('pat_date_acq_${item.key}', this.value); recalcAll();"></span></div>
-                <div class="data-row"><span class="data-label">Prix d'acquisition</span><span class="data-value"><input type="number" class="input-field" style="width:140px" placeholder="0" value="${storedPrix}" onchange="sessionStorage.setItem('pat_prix_acq_${item.key}', this.value); recalcAll();"> &euro;</span></div>
-                <div class="data-row"><span class="data-label">Loyer mensuel</span><span class="data-value"><input type="number" class="input-field" style="width:140px" placeholder="0" value="${storedLoyer}" onchange="sessionStorage.setItem('pat_loyer_${item.key}', this.value); recalcAll();"> &euro;</span></div>
-            </div>`;
-        });
-        html += '</div>';
-    }
+    html += `<tr class="total-row"><td><strong>TOTAL</strong></td><td class="num strong">${fmt(totalImmo)}</td><td class="num">${fmt(dettes)}</td><td class="num strong">${fmt(totalImmo - dettes)}</td><td></td><td></td></tr></tbody></table>`;
 
     setHTML('pat-immo-table', html);
 
@@ -1383,6 +1394,165 @@ function calculateClauseBeneficiaire() {
 }
 
 // ===== OBO (Owner Buy-Out) =====
+// ===== AUTO-SIMULATE OBO FROM PATRIMOINE DATA =====
+function autoSimulateOBO(d) {
+    // Find best OBO candidate: highest value property with low debt
+    const candidates = [
+        { key: 'rp', label: 'Residence principale', value: d.immoRP || 0, credit: (d.immoRP_creditRestant || 0), prixAcq: d.immoRP_prixAcq || 0, loyer: 0 },
+        { key: 'rs', label: 'Residence secondaire', value: d.immoRS || 0, credit: (d.immoRS_creditRestant || 0), prixAcq: d.immoRS_prixAcq || 0, loyer: 0 },
+        { key: 'locatif', label: 'Invest. locatif 1', value: d.immoLoc1 || 0, credit: (d.immoLoc1_creditRestant || 0), prixAcq: d.immoLoc1_prixAcq || 0, loyer: d.immoLoc1_loyer || 0 },
+        { key: 'locatif2', label: 'Invest. locatif 2', value: d.immoLoc2 || 0, credit: (d.immoLoc2_creditRestant || 0), prixAcq: d.immoLoc2_prixAcq || 0, loyer: d.immoLoc2_loyer || 0 }
+    ].filter(c => c.value >= 150000 && c.credit < c.value * 0.4);
+
+    if (candidates.length === 0) return;
+
+    // Sort by net value (best candidate = highest equity)
+    candidates.sort((a, b) => (b.value - b.credit) - (a.value - a.credit));
+    const best = candidates[0];
+
+    // Pre-fill OBO fields
+    const oboValEl = document.querySelector('[data-field="obo_valeur"]');
+    const oboDetteEl = document.querySelector('[data-field="obo_dette"]');
+    const oboBienEl = document.querySelector('[data-field="obo_bien"]');
+    const oboLoyerEl = document.querySelector('[data-field="obo_loyer"]');
+    const oboPrixEl = document.querySelector('[data-field="obo_prix_acq"]');
+
+    if (oboValEl && !parseFloat(oboValEl.value)) oboValEl.value = best.value;
+    if (oboDetteEl && !parseFloat(oboDetteEl.value)) oboDetteEl.value = best.credit;
+    if (oboBienEl) oboBienEl.value = best.key.startsWith('locatif') ? 'locatif' : best.key;
+    if (oboLoyerEl && !parseFloat(oboLoyerEl.value) && best.loyer > 0) oboLoyerEl.value = best.loyer;
+    if (oboPrixEl && !parseFloat(oboPrixEl.value) && best.prixAcq > 0) oboPrixEl.value = best.prixAcq;
+
+    // Show auto-recommendation banner
+    const recoEl = document.getElementById('obo-auto-reco');
+    if (recoEl) {
+        const netValue = best.value - best.credit;
+        const tresoEstimee = netValue - best.value * 0.20;
+        recoEl.classList.remove('hidden');
+        recoEl.innerHTML = `
+            <div class="card recommendation-card" style="margin-top:16px; border-left: 4px solid var(--accent-gold, #c9a84c);">
+                <div class="rec-badge">Recommandation OBO</div>
+                <h3>OBO recommande sur : ${best.label}</h3>
+                <p>Votre ${best.label.toLowerCase()} d'une valeur de <strong>${fmt(best.value)}</strong> avec seulement <strong>${fmt(best.credit)}</strong> de dette restante est un excellent candidat pour un OBO.</p>
+                <div class="kpi-grid" style="margin-top:12px;">
+                    <div class="kpi-card kpi-primary"><div class="kpi-label">Valeur nette</div><div class="kpi-value">${fmt(netValue)}</div></div>
+                    <div class="kpi-card kpi-green"><div class="kpi-label">Tresorerie estimee</div><div class="kpi-value">${fmt(tresoEstimee)}</div></div>
+                    <div class="kpi-card kpi-blue"><div class="kpi-label">Taux endettement</div><div class="kpi-value">${best.value > 0 ? pct(best.credit / best.value) : '0%'}</div></div>
+                </div>
+                <p style="margin-top:12px; font-size:13px; color:#6b7280;">Les champs ci-dessus ont ete pre-remplis. Cliquez sur "Simuler l'OBO" pour obtenir la projection complete.</p>
+            </div>`;
+    }
+
+    // Generate structure recommendation
+    generateStructureRecommendation(d, best);
+}
+
+// ===== STRUCTURE RECOMMENDATION (SCI IS / SCI IR / SARL) =====
+function generateStructureRecommendation(d, oboBien) {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+    const el = document.getElementById('obo-structure-reco');
+    if (!el) return;
+
+    const tmi = parseFloat(d.tmi) || 0.30;
+    const valeur = oboBien ? oboBien.value : 0;
+    const loyer = oboBien ? (oboBien.loyer || 0) : 0;
+    const loyerAnnuel = loyer * 12;
+    const revenusFonciers = d.revenusFonciers || 0;
+    const isDirigeant = d.statutPro === 'Dirigeant' || d.estDirigeant === 'oui';
+    const nbEnfants = parseFloat(d.nbEnfants) || 0;
+    const objectif = d.objectifPrincipal || '';
+
+    // Scoring: SCI IS vs SCI IR vs SARL
+    let sciIS = { score: 0, avantages: [], inconvenients: [] };
+    let sciIR = { score: 0, avantages: [], inconvenients: [] };
+    let sarl = { score: 0, avantages: [], inconvenients: [] };
+
+    // TMI analysis
+    if (tmi >= 0.41) {
+        sciIS.score += 4; sciIS.avantages.push('IS 15%/25% bien inferieur a votre TMI ' + pct(tmi));
+        sciIR.score += 1; sciIR.inconvenients.push('Revenus fonciers imposes a TMI ' + pct(tmi) + ' + PS 17,2%');
+        sarl.score += 3; sarl.avantages.push('IS a taux reduit possible');
+    } else if (tmi >= 0.30) {
+        sciIS.score += 3; sciIS.avantages.push('IS 15% avantageux vs TMI 30%');
+        sciIR.score += 2; sciIR.inconvenients.push('Revenus imposes a 30% + PS 17,2%');
+        sarl.score += 2;
+    } else {
+        sciIS.score += 1;
+        sciIR.score += 3; sciIR.avantages.push('TMI faible — IR transparent avantageux');
+        sarl.score += 1;
+    }
+
+    // Amortissement (key SCI IS advantage)
+    if (valeur >= 200000) {
+        const amortAnnuel = (valeur * 0.80) / 25;
+        sciIS.score += 3; sciIS.avantages.push('Amortissement : ' + fmt(amortAnnuel) + '/an deductible');
+        sciIR.inconvenients.push('Pas d\'amortissement possible en SCI IR');
+        sarl.score += 2; sarl.avantages.push('Amortissement possible a l\'IS');
+    }
+
+    // Transmission / enfants
+    if (nbEnfants > 0 || objectif.includes('Transmission')) {
+        sciIS.score += 2; sciIS.avantages.push('Demembrement de parts facilite');
+        sciIR.score += 3; sciIR.avantages.push('Demembrement sans frottement fiscal a la cession');
+        sarl.score += 1; sarl.inconvenients.push('Cession de parts plus complexe');
+    }
+
+    // Deficit foncier (SCI IR advantage)
+    if (revenusFonciers > 10700) {
+        sciIR.score += 2; sciIR.avantages.push('Imputation deficit foncier possible (10 700 &euro;/an)');
+        sciIS.inconvenients.push('Pas d\'imputation de deficit sur revenus globaux');
+    }
+
+    // Dirigeant / SARL de famille
+    if (isDirigeant) {
+        sarl.score += 2; sarl.avantages.push('Coherence avec votre statut de dirigeant');
+    }
+    if (nbEnfants > 0) {
+        sarl.score += 2; sarl.avantages.push('SARL de famille : option IR possible avec avantages societe');
+    }
+
+    // Plus-value a la revente
+    sciIS.inconvenients.push('PV des particuliers non applicable — PV pro + IS sur gain');
+    sciIR.score += 1; sciIR.avantages.push('PV des particuliers : abattement pour duree de detention');
+    sarl.inconvenients.push('PV pro si IS — planifier la sortie');
+
+    // Determine best
+    const structures = [
+        { nom: 'SCI a l\'IS', code: 'sci_is', ...sciIS },
+        { nom: 'SCI a l\'IR', code: 'sci_ir', ...sciIR },
+        { nom: 'SARL de famille', code: 'sarl', ...sarl }
+    ].sort((a, b) => b.score - a.score);
+
+    const best = structures[0];
+    const second = structures[1];
+
+    el.classList.remove('hidden');
+    el.innerHTML = `
+        <div class="card" style="margin-top:16px;">
+            <h3>Recommandation de Structure</h3>
+            <p style="font-size:13px; color:#6b7280; margin-bottom:16px;">Analyse basee sur votre TMI (${pct(tmi)}), votre patrimoine et vos objectifs.</p>
+            <div class="dashboard-grid">
+                ${structures.map((s, i) => `
+                    <div class="card ${i === 0 ? 'recommendation-card' : ''}" style="${i === 0 ? 'border: 2px solid var(--accent-gold, #c9a84c);' : ''}">
+                        ${i === 0 ? '<div class="rec-badge">Recommandee</div>' : ''}
+                        <h3>${s.nom}</h3>
+                        <p class="rec-score" style="margin-bottom:8px;">Score : ${s.score}/15</p>
+                        ${s.avantages.length > 0 ? '<h4 style="color:#16a34a; font-size:13px;">Avantages</h4><ul style="font-size:12px; margin-bottom:8px;">' + s.avantages.map(a => '<li style="color:#16a34a;">' + a + '</li>').join('') + '</ul>' : ''}
+                        ${s.inconvenients.length > 0 ? '<h4 style="color:#dc2626; font-size:13px;">Inconvenients</h4><ul style="font-size:12px;">' + s.inconvenients.map(a => '<li style="color:#dc2626;">' + a + '</li>').join('') + '</ul>' : ''}
+                    </div>
+                `).join('')}
+            </div>
+            <div class="card info-card" style="margin-top:12px;">
+                <p><strong>Recommandation :</strong> La <strong>${best.nom}</strong> est la structure la plus adaptee a votre situation.
+                ${best.code === 'sci_is' ? 'L\'amortissement du bien permet de reduire significativement la base imposable. Ideal pour la capitalisation et la constitution de tresorerie au sein de la structure.' : ''}
+                ${best.code === 'sci_ir' ? 'La transparence fiscale permet l\'application du regime des PV des particuliers avec abattement pour duree de detention. Ideal pour la transmission via demembrement de parts.' : ''}
+                ${best.code === 'sarl' ? 'La SARL de famille permet d\'opter pour l\'IR tout en beneficiant du cadre juridique de la SARL. Adaptee aux familles souhaitant une gestion structuree.' : ''}
+                ${second ? ' En alternative, la <strong>' + second.nom + '</strong> (score ' + second.score + '/15) peut etre envisagee.' : ''}
+                </p>
+            </div>
+        </div>`;
+}
+
 function calculateOBO() {
     const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
 
@@ -1418,52 +1588,68 @@ function calculateOBO() {
     const plafondIS = cfg.dirigeant.is.plafondTauxReduit;
     const tauxISNormal = cfg.dirigeant.is.tauxNormal; // 25%
 
-    // Amortissement (SCI IS peut amortir)
+    // Amortissement (SCI IS et SARL IS peuvent amortir, SCI IR non)
     const dureeAmort = 25;
-    const amortAnnuel = structure === 'sci_is' ? (valeurBien * 0.80) / dureeAmort : 0; // 80% du bien (hors terrain)
+    const isStructureIS = (structure === 'sci_is' || structure === 'holding' || structure === 'sarl');
+    const amortAnnuel = isStructureIS ? (valeurBien * 0.80) / dureeAmort : 0;
+
+    // Structure label
+    const structureLabels = { sci_is: 'SCI a l\'IS', sci_ir: 'SCI a l\'IR', sarl: 'SARL de famille', holding: 'Holding + SCI IS' };
+    const structureLabel = structureLabels[structure] || structure;
+
+    // TMI for SCI IR calculation
+    const tmi = parseFloat(collectFormData().tmi) || 0.30;
+    const ps = 0.172;
 
     // Cash flow projection over dureeCredit years
     let projectionRows = '';
     let cumulCashFlow = 0;
     let cumulIS = 0;
+    let cumulIR = 0;
 
     for (let y = 1; y <= Math.min(dureeCredit, 15); y++) {
         const loyerY = loyerAnnuel * Math.pow(1.02, y - 1);
         const chargesY = chargesAnnuelles + fraisGestion;
-        const interetsY = y <= dureeCredit ? (empruntSCI * tauxCredit * Math.pow(1 + tauxCredit, dureeCredit - y) / (Math.pow(1 + tauxCredit, dureeCredit) - 1)) : 0;
-        const resultatComptable = loyerY - chargesY - amortAnnuel - (mensualiteCredit * 12 - (empruntSCI / dureeCredit)); // Simplified: interests approximation
         const resultatFiscal = Math.max(0, loyerY - chargesY - amortAnnuel);
-        let isY = 0;
-        if (structure === 'sci_is' && resultatFiscal > 0) {
-            isY = resultatFiscal <= plafondIS ? resultatFiscal * tauxIS : plafondIS * tauxIS + (resultatFiscal - plafondIS) * tauxISNormal;
+        let impotY = 0;
+        if (isStructureIS && resultatFiscal > 0) {
+            impotY = resultatFiscal <= plafondIS ? resultatFiscal * tauxIS : plafondIS * tauxIS + (resultatFiscal - plafondIS) * tauxISNormal;
+        } else if (structure === 'sci_ir') {
+            // SCI IR: revenus fonciers imposes a TMI + PS
+            const resultatIR = Math.max(0, loyerY - chargesY); // pas d'amortissement en IR
+            impotY = resultatIR * (tmi + ps);
+            cumulIR += impotY;
         }
-        const cashFlowY = loyerY - chargesY - mensualiteCredit * 12 - isY;
+        const cashFlowY = loyerY - chargesY - mensualiteCredit * 12 - impotY;
         cumulCashFlow += cashFlowY;
-        cumulIS += isY;
+        if (isStructureIS) cumulIS += impotY;
 
         if (y <= 5 || y === 10 || y === 15) {
-            projectionRows += `<tr><td>Annee ${y}</td><td class="num">${fmt(loyerY)}</td><td class="num">${fmt(mensualiteCredit * 12)}</td><td class="num">${fmt(amortAnnuel)}</td><td class="num">${fmt(isY)}</td><td class="num ${cashFlowY >= 0 ? '' : 'warning'}">${fmt(cashFlowY)}</td></tr>`;
+            projectionRows += `<tr><td>Annee ${y}</td><td class="num">${fmt(loyerY)}</td><td class="num">${fmt(mensualiteCredit * 12)}</td><td class="num">${fmt(amortAnnuel)}</td><td class="num">${fmt(impotY)}</td><td class="num ${cashFlowY >= 0 ? '' : 'warning'}">${fmt(cashFlowY)}</td></tr>`;
         }
     }
 
     const el = document.getElementById('obo-results');
     if (!el) return;
     el.classList.remove('hidden');
+    const impotLabel = isStructureIS ? 'IS' : 'IR + PS';
+    const impotCumul = isStructureIS ? cumulIS : cumulIR;
+
     setHTML('obo-results', `
         <div class="kpi-grid">
             <div class="kpi-card kpi-primary"><div class="kpi-label">Tresorerie degagee</div><div class="kpi-value">${fmt(tresorerieDegagee)}</div></div>
-            <div class="kpi-card kpi-blue"><div class="kpi-label">Emprunt SCI</div><div class="kpi-value">${fmt(empruntSCI)}</div></div>
+            <div class="kpi-card kpi-blue"><div class="kpi-label">Emprunt structure</div><div class="kpi-value">${fmt(empruntSCI)}</div></div>
             <div class="kpi-card kpi-orange"><div class="kpi-label">Mensualite credit</div><div class="kpi-value">${fmt(mensualiteCredit)}</div></div>
-            <div class="kpi-card kpi-green"><div class="kpi-label">Amortissement/an</div><div class="kpi-value">${fmt(amortAnnuel)}</div></div>
+            <div class="kpi-card kpi-green"><div class="kpi-label">${isStructureIS ? 'Amortissement/an' : 'Economie IR/an'}</div><div class="kpi-value">${isStructureIS ? fmt(amortAnnuel) : fmt(loyerAnnuel * (tmi + ps) * 0.3)}</div></div>
         </div>
         <div class="dashboard-grid">
             <div class="card"><h3>Structure de l'OBO</h3><div class="data-grid">
                 <div class="data-row"><span class="data-label">Valeur du bien</span><span class="data-value">${fmt(valeurBien)}</span></div>
                 <div class="data-row"><span class="data-label">Dette restante</span><span class="data-value">${fmt(detteRestante)}</span></div>
                 <div class="data-row"><span class="data-label">Valeur nette</span><span class="data-value">${fmt(valeurNette)}</span></div>
-                <div class="data-row"><span class="data-label">Structure</span><span class="data-value">${structure === 'sci_is' ? 'SCI a l\'IS' : 'Holding'}</span></div>
-                <div class="data-row"><span class="data-label">Apport SCI (20%)</span><span class="data-value">${fmt(apportSCI)}</span></div>
-                <div class="data-row"><span class="data-label">Emprunt SCI</span><span class="data-value">${fmt(empruntSCI)}</span></div>
+                <div class="data-row"><span class="data-label">Structure</span><span class="data-value">${structureLabel}</span></div>
+                <div class="data-row"><span class="data-label">Apport (${pct(apportPct)})</span><span class="data-value">${fmt(apportSCI)}</span></div>
+                <div class="data-row"><span class="data-label">Emprunt structure</span><span class="data-value">${fmt(empruntSCI)}</span></div>
                 <div class="data-row highlight"><span class="data-label">TRESORERIE DEGAGEE</span><span class="data-value">${fmt(tresorerieDegagee)}</span></div>
             </div></div>
             <div class="card"><h3>Parametres financiers</h3><div class="data-grid">
@@ -1471,21 +1657,27 @@ function calculateOBO() {
                 <div class="data-row"><span class="data-label">Duree credit</span><span class="data-value">${dureeCredit} ans</span></div>
                 <div class="data-row"><span class="data-label">Mensualite</span><span class="data-value">${fmt(mensualiteCredit)}</span></div>
                 <div class="data-row"><span class="data-label">Loyer annuel</span><span class="data-value">${fmt(loyerAnnuel)}</span></div>
-                <div class="data-row"><span class="data-label">Amortissement annuel</span><span class="data-value">${fmt(amortAnnuel)}</span></div>
-                <div class="data-row"><span class="data-label">IS cumule (${dureeCredit} ans)</span><span class="data-value">${fmt(cumulIS)}</span></div>
+                <div class="data-row"><span class="data-label">${isStructureIS ? 'Amortissement annuel' : 'Deduction charges'}</span><span class="data-value">${fmt(amortAnnuel)}</span></div>
+                <div class="data-row"><span class="data-label">${impotLabel} cumule (${Math.min(dureeCredit, 15)} ans)</span><span class="data-value">${fmt(impotCumul)}</span></div>
                 <div class="data-row highlight"><span class="data-label">CASH-FLOW CUMULE</span><span class="data-value">${fmt(cumulCashFlow)}</span></div>
             </div></div>
         </div>
         <div class="card" style="margin-top:16px;">
-            <h3>Projection sur ${Math.min(dureeCredit, 15)} ans</h3>
-            <table class="data-table"><thead><tr><th>Periode</th><th>Loyers</th><th>Credit</th><th>Amort.</th><th>IS</th><th>Cash-flow</th></tr></thead><tbody>
+            <h3>Projection sur ${Math.min(dureeCredit, 15)} ans — ${structureLabel}</h3>
+            <table class="data-table"><thead><tr><th>Periode</th><th>Loyers</th><th>Credit</th><th>${isStructureIS ? 'Amort.' : 'Charges'}</th><th>${impotLabel}</th><th>Cash-flow</th></tr></thead><tbody>
                 ${projectionRows}
             </tbody></table>
         </div>
         <div class="card info-card" style="margin-top:16px;">
-            <p>L'OBO permet de degager ${fmt(tresorerieDegagee)} de tresorerie tout en conservant la jouissance du bien via la SCI. L'amortissement en SCI IS reduit la base imposable de ${fmt(amortAnnuel)}/an. La tresorerie degagee peut etre reinvestie en assurance vie ou autres placements.</p>
+            <p><strong>${structureLabel} :</strong>
+            ${isStructureIS ? 'L\'amortissement du bien (' + fmt(amortAnnuel) + '/an) reduit la base imposable a l\'IS. Le taux reduit de 15% s\'applique jusqu\'a 42 500 &euro; de resultat.' : 'Les revenus fonciers sont imposes a votre TMI (' + pct(tmi) + ') + PS (17,2%). L\'avantage reside dans le regime des PV des particuliers a la revente.'}
+            La tresorerie degagee de ${fmt(tresorerieDegagee)} peut etre reinvestie en assurance vie, PEA ou autres placements pour diversifier votre patrimoine.</p>
         </div>
     `);
+
+    // Trigger structure recommendation after manual simulation
+    const d2 = collectFormData();
+    generateStructureRecommendation(d2, { value: valeurBien, credit: detteRestante, loyer: loyerMensuel });
 }
 
 // ===== ENVOYER BILAN PAR EMAIL =====
@@ -1494,10 +1686,10 @@ function generateBilanText() {
     const r = getSimResults();
     const totalRevenus = (d.salairesClient || 0) + (d.salairesConjoint || 0) + (d.revenusBIC || 0) + (d.dividendes || 0) + (d.revenusFonciers || 0) + (d.pensions || 0) + (d.autresRevenus || 0);
     const totalCharges = (d.loyer || 0) + (d.creditRP || 0) + (d.creditLocatif || 0) + (d.creditConso || 0) + (d.pensionAlim || 0) + (d.autresCharges || 0);
-    const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
+    const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoSCPI || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
     const totalFin = (d.livrets || 0) + (d.pel || 0) + (d.assuranceVie || 0) + (d.pea || 0) + (d.cto || 0) + (d.per || 0) + (d.epargneSalariale || 0) + (d.autresPlacement || 0);
     const patriBrut = totalImmo + totalFin;
-    const dettes = d.capitalRestantRP || 0;
+    const dettes = (d.capitalRestantRP || 0) + (d.immoRP_creditRestant || 0) + (d.immoRS_creditRestant || 0) + (d.immoLoc1_creditRestant || 0) + (d.immoLoc2_creditRestant || 0);
     const patriNet = patriBrut - dettes;
 
     let text = `BILAN PATRIMONIAL - ${d.prenom || ''} ${d.nom || ''}\n`;
@@ -1593,10 +1785,10 @@ function exportBilanPDF() {
 
     const totalRevenus = (d.salairesClient || 0) + (d.salairesConjoint || 0) + (d.revenusBIC || 0) + (d.dividendes || 0) + (d.revenusFonciers || 0) + (d.pensions || 0) + (d.autresRevenus || 0);
     const totalCharges = (d.loyer || 0) + (d.creditRP || 0) + (d.creditLocatif || 0) + (d.creditConso || 0) + (d.pensionAlim || 0) + (d.autresCharges || 0);
-    const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
+    const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoSCPI || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
     const totalFin = (d.livrets || 0) + (d.pel || 0) + (d.assuranceVie || 0) + (d.pea || 0) + (d.cto || 0) + (d.per || 0) + (d.epargneSalariale || 0) + (d.autresPlacement || 0);
     const patriBrut = totalImmo + totalFin;
-    const dettes = d.capitalRestantRP || 0;
+    const dettes = (d.capitalRestantRP || 0) + (d.immoRP_creditRestant || 0) + (d.immoRS_creditRestant || 0) + (d.immoLoc1_creditRestant || 0) + (d.immoLoc2_creditRestant || 0);
     const patriNet = patriBrut - dettes;
 
     // Helper to build a table row
