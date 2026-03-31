@@ -84,8 +84,29 @@ function recalcAll() {
     // IFI calc
     calculateIFI(d, totalImmo, dettes);
 
-    // Fiscalite succession
+    // Fiscalite succession + IR
     calculateFiscalite(d, patriNet, totalFin);
+
+    // Demembrement
+    calculateDemembrement();
+
+    // IR estime display in profil
+    if (typeof calcBareme === 'function' && typeof CONFIG !== 'undefined') {
+        const cfg2 = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+        const pf = parseFloat(d.partsFiscales) || 1;
+        const rev = ((d.salairesClient || 0) + (d.salairesConjoint || 0) + (d.revenusBIC || 0) + (d.dividendes || 0) + (d.revenusFonciers || 0) + (d.pensions || 0) + (d.autresRevenus || 0));
+        const irEst = calcBareme(rev / pf, cfg2.ir.bareme) * pf;
+        setHTML('ir-estime', rev > 0 ? fmt(irEst) : '0 €');
+    }
+
+    // OBO visibility: show if client has real estate with low/no debt
+    const oboNav = document.getElementById('nav-obo');
+    if (oboNav) {
+        const hasImmoValue = totalImmo > 200000;
+        const lowDebt = dettes < totalImmo * 0.3;
+        if (hasImmoValue && lowDebt) oboNav.classList.remove('hidden');
+        else oboNav.classList.add('hidden');
+    }
 
     // Patrimoine page
     updatePatrimoinePage(d, totalImmo, totalFin, dettes, patriBrut, patriNet);
@@ -606,23 +627,75 @@ function generateRecommendation(d) {
 
 // ===== PATRIMOINE PAGE =====
 function updatePatrimoinePage(d, totalImmo, totalFin, dettes, brut, net) {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+
     setHTML('pat-brut', fmt(brut));
     setHTML('pat-dettes', fmt(dettes));
     setHTML('pat-net', fmt(net));
     setHTML('pat-immo-pct', brut > 0 ? pct(totalImmo / brut) : '0%');
 
     const immoItems = [
-        ['Residence principale', d.immoRP],
-        ['Residence secondaire', d.immoRS],
-        ['Investissement locatif 1', d.immoLoc1],
-        ['Investissement locatif 2', d.immoLoc2],
-        ['Immobilier professionnel', d.immoPro],
-        ['Autres immobiliers', d.immoAutres]
-    ].filter(x => x[1] > 0);
+        { label: 'Residence principale', value: d.immoRP, key: 'immoRP', locatif: false },
+        { label: 'Residence secondaire', value: d.immoRS, key: 'immoRS', locatif: false },
+        { label: 'Investissement locatif 1', value: d.immoLoc1, key: 'immoLoc1', locatif: true },
+        { label: 'Investissement locatif 2', value: d.immoLoc2, key: 'immoLoc2', locatif: true },
+        { label: 'Immobilier professionnel', value: d.immoPro, key: 'immoPro', locatif: false },
+        { label: 'Autres immobiliers', value: d.immoAutres, key: 'immoAutres', locatif: false }
+    ].filter(x => x.value > 0);
 
-    let html = '<table class="data-table"><thead><tr><th>Bien</th><th>Valeur</th></tr></thead><tbody>';
-    immoItems.forEach(([n, v]) => { html += `<tr><td>${n}</td><td class="num">${fmt(v)}</td></tr>`; });
-    html += `<tr class="total-row"><td><strong>TOTAL</strong></td><td class="num strong">${fmt(totalImmo)}</td></tr></tbody></table>`;
+    // Build immobilier table with TRI for locatif items
+    let html = '<table class="data-table"><thead><tr><th>Bien</th><th>Valeur</th><th>Rdt locatif brut</th><th>TRI estime</th></tr></thead><tbody>';
+    immoItems.forEach(item => {
+        let rdtBrut = '—';
+        let triEstime = '—';
+        if (item.locatif) {
+            // Read stored inputs or use defaults
+            const storedLoyer = parseFloat(sessionStorage.getItem('pat_loyer_' + item.key)) || 0;
+            const storedPrixAcq = parseFloat(sessionStorage.getItem('pat_prix_acq_' + item.key)) || item.value;
+            const revalo = cfg.immobilier.parametresDefaut.revalorisationAnnuelle;
+            const vacance = cfg.immobilier.parametresDefaut.tauxVacance;
+            const chargesPct = cfg.immobilier.parametresDefaut.chargesAnnuelles;
+
+            if (storedLoyer > 0 && storedPrixAcq > 0) {
+                const loyerAnnuelNet = storedLoyer * 12 * (1 - vacance);
+                const charges = item.value * chargesPct;
+                rdtBrut = pct(storedLoyer * 12 / item.value);
+
+                // TRI simplifie sur 10 ans: (loyer net + revalo) vs prix achat
+                const horizon = 10;
+                let cashFlowsCumules = 0;
+                for (let y = 1; y <= horizon; y++) {
+                    cashFlowsCumules += (loyerAnnuelNet - charges) * Math.pow(1.02, y - 1);
+                }
+                const valeurFinale = item.value * Math.pow(1 + revalo, horizon);
+                const totalReturn = cashFlowsCumules + valeurFinale;
+                const tri = Math.pow(totalReturn / storedPrixAcq, 1 / horizon) - 1;
+                triEstime = pct(tri);
+            }
+        }
+        html += `<tr><td>${item.label}</td><td class="num">${fmt(item.value)}</td><td class="num">${rdtBrut}</td><td class="num">${triEstime}</td></tr>`;
+    });
+    html += `<tr class="total-row"><td><strong>TOTAL</strong></td><td class="num strong">${fmt(totalImmo)}</td><td></td><td></td></tr></tbody></table>`;
+
+    // Add input fields for locatif items
+    const locatifItems = immoItems.filter(x => x.locatif);
+    if (locatifItems.length > 0) {
+        html += '<div class="card" style="margin-top:16px;"><h3>Parametres des biens locatifs</h3>';
+        html += '<p style="font-size:12px;color:#6b7280;margin-bottom:12px;">Renseignez les informations pour calculer le rendement et le TRI de chaque bien.</p>';
+        locatifItems.forEach(item => {
+            const storedDate = sessionStorage.getItem('pat_date_acq_' + item.key) || '';
+            const storedPrix = sessionStorage.getItem('pat_prix_acq_' + item.key) || '';
+            const storedLoyer = sessionStorage.getItem('pat_loyer_' + item.key) || '';
+            html += `<div class="data-grid" style="margin-bottom:12px;">
+                <div class="data-row"><span class="data-label"><strong>${item.label}</strong></span><span class="data-value"></span></div>
+                <div class="data-row"><span class="data-label">Date d'acquisition</span><span class="data-value"><input type="date" class="input-field" style="width:160px" value="${storedDate}" onchange="sessionStorage.setItem('pat_date_acq_${item.key}', this.value); recalcAll();"></span></div>
+                <div class="data-row"><span class="data-label">Prix d'acquisition</span><span class="data-value"><input type="number" class="input-field" style="width:140px" placeholder="0" value="${storedPrix}" onchange="sessionStorage.setItem('pat_prix_acq_${item.key}', this.value); recalcAll();"> &euro;</span></div>
+                <div class="data-row"><span class="data-label">Loyer mensuel</span><span class="data-value"><input type="number" class="input-field" style="width:140px" placeholder="0" value="${storedLoyer}" onchange="sessionStorage.setItem('pat_loyer_${item.key}', this.value); recalcAll();"> &euro;</span></div>
+            </div>`;
+        });
+        html += '</div>';
+    }
+
     setHTML('pat-immo-table', html);
 
     const finItems = [
@@ -962,34 +1035,61 @@ function calculateIFI(d, totalImmo, dettes) {
 // ===== FISCALITE & SUCCESSION =====
 function calculateFiscalite(d, patriNet, totalFin) {
     const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
-    const nbEnfants = d.nbEnfants || 0;
-    if (nbEnfants === 0 || patriNet === 0) return;
 
-    const av = d.assuranceVie || 0;
-    const horsAV = patriNet - av;
-    const abattParEnfant = cfg.succession.ligneDirecte.abattement;
-    const totalAbatt = abattParEnfant * nbEnfants;
-    const partTaxable = Math.max(0, (horsAV / nbEnfants) - abattParEnfant);
+    // --- IR CALCULATION ---
+    const totalRevenus = (d.salairesClient || 0) + (d.salairesConjoint || 0) + (d.revenusBIC || 0) + (d.dividendes || 0) + (d.revenusFonciers || 0) + (d.pensions || 0) + (d.autresRevenus || 0);
+    const partsFiscales = parseFloat(d.partsFiscales) || 1;
+    const revenuParPart = totalRevenus / partsFiscales;
 
-    // Bareme succession ligne directe — depuis CONFIG
-    function calcDroits(base) {
-        return typeof calcBareme === 'function' ? calcBareme(base, cfg.succession.ligneDirecte.tranches) : 0;
+    // Calculate IR using bareme progressif
+    let irParPart = 0;
+    if (typeof calcBareme === 'function') {
+        irParPart = calcBareme(revenuParPart, cfg.ir.bareme);
+    }
+    const irBrut = irParPart * partsFiscales;
+
+    // Determine TMI
+    let tmiCalc = 0;
+    for (const t of cfg.ir.tmiTranches) {
+        if (revenuParPart > t.seuil) { tmiCalc = t.tmi; break; }
     }
 
-    const droitsParEnfant = calcDroits(partTaxable);
-    const droitsTotaux = droitsParEnfant * nbEnfants;
+    // PS on patrimoine revenues (revenus fonciers, dividendes if not PFU)
+    const revenusFonciers = d.revenusFonciers || 0;
+    const psPatrimoine = revenusFonciers * cfg.prelevementsSociaux.taux;
 
-    const abattAV = cfg.assuranceVie.transmission.abattementParBeneficiaire;
-    const partAV = av / nbEnfants;
-    const taxableAV = Math.max(0, partAV - abattAV);
-    const droitsAV = taxableAV * cfg.assuranceVie.transmission.tauxApresAbattement;
-    const economieAV = droitsTotaux - droitsAV * nbEnfants;
+    const irTotal = irBrut + psPatrimoine;
 
-    const fiscEl = document.getElementById('fiscalite-content');
-    if (fiscEl) {
-        fiscEl.innerHTML = `
-            <div class="kpi-grid">
-                <div class="kpi-card kpi-red"><div class="kpi-label">Droits Totaux Famille</div><div class="kpi-value">${fmt(droitsTotaux)}</div></div>
+    // Update dashboard IR display
+    setHTML('dash-ir', totalRevenus > 0 ? 'TMI ' + pct(tmiCalc) + ' — IR ' + fmt(irBrut) : '—');
+
+    // --- SUCCESSION CALCULATION ---
+    const nbEnfants = d.nbEnfants || 0;
+    let successionHTML = '';
+
+    if (nbEnfants > 0 && patriNet > 0) {
+        const av = d.assuranceVie || 0;
+        const horsAV = patriNet - av;
+        const abattParEnfant = cfg.succession.ligneDirecte.abattement;
+        const totalAbatt = abattParEnfant * nbEnfants;
+        const partTaxable = Math.max(0, (horsAV / nbEnfants) - abattParEnfant);
+
+        function calcDroits(base) {
+            return typeof calcBareme === 'function' ? calcBareme(base, cfg.succession.ligneDirecte.tranches) : 0;
+        }
+
+        const droitsParEnfant = calcDroits(partTaxable);
+        const droitsTotaux = droitsParEnfant * nbEnfants;
+
+        const abattAV = cfg.assuranceVie.transmission.abattementParBeneficiaire;
+        const partAV = av / Math.max(nbEnfants, 1);
+        const taxableAV = Math.max(0, partAV - abattAV);
+        const droitsAV = taxableAV * cfg.assuranceVie.transmission.tauxApresAbattement;
+        const economieAV = droitsTotaux - droitsAV * nbEnfants;
+
+        successionHTML = `
+            <div class="kpi-grid" style="margin-top:24px;">
+                <div class="kpi-card kpi-red"><div class="kpi-label">Droits Succession</div><div class="kpi-value">${fmt(droitsTotaux)}</div></div>
                 <div class="kpi-card kpi-green"><div class="kpi-label">Economie via AV</div><div class="kpi-value">${fmt(economieAV)}</div></div>
                 <div class="kpi-card kpi-blue"><div class="kpi-label">Abattement / enfant</div><div class="kpi-value">${fmt(abattParEnfant)}</div></div>
                 <div class="kpi-card kpi-orange"><div class="kpi-label">Abattement AV / benef.</div><div class="kpi-value">${fmt(abattAV)}</div></div>
@@ -1012,6 +1112,380 @@ function calculateFiscalite(d, patriNet, totalFin) {
             </div>
         `;
     }
+
+    // --- COMBINED DISPLAY ---
+    const fiscEl = document.getElementById('fiscalite-content');
+    if (fiscEl && totalRevenus > 0) {
+        let irDetailRows = '';
+        cfg.ir.bareme.forEach(t => {
+            if (t.taux > 0 && revenuParPart > t.min) {
+                const taxable = Math.min(revenuParPart, t.max === Infinity ? revenuParPart : t.max) - t.min;
+                irDetailRows += `<div class="data-row"><span class="data-label">Tranche ${pct(t.taux)} (${fmt(t.min)} - ${t.max === Infinity ? '...' : fmt(t.max)})</span><span class="data-value">${fmt(taxable * t.taux)} (sur ${fmt(taxable)})</span></div>`;
+            }
+        });
+
+        fiscEl.innerHTML = `
+            <div class="kpi-grid">
+                <div class="kpi-card kpi-red"><div class="kpi-label">IR Brut</div><div class="kpi-value">${fmt(irBrut)}</div></div>
+                <div class="kpi-card kpi-orange"><div class="kpi-label">TMI</div><div class="kpi-value">${pct(tmiCalc)}</div></div>
+                <div class="kpi-card kpi-blue"><div class="kpi-label">PS Patrimoine</div><div class="kpi-value">${fmt(psPatrimoine)}</div></div>
+                <div class="kpi-card kpi-primary"><div class="kpi-label">Total IR + PS</div><div class="kpi-value">${fmt(irTotal)}</div></div>
+            </div>
+            <div class="dashboard-grid">
+                <div class="card"><h3>Impot sur le Revenu — Bareme progressif</h3><div class="data-grid">
+                    <div class="data-row"><span class="data-label">Revenu brut global</span><span class="data-value">${fmt(totalRevenus)}</span></div>
+                    <div class="data-row"><span class="data-label">Parts fiscales</span><span class="data-value">${partsFiscales}</span></div>
+                    <div class="data-row"><span class="data-label">Revenu par part</span><span class="data-value">${fmt(revenuParPart)}</span></div>
+                    ${irDetailRows}
+                    <div class="data-row"><span class="data-label">IR par part</span><span class="data-value">${fmt(irParPart)}</span></div>
+                    <div class="data-row highlight"><span class="data-label">IR BRUT (x ${partsFiscales} parts)</span><span class="data-value">${fmt(irBrut)}</span></div>
+                </div></div>
+                <div class="card"><h3>Prelevements Sociaux sur revenus patrimoine</h3><div class="data-grid">
+                    <div class="data-row"><span class="data-label">Revenus fonciers</span><span class="data-value">${fmt(revenusFonciers)}</span></div>
+                    <div class="data-row"><span class="data-label">Taux PS</span><span class="data-value">${pct(cfg.prelevementsSociaux.taux)}</span></div>
+                    <div class="data-row highlight"><span class="data-label">PS DUS</span><span class="data-value">${fmt(psPatrimoine)}</span></div>
+                </div></div>
+            </div>
+            ${successionHTML}
+        `;
+    }
+}
+
+// ===== DEMEMBREMENT =====
+function calculateDemembrement() {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+    const d = collectFormData();
+
+    // Calculate age from dateNaissance
+    let age = 0;
+    if (d.dateNaissance) {
+        const born = new Date(d.dateNaissance);
+        const today = new Date();
+        age = today.getFullYear() - born.getFullYear();
+        const m = today.getMonth() - born.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < born.getDate())) age--;
+    }
+
+    const demEl = document.getElementById('demembrement-content');
+    if (!demEl) return;
+
+    if (age <= 0) {
+        demEl.innerHTML = '<p class="empty-state">Renseignez votre date de naissance pour generer l\'analyse de demembrement.</p>';
+        return;
+    }
+
+    // Get usufruit percentage from bareme
+    let pctUsufruit = 0.10;
+    for (const tranche of cfg.demembrement.baremeUsufruitViager) {
+        if (age <= tranche.ageMax) {
+            pctUsufruit = tranche.usufruit;
+            break;
+        }
+    }
+    const pctNP = 1 - pctUsufruit;
+
+    // Collect real estate items
+    const immoItems = [
+        { label: 'Residence principale', value: d.immoRP || 0 },
+        { label: 'Residence secondaire', value: d.immoRS || 0 },
+        { label: 'Investissement locatif 1', value: d.immoLoc1 || 0 },
+        { label: 'Investissement locatif 2', value: d.immoLoc2 || 0 },
+        { label: 'Immobilier professionnel', value: d.immoPro || 0 },
+        { label: 'Autres immobiliers', value: d.immoAutres || 0 }
+    ].filter(x => x.value > 0);
+
+    if (immoItems.length === 0) {
+        demEl.innerHTML = '<p class="empty-state">Aucun bien immobilier renseigne dans votre profil.</p>';
+        return;
+    }
+
+    const totalPP = immoItems.reduce((s, x) => s + x.value, 0);
+    const totalUsufruit = totalPP * pctUsufruit;
+    const totalNP = totalPP * pctNP;
+
+    let tableRows = '';
+    immoItems.forEach(item => {
+        tableRows += `<tr><td>${item.label}</td><td class="num">${fmt(item.value)}</td><td class="num">${fmt(item.value * pctUsufruit)}</td><td class="num">${fmt(item.value * pctNP)}</td></tr>`;
+    });
+
+    demEl.innerHTML = `
+        <div class="kpi-grid">
+            <div class="kpi-card kpi-primary"><div class="kpi-label">Age de l'usufruitier</div><div class="kpi-value">${age} ans</div></div>
+            <div class="kpi-card kpi-blue"><div class="kpi-label">Usufruit (${pct(pctUsufruit)})</div><div class="kpi-value">${fmt(totalUsufruit)}</div></div>
+            <div class="kpi-card kpi-green"><div class="kpi-label">Nue-propriete (${pct(pctNP)})</div><div class="kpi-value">${fmt(totalNP)}</div></div>
+            <div class="kpi-card kpi-orange"><div class="kpi-label">Pleine propriete</div><div class="kpi-value">${fmt(totalPP)}</div></div>
+        </div>
+        <div class="card">
+            <h3>Demembrement par bien — Bareme fiscal art. 669 CGI</h3>
+            <table class="data-table"><thead><tr><th>Bien</th><th>Pleine propriete</th><th>Usufruit</th><th>Nue-propriete</th></tr></thead><tbody>
+                ${tableRows}
+                <tr class="total-row"><td><strong>TOTAL</strong></td><td class="num strong">${fmt(totalPP)}</td><td class="num strong">${fmt(totalUsufruit)}</td><td class="num strong">${fmt(totalNP)}</td></tr>
+            </tbody></table>
+        </div>
+        <div class="card">
+            <h3>Bareme fiscal de l'usufruit viager</h3>
+            <div class="data-grid">
+                <div class="data-row"><span class="data-label">Age de l'usufruitier</span><span class="data-value">${age} ans</span></div>
+                <div class="data-row"><span class="data-label">Valeur usufruit</span><span class="data-value">${pct(pctUsufruit)} de la pleine propriete</span></div>
+                <div class="data-row"><span class="data-label">Valeur nue-propriete</span><span class="data-value">${pct(pctNP)} de la pleine propriete</span></div>
+            </div>
+            <p style="font-size:12px;color:#6b7280;margin-top:12px;">La donation en nue-propriete permet de transmettre un bien en reduisant l'assiette taxable. Au deces de l'usufruitier, le nu-proprietaire recupere la pleine propriete sans droits supplementaires.</p>
+        </div>
+    `;
+}
+
+// ===== DONATIONS =====
+function calculateDonations() {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+
+    const valeurBien = getField('don_valeur');
+    const nbDonataires = getField('don_nb') || 1;
+    const ageDonateur = getField('don_age') || 60;
+    const type = document.querySelector('[data-field="don_type"]')?.value || 'simple';
+
+    if (valeurBien <= 0) return;
+
+    const abattement = cfg.succession.ligneDirecte.abattement; // 100 000 per child
+
+    // --- Donation simple ---
+    const partSimple = valeurBien / nbDonataires;
+    const taxableSimple = Math.max(0, partSimple - abattement);
+    const droitsSimpleParDonataire = typeof calcBareme === 'function' ? calcBareme(taxableSimple, cfg.succession.ligneDirecte.tranches) : 0;
+
+    // Reduction for age < 70
+    const reductionAge = ageDonateur < 70 ? 0.50 : 0;
+    const droitsSimpleReduits = droitsSimpleParDonataire * (1 - reductionAge);
+    const totalSimple = droitsSimpleReduits * nbDonataires;
+
+    // --- Donation-partage ---
+    // Donation-partage: same fiscal treatment but irrevocable equal partition
+    const partPartage = valeurBien / nbDonataires;
+    const taxablePartage = Math.max(0, partPartage - abattement);
+    const droitsPartageParDonataire = typeof calcBareme === 'function' ? calcBareme(taxablePartage, cfg.succession.ligneDirecte.tranches) : 0;
+    const droitsPartageReduits = droitsPartageParDonataire * (1 - reductionAge);
+    const totalPartage = droitsPartageReduits * nbDonataires;
+
+    // Key difference: donation-partage fixes value at donation date (no revaluation at succession)
+    // Simulate the advantage if bien revalorises
+    const revalo10ans = valeurBien * Math.pow(1.02, 10) - valeurBien;
+
+    const el = document.getElementById('donation-results');
+    if (!el) return;
+    el.classList.remove('hidden');
+    setHTML('donation-results', `
+        <div class="kpi-grid">
+            <div class="kpi-card kpi-primary"><div class="kpi-label">Valeur transmise</div><div class="kpi-value">${fmt(valeurBien)}</div></div>
+            <div class="kpi-card kpi-red"><div class="kpi-label">Droits donation simple</div><div class="kpi-value">${fmt(totalSimple)}</div></div>
+            <div class="kpi-card kpi-blue"><div class="kpi-label">Droits donation-partage</div><div class="kpi-value">${fmt(totalPartage)}</div></div>
+            <div class="kpi-card kpi-green"><div class="kpi-label">Reduction < 70 ans</div><div class="kpi-value">${reductionAge > 0 ? pct(reductionAge) : 'Non applicable'}</div></div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card"><h3>Donation Simple</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Valeur totale</span><span class="data-value">${fmt(valeurBien)}</span></div>
+                <div class="data-row"><span class="data-label">Nombre de donataires</span><span class="data-value">${nbDonataires}</span></div>
+                <div class="data-row"><span class="data-label">Part par donataire</span><span class="data-value">${fmt(partSimple)}</span></div>
+                <div class="data-row"><span class="data-label">Abattement / donataire</span><span class="data-value">${fmt(abattement)}</span></div>
+                <div class="data-row"><span class="data-label">Part taxable / donataire</span><span class="data-value">${fmt(taxableSimple)}</span></div>
+                <div class="data-row"><span class="data-label">Droits bruts / donataire</span><span class="data-value">${fmt(droitsSimpleParDonataire)}</span></div>
+                ${reductionAge > 0 ? '<div class="data-row"><span class="data-label">Reduction donateur < 70 ans (-50%)</span><span class="data-value">-' + fmt(droitsSimpleParDonataire * reductionAge) + '</span></div>' : ''}
+                <div class="data-row highlight"><span class="data-label">DROITS TOTAUX</span><span class="data-value">${fmt(totalSimple)}</span></div>
+            </div></div>
+            <div class="card card-highlight-green"><h3>Donation-Partage</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Valeur totale</span><span class="data-value">${fmt(valeurBien)}</span></div>
+                <div class="data-row"><span class="data-label">Part par donataire</span><span class="data-value">${fmt(partPartage)}</span></div>
+                <div class="data-row"><span class="data-label">Abattement / donataire</span><span class="data-value">${fmt(abattement)}</span></div>
+                <div class="data-row"><span class="data-label">Part taxable / donataire</span><span class="data-value">${fmt(taxablePartage)}</span></div>
+                <div class="data-row"><span class="data-label">Droits bruts / donataire</span><span class="data-value">${fmt(droitsPartageParDonataire)}</span></div>
+                ${reductionAge > 0 ? '<div class="data-row"><span class="data-label">Reduction donateur < 70 ans (-50%)</span><span class="data-value">-' + fmt(droitsPartageParDonataire * reductionAge) + '</span></div>' : ''}
+                <div class="data-row highlight"><span class="data-label">DROITS TOTAUX</span><span class="data-value">${fmt(totalPartage)}</span></div>
+            </div></div>
+        </div>
+        <div class="card" style="margin-top:16px;"><h3>Avantage de la donation-partage</h3><div class="data-grid">
+            <div class="data-row"><span class="data-label">Valeur figee a la date de donation</span><span class="data-value">Oui (pas de revalorisation au deces)</span></div>
+            <div class="data-row"><span class="data-label">Revalorisation evitee (10 ans, +2%/an)</span><span class="data-value">${fmt(revalo10ans)}</span></div>
+            <div class="data-row"><span class="data-label">Partage egal et irrevocable</span><span class="data-value">Securite juridique accrue</span></div>
+            <div class="data-row"><span class="data-label">Abattement renouvelable</span><span class="data-value">Tous les 15 ans</span></div>
+        </div></div>
+    `);
+}
+
+// ===== CLAUSE BENEFICIAIRE ASSURANCE VIE =====
+function calculateClauseBeneficiaire() {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+
+    const capitalAV = getField('cb_capital');
+    const nbBenef = getField('cb_nb_benef') || 1;
+    const primesAvant70 = getField('cb_avant70');
+    const primesApres70 = getField('cb_apres70');
+
+    if (capitalAV <= 0) return;
+
+    // --- Scenario primes avant 70 ans (art. 990 I CGI) ---
+    const abattAvant70 = cfg.assuranceVie.transmission.abattementParBeneficiaire; // 152 500 per benef
+    const partAvant70 = primesAvant70 / nbBenef;
+    const taxableAvant70 = Math.max(0, partAvant70 - abattAvant70);
+    // Two tranches: 20% up to 700k, 31.25% beyond
+    let droitsAvant70ParBenef = 0;
+    if (taxableAvant70 > 0) {
+        const tranche1 = Math.min(taxableAvant70, 700000);
+        const tranche2 = Math.max(0, taxableAvant70 - 700000);
+        droitsAvant70ParBenef = tranche1 * cfg.assuranceVie.transmission.tauxApresAbattement + tranche2 * cfg.assuranceVie.transmission.tauxAuDela700k;
+    }
+    const totalDroitsAvant70 = droitsAvant70ParBenef * nbBenef;
+
+    // --- Scenario primes apres 70 ans (art. 757 B CGI) ---
+    const abattApres70 = cfg.assuranceVie.transmission.abattementApres70; // 30 500 global
+    const taxableApres70 = Math.max(0, primesApres70 - abattApres70);
+    // Soumis aux droits de succession classiques, reparti entre beneficiaires
+    const partTaxableApres70 = taxableApres70 / nbBenef;
+    const droitsApres70ParBenef = typeof calcBareme === 'function' ? calcBareme(partTaxableApres70, cfg.succession.ligneDirecte.tranches) : 0;
+    const totalDroitsApres70 = droitsApres70ParBenef * nbBenef;
+
+    const totalDroits = totalDroitsAvant70 + totalDroitsApres70;
+    const totalAbattements = (abattAvant70 * nbBenef) + abattApres70;
+    const tauxEffectif = capitalAV > 0 ? totalDroits / capitalAV : 0;
+
+    const el = document.getElementById('clause-benef-results');
+    if (!el) return;
+    el.classList.remove('hidden');
+    setHTML('clause-benef-results', `
+        <div class="kpi-grid">
+            <div class="kpi-card kpi-primary"><div class="kpi-label">Capital AV total</div><div class="kpi-value">${fmt(capitalAV)}</div></div>
+            <div class="kpi-card kpi-red"><div class="kpi-label">Droits totaux</div><div class="kpi-value">${fmt(totalDroits)}</div></div>
+            <div class="kpi-card kpi-green"><div class="kpi-label">Total abattements</div><div class="kpi-value">${fmt(totalAbattements)}</div></div>
+            <div class="kpi-card kpi-orange"><div class="kpi-label">Taux effectif</div><div class="kpi-value">${pct(tauxEffectif)}</div></div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card card-highlight-green"><h3>Primes avant 70 ans — Art. 990 I CGI</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Primes versees avant 70 ans</span><span class="data-value">${fmt(primesAvant70)}</span></div>
+                <div class="data-row"><span class="data-label">Nombre de beneficiaires</span><span class="data-value">${nbBenef}</span></div>
+                <div class="data-row"><span class="data-label">Abattement par beneficiaire</span><span class="data-value">${fmt(abattAvant70)}</span></div>
+                <div class="data-row"><span class="data-label">Part taxable par beneficiaire</span><span class="data-value">${fmt(taxableAvant70)}</span></div>
+                <div class="data-row"><span class="data-label">Droits par beneficiaire</span><span class="data-value">${fmt(droitsAvant70ParBenef)}</span></div>
+                <div class="data-row highlight"><span class="data-label">DROITS TOTAUX (avant 70 ans)</span><span class="data-value">${fmt(totalDroitsAvant70)}</span></div>
+            </div></div>
+            <div class="card"><h3>Primes apres 70 ans — Art. 757 B CGI</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Primes versees apres 70 ans</span><span class="data-value">${fmt(primesApres70)}</span></div>
+                <div class="data-row"><span class="data-label">Abattement global</span><span class="data-value">${fmt(abattApres70)}</span></div>
+                <div class="data-row"><span class="data-label">Base taxable</span><span class="data-value">${fmt(taxableApres70)}</span></div>
+                <div class="data-row"><span class="data-label">Droits par beneficiaire</span><span class="data-value">${fmt(droitsApres70ParBenef)}</span></div>
+                <div class="data-row highlight"><span class="data-label">DROITS TOTAUX (apres 70 ans)</span><span class="data-value">${fmt(totalDroitsApres70)}</span></div>
+            </div></div>
+        </div>
+        <div class="card" style="margin-top:16px;"><h3>Optimisation de la clause beneficiaire</h3><div class="data-grid">
+            <div class="data-row"><span class="data-label">Strategie optimale</span><span class="data-value">Maximiser les versements avant 70 ans</span></div>
+            <div class="data-row"><span class="data-label">Abattement disponible (avant 70 ans)</span><span class="data-value">${fmt(abattAvant70 * nbBenef)} (${nbBenef} x ${fmt(abattAvant70)})</span></div>
+            <div class="data-row"><span class="data-label">Clause demembree recommandee</span><span class="data-value">${nbBenef > 1 ? 'Oui — Usufruit conjoint, NP enfants' : 'A evaluer selon situation'}</span></div>
+            <div class="data-row"><span class="data-label">Clause a parts egales</span><span class="data-value">Repartition equitable entre ${nbBenef} beneficiaire${nbBenef > 1 ? 's' : ''}</span></div>
+        </div>
+        <p style="font-size:12px;color:#6b7280;margin-top:12px;">La clause demembree permet d'optimiser la transmission en combinant usufruit (pour le conjoint survivant) et nue-propriete (pour les enfants), tout en beneficiant d'un abattement par beneficiaire.</p></div>
+    `);
+}
+
+// ===== OBO (Owner Buy-Out) =====
+function calculateOBO() {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+
+    const valeurBien = getField('obo_valeur');
+    const detteRestante = getField('obo_dette') || 0;
+    const structure = document.querySelector('[data-field="obo_structure"]')?.value || 'sci_is';
+    const tauxCredit = (getField('obo_taux') || 4) / 100;
+    const dureeCredit = getField('obo_duree_credit') || 15;
+    const loyerMensuel = getField('obo_loyer') || 0;
+
+    if (valeurBien <= 0) return;
+
+    const valeurNette = valeurBien - detteRestante;
+
+    // SCI IS achete le bien au proprietaire
+    const apportPct = (getField('obo_apport_pct') || 20) / 100;
+    const apportSCI = valeurBien * apportPct;
+    const empruntSCI = valeurBien - apportSCI;
+    const tresorerieDegagee = valeurNette - apportSCI; // Cash recovered by owner
+
+    // Credit SCI
+    const tauxMens = tauxCredit / 12;
+    const nbMens = dureeCredit * 12;
+    const mensualiteCredit = empruntSCI > 0 ? empruntSCI * tauxMens / (1 - Math.pow(1 + tauxMens, -nbMens)) : 0;
+
+    // Loyers SCI
+    const loyerAnnuel = loyerMensuel * 12;
+    const fraisGestion = loyerAnnuel * 0.07;
+    const chargesAnnuelles = valeurBien * 0.015;
+
+    // IS sur SCI
+    const tauxIS = cfg.dirigeant.is.tauxReduit; // 15% up to 42500
+    const plafondIS = cfg.dirigeant.is.plafondTauxReduit;
+    const tauxISNormal = cfg.dirigeant.is.tauxNormal; // 25%
+
+    // Amortissement (SCI IS peut amortir)
+    const dureeAmort = 25;
+    const amortAnnuel = structure === 'sci_is' ? (valeurBien * 0.80) / dureeAmort : 0; // 80% du bien (hors terrain)
+
+    // Cash flow projection over dureeCredit years
+    let projectionRows = '';
+    let cumulCashFlow = 0;
+    let cumulIS = 0;
+
+    for (let y = 1; y <= Math.min(dureeCredit, 15); y++) {
+        const loyerY = loyerAnnuel * Math.pow(1.02, y - 1);
+        const chargesY = chargesAnnuelles + fraisGestion;
+        const interetsY = y <= dureeCredit ? (empruntSCI * tauxCredit * Math.pow(1 + tauxCredit, dureeCredit - y) / (Math.pow(1 + tauxCredit, dureeCredit) - 1)) : 0;
+        const resultatComptable = loyerY - chargesY - amortAnnuel - (mensualiteCredit * 12 - (empruntSCI / dureeCredit)); // Simplified: interests approximation
+        const resultatFiscal = Math.max(0, loyerY - chargesY - amortAnnuel);
+        let isY = 0;
+        if (structure === 'sci_is' && resultatFiscal > 0) {
+            isY = resultatFiscal <= plafondIS ? resultatFiscal * tauxIS : plafondIS * tauxIS + (resultatFiscal - plafondIS) * tauxISNormal;
+        }
+        const cashFlowY = loyerY - chargesY - mensualiteCredit * 12 - isY;
+        cumulCashFlow += cashFlowY;
+        cumulIS += isY;
+
+        if (y <= 5 || y === 10 || y === 15) {
+            projectionRows += `<tr><td>Annee ${y}</td><td class="num">${fmt(loyerY)}</td><td class="num">${fmt(mensualiteCredit * 12)}</td><td class="num">${fmt(amortAnnuel)}</td><td class="num">${fmt(isY)}</td><td class="num ${cashFlowY >= 0 ? '' : 'warning'}">${fmt(cashFlowY)}</td></tr>`;
+        }
+    }
+
+    const el = document.getElementById('obo-results');
+    if (!el) return;
+    el.classList.remove('hidden');
+    setHTML('obo-results', `
+        <div class="kpi-grid">
+            <div class="kpi-card kpi-primary"><div class="kpi-label">Tresorerie degagee</div><div class="kpi-value">${fmt(tresorerieDegagee)}</div></div>
+            <div class="kpi-card kpi-blue"><div class="kpi-label">Emprunt SCI</div><div class="kpi-value">${fmt(empruntSCI)}</div></div>
+            <div class="kpi-card kpi-orange"><div class="kpi-label">Mensualite credit</div><div class="kpi-value">${fmt(mensualiteCredit)}</div></div>
+            <div class="kpi-card kpi-green"><div class="kpi-label">Amortissement/an</div><div class="kpi-value">${fmt(amortAnnuel)}</div></div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card"><h3>Structure de l'OBO</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Valeur du bien</span><span class="data-value">${fmt(valeurBien)}</span></div>
+                <div class="data-row"><span class="data-label">Dette restante</span><span class="data-value">${fmt(detteRestante)}</span></div>
+                <div class="data-row"><span class="data-label">Valeur nette</span><span class="data-value">${fmt(valeurNette)}</span></div>
+                <div class="data-row"><span class="data-label">Structure</span><span class="data-value">${structure === 'sci_is' ? 'SCI a l\'IS' : 'Holding'}</span></div>
+                <div class="data-row"><span class="data-label">Apport SCI (20%)</span><span class="data-value">${fmt(apportSCI)}</span></div>
+                <div class="data-row"><span class="data-label">Emprunt SCI</span><span class="data-value">${fmt(empruntSCI)}</span></div>
+                <div class="data-row highlight"><span class="data-label">TRESORERIE DEGAGEE</span><span class="data-value">${fmt(tresorerieDegagee)}</span></div>
+            </div></div>
+            <div class="card"><h3>Parametres financiers</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Taux credit</span><span class="data-value">${pct(tauxCredit)}</span></div>
+                <div class="data-row"><span class="data-label">Duree credit</span><span class="data-value">${dureeCredit} ans</span></div>
+                <div class="data-row"><span class="data-label">Mensualite</span><span class="data-value">${fmt(mensualiteCredit)}</span></div>
+                <div class="data-row"><span class="data-label">Loyer annuel</span><span class="data-value">${fmt(loyerAnnuel)}</span></div>
+                <div class="data-row"><span class="data-label">Amortissement annuel</span><span class="data-value">${fmt(amortAnnuel)}</span></div>
+                <div class="data-row"><span class="data-label">IS cumule (${dureeCredit} ans)</span><span class="data-value">${fmt(cumulIS)}</span></div>
+                <div class="data-row highlight"><span class="data-label">CASH-FLOW CUMULE</span><span class="data-value">${fmt(cumulCashFlow)}</span></div>
+            </div></div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+            <h3>Projection sur ${Math.min(dureeCredit, 15)} ans</h3>
+            <table class="data-table"><thead><tr><th>Periode</th><th>Loyers</th><th>Credit</th><th>Amort.</th><th>IS</th><th>Cash-flow</th></tr></thead><tbody>
+                ${projectionRows}
+            </tbody></table>
+        </div>
+        <div class="card info-card" style="margin-top:16px;">
+            <p>L'OBO permet de degager ${fmt(tresorerieDegagee)} de tresorerie tout en conservant la jouissance du bien via la SCI. L'amortissement en SCI IS reduit la base imposable de ${fmt(amortAnnuel)}/an. La tresorerie degagee peut etre reinvestie en assurance vie ou autres placements.</p>
+        </div>
+    `);
 }
 
 // ===== ENVOYER BILAN PAR EMAIL =====

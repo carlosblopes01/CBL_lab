@@ -264,6 +264,8 @@
             <li><a href="#" class="nav-link" data-section="fiscalite"><span class="nav-icon">&#9879;</span> Fiscalite</a></li>
             <li><a href="#" class="nav-link" data-section="ifi"><span class="nav-icon">&#9830;</span> IFI</a></li>
             <li><a href="#" class="nav-link" data-section="demembrement"><span class="nav-icon">&#9883;</span> Demembrement</a></li>
+            <li><a href="#" class="nav-link" data-section="clause-benef"><span class="nav-icon">&#9830;</span> Clause beneficiaire</a></li>
+            <li id="nav-obo" class="hidden"><a href="#" class="nav-link" data-section="obo"><span class="nav-icon">&#9670;</span> OBO Immobilier</a></li>
         </ul>
         <div class="sidebar-footer">
             <button class="btn btn-gold btn-full btn-sm" onclick="prendreRDV()">Prendre rendez-vous</button>
@@ -510,6 +512,10 @@
                             </select>
                         </div>
                     </div>
+                    <div class="computed-row" style="margin-top:12px;">
+                        <span>Impot sur le revenu estime</span>
+                        <span class="computed-value" id="ir-estime">0 &euro;</span>
+                    </div>
                 </div>
 
                 <div id="step-result-2" class="step-result"></div>
@@ -611,16 +617,21 @@
 
         <!-- ===== PATRIMOINE ===== -->
         <section id="patrimoine" class="section">
-            <div class="section-header"><h1>Patrimoine Global</h1><p class="section-subtitle">Vue consolidee de tous les actifs et passifs</p></div>
+            <div class="section-header"><h1>Mon Patrimoine</h1><p class="section-subtitle">Vue consolidee et rendement de vos actifs</p></div>
             <div class="kpi-grid">
-                <div class="kpi-card kpi-primary"><div class="kpi-label">Patrimoine Brut</div><div class="kpi-value" id="pat-brut">— &euro;</div></div>
-                <div class="kpi-card kpi-red"><div class="kpi-label">Dettes</div><div class="kpi-value" id="pat-dettes">— &euro;</div></div>
-                <div class="kpi-card kpi-green"><div class="kpi-label">Patrimoine Net</div><div class="kpi-value" id="pat-net">— &euro;</div></div>
-                <div class="kpi-card kpi-blue"><div class="kpi-label">Part Immobilier</div><div class="kpi-value" id="pat-immo-pct">—%</div></div>
+                <div class="kpi-card kpi-primary"><div class="kpi-label">Patrimoine Brut</div><div class="kpi-value" id="pat-brut">0</div></div>
+                <div class="kpi-card kpi-red"><div class="kpi-label">Dettes</div><div class="kpi-value" id="pat-dettes">0</div></div>
+                <div class="kpi-card kpi-green"><div class="kpi-label">Patrimoine Net</div><div class="kpi-value" id="pat-net">0</div></div>
+                <div class="kpi-card kpi-blue"><div class="kpi-label">Part Immobilier</div><div class="kpi-value" id="pat-immo-pct">0%</div></div>
             </div>
             <div class="dashboard-grid">
                 <div class="card"><h3>Patrimoine Immobilier</h3><div id="pat-immo-table"></div></div>
-                <div class="card"><h3>Patrimoine Financier</h3><div id="pat-fin-table"></div><div class="chart-container chart-sm"><canvas id="financierChart"></canvas></div></div>
+                <div class="card"><h3>Patrimoine Financier</h3><div id="pat-fin-table"></div><div class="chart-container"><canvas id="financierChart"></canvas></div></div>
+            </div>
+            <div class="card" id="pat-rendement-immo" class="hidden">
+                <h3>Rendement de vos biens immobiliers</h3>
+                <p class="desc" style="font-size:12px;color:#6b7280;margin-bottom:12px;">Renseignez les details pour calculer le TRI</p>
+                <div id="pat-immo-tri-content"></div>
             </div>
         </section>
 
@@ -781,7 +792,7 @@
         </section>
 
         <section id="fiscalite" class="section">
-            <div class="section-header"><h1>Fiscalite &amp; Succession</h1><p class="section-subtitle">Simulation successorale et avantages AV</p></div>
+            <div class="section-header"><h1>Fiscalite &amp; Succession</h1><p class="section-subtitle">Impot sur le revenu, droits de succession et avantages AV</p></div>
             <div id="fiscalite-content"><p class="empty-state">Remplissez votre profil pour generer l'analyse fiscale.</p></div>
         </section>
 
@@ -791,8 +802,48 @@
         </section>
 
         <section id="demembrement" class="section">
-            <div class="section-header"><h1>Demembrement</h1><p class="section-subtitle">Usufruit / Nue-propriete — Optimisation transmission</p></div>
+            <div class="section-header"><h1>Demembrement &amp; Donations</h1><p class="section-subtitle">Usufruit, nue-propriete, donations et transmission</p></div>
             <div id="demembrement-content"><p class="empty-state">Remplissez votre profil pour generer l'analyse de demembrement.</p></div>
+
+            <div class="card" style="margin-top:20px;">
+                <h3>Simulation de Donation</h3>
+                <div class="desc" style="font-size:12px;color:#6b7280;margin-bottom:12px;">Donation simple ou donation-partage en ligne directe</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Valeur du bien (&euro;)</label><input type="number" data-field="don_valeur" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Nombre de donataires</label><input type="number" data-field="don_nb" min="1" value="1" class="sim-input"></div>
+                    <div class="form-group"><label>Type</label>
+                        <select data-field="don_type">
+                            <option value="simple">Donation simple</option>
+                            <option value="partage">Donation-partage</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Age du donateur</label><input type="number" data-field="don_age" min="18" max="100" value="55" class="sim-input"></div>
+                    <div class="form-group"><label>Donation en demembrement ?</label>
+                        <select data-field="don_demembre">
+                            <option value="non">Non — Pleine propriete</option>
+                            <option value="oui">Oui — Nue-propriete uniquement</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="calculateDonations()" style="margin-top:16px;">Simuler la donation</button>
+            </div>
+            <div id="donation-results" class="hidden"></div>
+
+            <div class="card" style="margin-top:20px;">
+                <h3>Legs &amp; Donations anterieures</h3>
+                <div class="desc" style="font-size:12px;color:#6b7280;margin-bottom:12px;">Donations deja consenties (rapport fiscal sur 15 ans)</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Montant des donations anterieures (&euro;)</label><input type="number" data-field="legs_montant" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Date de la derniere donation</label><input type="date" data-field="legs_date" class="sim-input"></div>
+                    <div class="form-group"><label>DDV consentie ?</label>
+                        <select data-field="legs_ddv">
+                            <option value="non">Non</option>
+                            <option value="oui">Oui</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Date de la DDV</label><input type="date" data-field="legs_ddv_date" class="sim-input"></div>
+                </div>
+            </div>
         </section>
 
         <!-- ===== DIRIGEANT ===== -->
@@ -948,6 +999,62 @@
             </div>
             <div id="per-results" class="hidden"></div>
 
+        </section>
+
+        <!-- ===== CLAUSE BENEFICIAIRE ===== -->
+        <section id="clause-benef" class="section">
+            <div class="section-header"><h1>Clause Beneficiaire</h1><p class="section-subtitle">Optimisation de la transmission via assurance vie</p></div>
+            <div class="card">
+                <h3>Parametres de la clause</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Capital AV total (&euro;)</label><input type="number" data-field="cb_capital" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Primes versees avant 70 ans (&euro;)</label><input type="number" data-field="cb_avant70" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Primes versees apres 70 ans (&euro;)</label><input type="number" data-field="cb_apres70" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Nombre de beneficiaires</label><input type="number" data-field="cb_nb_benef" min="1" value="2" class="sim-input"></div>
+                    <div class="form-group"><label>Repartition</label>
+                        <select data-field="cb_repartition">
+                            <option value="egale">A parts egales</option>
+                            <option value="custom">Personnalisee</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="calculateClauseBeneficiaire()" style="margin-top:16px;">Analyser la clause</button>
+            </div>
+            <div id="clause-benef-results" class="hidden"></div>
+        </section>
+
+        <!-- ===== OBO IMMOBILIER ===== -->
+        <section id="obo" class="section">
+            <div class="section-header"><h1>OBO Immobilier</h1><p class="section-subtitle">Owner Buy-Out — Monetisation de votre patrimoine immobilier</p></div>
+            <div class="card">
+                <h3>Parametres de l'OBO</h3>
+                <div class="desc" style="font-size:12px;color:#6b7280;margin-bottom:12px;">Cession d'un bien a une SCI a l'IS pour degager de la tresorerie</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Bien concerne</label>
+                        <select data-field="obo_bien">
+                            <option value="rp">Residence principale</option>
+                            <option value="locatif">Bien locatif</option>
+                            <option value="rs">Residence secondaire</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Valeur du bien (&euro;)</label><input type="number" data-field="obo_valeur" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Prix d'acquisition (&euro;)</label><input type="number" data-field="obo_prix_acq" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Duree de detention (ans)</label><input type="number" data-field="obo_duree_det" min="0" value="10" class="sim-input"></div>
+                    <div class="form-group"><label>Dette restante (&euro;)</label><input type="number" data-field="obo_dette" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Structure d'accueil</label>
+                        <select data-field="obo_structure">
+                            <option value="sci_is">SCI a l'IS</option>
+                            <option value="holding">Holding + SCI</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Apport en capital (%)</label><input type="number" data-field="obo_apport_pct" min="10" max="50" value="20" class="sim-input"></div>
+                    <div class="form-group"><label>Taux du credit SCI (%)</label><input type="number" data-field="obo_taux" min="0" step="0.1" value="4" class="sim-input"></div>
+                    <div class="form-group"><label>Duree du credit (ans)</label><input type="number" data-field="obo_duree_credit" min="5" max="25" value="15" class="sim-input"></div>
+                    <div class="form-group"><label>Loyer mensuel estime (&euro;)</label><input type="number" data-field="obo_loyer" min="0" value="0" class="input-currency sim-input"></div>
+                </div>
+                <button class="btn btn-primary" onclick="calculateOBO()" style="margin-top:16px;">Simuler l'OBO</button>
+            </div>
+            <div id="obo-results" class="hidden"></div>
         </section>
 
     </main>
