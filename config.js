@@ -558,7 +558,7 @@ const CONFIG = {
             rapportAuto: true,
             lien: 'rdv.html'
         }
-    ]
+    ],
 
     // =========================================================================
     // 20. DIRIGEANT — Cession de parts, 150-0 B ter, Pacte Dutreil

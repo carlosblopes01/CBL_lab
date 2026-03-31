@@ -173,6 +173,21 @@ function enterApp() {
     // Recalculate
     recalcAll();
 
+    // Pre-fill simulators and run auto-simulations if profile data exists
+    const savedData = getUserData();
+    if (savedData && savedData.apportDispo > 0) {
+        if (typeof prefillSimulators === 'function') prefillSimulators(savedData);
+        if (typeof autoRunSimulations === 'function') autoRunSimulations(savedData);
+        if (typeof generateRecommendation === 'function') generateRecommendation(savedData);
+        const dashActions = document.getElementById('dash-actions');
+        if (dashActions) dashActions.classList.remove('hidden');
+        const recoActions = document.getElementById('reco-actions');
+        if (recoActions) recoActions.classList.remove('hidden');
+    }
+
+    // Dirigeant toggle on load
+    if (typeof toggleDirigeantSection === 'function') toggleDirigeantSection();
+
     // Update contextual dashboard
     if (typeof updateDashboardContext === 'function') updateDashboardContext();
 

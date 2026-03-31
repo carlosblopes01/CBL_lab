@@ -23,6 +23,11 @@ function getField(name) {
 function recalcAll() {
     const d = collectFormData();
 
+    // Auto-save form data
+    if (typeof saveUserData === 'function' && typeof getCurrentUser === 'function' && getCurrentUser()) {
+        saveUserData(d);
+    }
+
     // Revenus
     const totalRevenusClient = (d.salairesClient || 0) + (d.revenusBIC || 0) + (d.dividendes || 0) + (d.revenusFonciers || 0) + (d.pensions || 0) + (d.autresRevenus || 0);
     const totalRevenusConjoint = d.salairesConjoint || 0;
@@ -91,11 +96,87 @@ function setHTML(id, html) {
     if (el) el.innerHTML = html;
 }
 
+// ===== PRE-FILL SIMULATORS FROM PROFILE =====
+function prefillSimulators(d) {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+    const apport = d.apportDispo || 0;
+    const horizon = d.horizonAnnees || 8;
+    const profil = (d.profilRisque || 'prudent').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, '');
+    const alloc = cfg.assuranceVie.allocationProfilType[profil] || cfg.assuranceVie.allocationProfilType.prudent;
+
+    function setField(name, val) {
+        const el = document.querySelector('[data-field="' + name + '"]');
+        if (el && val !== undefined && val !== null) el.value = val;
+    }
+
+    // AV simulator — new contract
+    if (apport > 0) {
+        setField('av_apport', apport);
+        setField('av_horizon', horizon);
+        setField('av_pct_fe', Math.round(alloc.fondsEuros * 100));
+        setField('av_rdt_fe', (cfg.assuranceVie.rendements.fondsEuros * 100).toFixed(1));
+        setField('av_pct_mandat', Math.round(alloc.mandat * 100));
+        setField('av_rdt_mandat', (cfg.assuranceVie.rendements.mandatGestion * 100).toFixed(1));
+        setField('av_pct_struct', Math.round(alloc.structure * 100));
+        setField('av_rdt_struct', (cfg.assuranceVie.rendements.produitStructure * 100).toFixed(1));
+    }
+
+    // PEA simulator
+    if (apport > 0) {
+        setField('pea_capital', Math.min(apport, cfg.pea.plafondVersement));
+        setField('pea_horizon', horizon);
+        setField('pea_rdt_etf', (cfg.pea.rendements.etfMonde * 100).toFixed(1));
+        setField('pea_ter', (cfg.pea.rendements.terETF * 100).toFixed(2));
+        setField('pea_rdt_mandat', (cfg.pea.rendements.mandatTitresVifs * 100).toFixed(1));
+        setField('pea_frais_mandat', (cfg.pea.rendements.fraisMandat * 100).toFixed(1));
+    }
+
+    // CTO simulator
+    if (apport > 0) {
+        setField('cto_capital', apport);
+        setField('cto_horizon', horizon);
+        setField('cto_rdt', (cfg.cto.rendements.portefeuilleDiversifie * 100).toFixed(1));
+    }
+
+    // AV existing contract — from patrimoine
+    if (d.assuranceVie > 0) {
+        setField('av_exist_encours', d.assuranceVie);
+    }
+
+    // PEA existing — from patrimoine
+    if (d.pea > 0) {
+        setField('pea_exist_valeur', d.pea);
+    }
+
+    // CTO existing — from patrimoine
+    if (d.cto > 0) {
+        setField('cto_exist_valeur', d.cto);
+    }
+
+    // PER Dirigeant — pre-fill from profile revenus
+    const totalRevenus = (d.salairesClient || 0) + (d.revenusBIC || 0) + (d.dividendes || 0);
+    if (totalRevenus > 0) {
+        setField('per_revenu', totalRevenus);
+        // Set TMI from profile
+        if (d.tmi) {
+            const perTmiEl = document.querySelector('[data-field="per_tmi"]');
+            if (perTmiEl) perTmiEl.value = d.tmi;
+        }
+    }
+
+    // Dirigeant — pre-fill remuneration/dividendes
+    if (d.salairesClient > 0) setField('dir_remuneration', d.salairesClient);
+    if (d.dividendes > 0) setField('dir_dividendes', d.dividendes);
+}
+
 // ===== SAVE & CALCULATE =====
 function saveAndCalculate() {
     const data = collectFormData();
     saveUserData(data);
     recalcAll();
+
+    // Pre-fill simulator inputs from profile data
+    prefillSimulators(data);
 
     // Auto-run all simulations based on profile
     autoRunSimulations(data);
