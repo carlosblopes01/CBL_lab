@@ -50,12 +50,7 @@ function recalcAll() {
     const patriNet = patriBrut - dettes;
     const tauxEndettement = patriBrut > 0 ? dettes / patriBrut : 0;
 
-    let classe = '—';
-    if (patriNet >= 5000000) classe = 'Grande fortune';
-    else if (patriNet >= 1000000) classe = 'Patrimoine > 1M';
-    else if (patriNet >= 500000) classe = 'Patrimoine aise';
-    else if (patriNet >= 100000) classe = 'Patrimoine moyen';
-    else classe = 'En construction';
+    const classe = typeof getPatrimoineClasse === 'function' ? getPatrimoineClasse(patriNet) : 'En construction';
 
     setHTML('synth-brut', fmt(patriBrut));
     setHTML('synth-net', fmt(patriNet));
@@ -138,37 +133,38 @@ function saveAndCalculate() {
 
 // ===== AUTO-RUN ALL SIMULATIONS =====
 function autoRunSimulations(d) {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
     const apport = d.apportDispo || 0;
     const horizon = d.horizonAnnees || 8;
     const tmi = parseFloat(d.tmi) || 0.3;
-    const ps = 0.172;
+    const ps = cfg.prelevementsSociaux.taux;
     const totalRevenus = (d.salairesClient || 0) + (d.salairesConjoint || 0) + (d.revenusBIC || 0) + (d.dividendes || 0) + (d.revenusFonciers || 0) + (d.pensions || 0) + (d.autresRevenus || 0);
 
     if (apport <= 0) return;
 
     // --- IMMOBILIER ---
     const immo_prix = apport * 3;
-    const immo_notaire = 0.08;
+    const immo_notaire = cfg.immobilier.fraisNotaire.ancien;
     const immo_travaux = immo_prix * 0.05;
-    const immo_garantie = 2000;
+    const immo_garantie = cfg.immobilier.parametresDefaut.garantieBancaire;
     const immo_coutTotal = immo_prix + immo_prix * immo_notaire + immo_travaux + immo_garantie;
     const immo_aFinancer = immo_coutTotal - apport;
-    const immo_taux = 0.038;
-    const immo_dureePret = 20;
+    const immo_taux = cfg.immobilier.parametresDefaut.tauxCredit;
+    const immo_dureePret = cfg.immobilier.parametresDefaut.dureePret;
     const immo_tauxMens = immo_taux / 12;
     const immo_nbMens = immo_dureePret * 12;
     const immo_mensualite = immo_aFinancer > 0 ? immo_aFinancer * immo_tauxMens / (1 - Math.pow(1 + immo_tauxMens, -immo_nbMens)) : 0;
-    const immo_loyer = immo_prix * 0.005;
-    const immo_loyerAn = immo_loyer * 12 * 0.95;
-    const immo_chargesAn = immo_prix * 0.015;
+    const immo_loyer = immo_prix * cfg.immobilier.rentabilite.rendementLocatifBrut;
+    const immo_loyerAn = immo_loyer * 12 * (1 - cfg.immobilier.parametresDefaut.tauxVacance);
+    const immo_chargesAn = immo_prix * cfg.immobilier.parametresDefaut.chargesAnnuelles;
     const immo_resultatFiscal = immo_loyerAn - immo_chargesAn;
     const immo_impotAn = immo_resultatFiscal > 0 ? immo_resultatFiscal * (tmi + ps) : 0;
     const immo_cashFlowMens = (immo_loyerAn - immo_chargesAn - immo_impotAn) / 12 - immo_mensualite;
-    const immo_revalo = 0.02;
+    const immo_revalo = cfg.immobilier.parametresDefaut.revalorisationAnnuelle;
     const immo_valeurRevente = immo_prix * Math.pow(1 + immo_revalo, immo_dureePret);
     const immo_pvBrute = immo_valeurRevente - immo_prix;
-    const immo_abattPV = immo_dureePret >= 22 ? 1 : (immo_dureePret >= 6 ? (immo_dureePret - 5) * 0.06 : 0);
-    const immo_impotPV = immo_pvBrute * (1 - immo_abattPV) * 0.362;
+    const immo_abattPV = typeof calcAbattementPVImmo === 'function' ? calcAbattementPVImmo(immo_dureePret, 'ir') : (immo_dureePret >= 22 ? 1 : (immo_dureePret >= 6 ? (immo_dureePret - 5) * 0.06 : 0));
+    const immo_impotPV = immo_pvBrute * (1 - immo_abattPV) * cfg.immobilier.pvImmobiliere.tauxGlobal;
     const immo_produitCession = immo_valeurRevente - immo_impotPV;
     const immo_tri = apport > 0 ? (Math.pow(immo_produitCession / apport, 1 / immo_dureePret) - 1) : 0;
 
@@ -176,14 +172,13 @@ function autoRunSimulations(d) {
 
     // --- ASSURANCE VIE ---
     const profil = d.profilRisque || '';
-    let av_pctFE = 0.6, av_pctMandat = 0.3, av_pctStruct = 0.1;
-    if (profil.includes('Securitaire')) { av_pctFE = 0.85; av_pctMandat = 0.10; av_pctStruct = 0.05; }
-    else if (profil.includes('Prudent')) { av_pctFE = 0.60; av_pctMandat = 0.30; av_pctStruct = 0.10; }
-    else if (profil.includes('Equilibre')) { av_pctFE = 0.40; av_pctMandat = 0.40; av_pctStruct = 0.20; }
-    else if (profil.includes('Dynamique')) { av_pctFE = 0.20; av_pctMandat = 0.50; av_pctStruct = 0.30; }
-    else if (profil.includes('Offensif')) { av_pctFE = 0.10; av_pctMandat = 0.55; av_pctStruct = 0.35; }
+    const profilKey = profil.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, '');
+    const allocProfil = cfg.assuranceVie.allocationProfilType[profilKey] || cfg.assuranceVie.allocationProfilType.prudent;
+    let av_pctFE = allocProfil.fondsEuros, av_pctMandat = allocProfil.mandat, av_pctStruct = allocProfil.structure;
 
-    const av_rdtFE = 0.025, av_rdtMandat = 0.044, av_couponStruct = 0.07;
+    const av_rdtFE = cfg.assuranceVie.rendements.fondsEuros;
+    const av_rdtMandat = cfg.assuranceVie.rendements.mandatGestion;
+    const av_couponStruct = cfg.assuranceVie.rendements.produitStructure;
     const av_capFE = apport * av_pctFE;
     const av_capMandat = apport * av_pctMandat;
     const av_capStruct = apport * av_pctStruct;
@@ -192,30 +187,30 @@ function autoRunSimulations(d) {
     const av_finalStruct = av_capStruct + av_capStruct * av_couponStruct * horizon;
     const av_totalFinal = av_finalFE + av_finalMandat + av_finalStruct;
     const av_gain = av_totalFinal - apport;
-    const av_abattement = horizon >= 8 ? 4600 : 0;
+    const av_abattement = horizon >= cfg.assuranceVie.fiscaliteRachat.dureeOptimale ? cfg.assuranceVie.fiscaliteRachat.abattementApres8Ans.celibataire : 0;
     const av_gainImposable = Math.max(0, av_gain - av_abattement);
-    const av_fisc = av_gainImposable * 0.30;
+    const av_fisc = av_gainImposable * cfg.pfu.taux;
     const av_capitalNet = av_totalFinal - av_fisc;
     const av_tri = Math.pow(av_capitalNet / apport, 1 / horizon) - 1;
 
-    saveSimResult('av', { capitalNet: av_capitalNet, tri: av_tri, capitalInvesti: apport, gain: av_gain, fiscalite: av_fisc, transmission: Math.min(apport, 152500 * (d.nbEnfants || 1)), pctFE: av_pctFE, pctMandat: av_pctMandat, pctStruct: av_pctStruct });
+    saveSimResult('av', { capitalNet: av_capitalNet, tri: av_tri, capitalInvesti: apport, gain: av_gain, fiscalite: av_fisc, transmission: Math.min(apport, cfg.assuranceVie.transmission.abattementParBeneficiaire * (d.nbEnfants || 1)), pctFE: av_pctFE, pctMandat: av_pctMandat, pctStruct: av_pctStruct });
 
     // --- PEA LIBRE ---
-    const pea_capital = Math.min(apport, 150000);
-    const pea_rdtNet = 0.068;
+    const pea_capital = Math.min(apport, cfg.pea.plafondVersement);
+    const pea_rdtNet = cfg.pea.rendements.etfMonde;
     const pea_final = pea_capital * Math.pow(1 + pea_rdtNet, horizon);
     const pea_gains = pea_final - pea_capital;
-    const pea_fisc = pea_gains * 0.172;
+    const pea_fisc = pea_gains * (horizon >= cfg.pea.dureeOptimale ? cfg.pea.fiscaliteApres5Ans.taux : cfg.pea.fiscaliteAvant5Ans.taux);
     const pea_net = pea_final - pea_fisc;
     const pea_tri = Math.pow(pea_net / pea_capital, 1 / horizon) - 1;
 
     saveSimResult('peaLibre', { capitalNet: pea_net, tri: pea_tri, capitalInvesti: pea_capital });
 
     // --- PEA MANDAT ---
-    const peaM_rdtNet = 0.05;
+    const peaM_rdtNet = cfg.pea.rendements.mandatTitresVifs;
     const peaM_final = pea_capital * Math.pow(1 + peaM_rdtNet, horizon);
     const peaM_gains = peaM_final - pea_capital;
-    const peaM_fisc = peaM_gains * 0.172;
+    const peaM_fisc = peaM_gains * (horizon >= cfg.pea.dureeOptimale ? cfg.pea.fiscaliteApres5Ans.taux : cfg.pea.fiscaliteAvant5Ans.taux);
     const peaM_net = peaM_final - peaM_fisc;
     const peaM_tri = Math.pow(peaM_net / pea_capital, 1 / horizon) - 1;
 
@@ -223,10 +218,10 @@ function autoRunSimulations(d) {
 
     // --- CTO ---
     const cto_capital = apport;
-    const cto_rdtNet = 0.0695;
+    const cto_rdtNet = cfg.cto.rendements.portefeuilleDiversifie;
     const cto_final = cto_capital * Math.pow(1 + cto_rdtNet, horizon);
     const cto_gains = cto_final - cto_capital;
-    const cto_impot = cto_gains * 0.30;
+    const cto_impot = cto_gains * cfg.cto.fiscalite.pfu;
     const cto_net = cto_final - cto_impot;
     const cto_tri = Math.pow(cto_net / cto_capital, 1 / horizon) - 1;
 
@@ -835,28 +830,22 @@ function updateComparatif() {
 
 // ===== IFI =====
 function calculateIFI(d, totalImmo, dettes) {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
     const rpVal = d.immoRP || 0;
-    const abattRP = rpVal * 0.3;
+    const abattRP = rpVal * cfg.ifi.abattementRP;
     const rpNette = rpVal - abattRP;
     const locatif = (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoPro || 0);
     const autres = (d.immoRS || 0) + (d.immoAutres || 0);
     const assiette = rpNette + locatif + autres - dettes;
 
     let ifi = 0;
-    if (assiette > 800000) {
-        const tranches = [
-            [800000, 1300000, 0.005],
-            [1300000, 2570000, 0.007],
-            [2570000, 5000000, 0.01],
-            [5000000, 10000000, 0.0125],
-            [10000000, Infinity, 0.015]
-        ];
-        tranches.forEach(([min, max, rate]) => {
-            if (assiette > min) ifi += (Math.min(assiette, max) - min) * rate;
+    if (assiette > cfg.ifi.tranches[1].min) {
+        cfg.ifi.tranches.forEach(t => {
+            if (t.taux > 0 && assiette > t.min) ifi += (Math.min(assiette, t.max) - t.min) * t.taux;
         });
     }
 
-    const assujetti = assiette > 1300000;
+    const assujetti = assiette > cfg.ifi.seuilImposition;
     setHTML('dash-ifi', assujetti ? 'Assujetti — ' + fmt(ifi) : 'Non assujetti');
     setHTML('dash-ir', '—');
 
@@ -867,13 +856,13 @@ function calculateIFI(d, totalImmo, dettes) {
             <div class="kpi-grid">
                 <div class="kpi-card ${assujetti ? 'kpi-red' : 'kpi-green'}"><div class="kpi-label">IFI Du</div><div class="kpi-value">${assujetti ? fmt(ifi) : '0 &euro;'}</div></div>
                 <div class="kpi-card kpi-primary"><div class="kpi-label">Assiette Nette</div><div class="kpi-value">${fmt(assiette)}</div></div>
-                <div class="kpi-card kpi-orange"><div class="kpi-label">Seuil IFI</div><div class="kpi-value">1 300 000 &euro;</div></div>
+                <div class="kpi-card kpi-orange"><div class="kpi-label">Seuil IFI</div><div class="kpi-value">${fmt(cfg.ifi.seuilImposition)}</div></div>
                 <div class="kpi-card kpi-blue"><div class="kpi-label">Statut</div><div class="kpi-value">${assujetti ? '<span class="badge badge-red">Assujetti</span>' : '<span class="badge badge-green">Non assujetti</span>'}</div></div>
             </div>
             <div class="dashboard-grid">
                 <div class="card"><h3>Assiette Taxable</h3><div class="data-grid">
                     <div class="data-row"><span class="data-label">Residence principale</span><span class="data-value">${fmt(rpVal)}</span></div>
-                    <div class="data-row"><span class="data-label">Abattement RP 30%</span><span class="data-value">-${fmt(abattRP)}</span></div>
+                    <div class="data-row"><span class="data-label">Abattement RP ${Math.round(cfg.ifi.abattementRP * 100)}%</span><span class="data-value">-${fmt(abattRP)}</span></div>
                     <div class="data-row"><span class="data-label">Immobilier locatif</span><span class="data-value">${fmt(locatif)}</span></div>
                     <div class="data-row"><span class="data-label">Autres immobiliers</span><span class="data-value">${fmt(autres)}</span></div>
                     <div class="data-row"><span class="data-label">Dettes deductibles</span><span class="data-value">-${fmt(dettes)}</span></div>
@@ -891,30 +880,28 @@ function calculateIFI(d, totalImmo, dettes) {
 
 // ===== FISCALITE & SUCCESSION =====
 function calculateFiscalite(d, patriNet, totalFin) {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
     const nbEnfants = d.nbEnfants || 0;
     if (nbEnfants === 0 || patriNet === 0) return;
 
     const av = d.assuranceVie || 0;
     const horsAV = patriNet - av;
-    const abattParEnfant = 100000;
+    const abattParEnfant = cfg.succession.ligneDirecte.abattement;
     const totalAbatt = abattParEnfant * nbEnfants;
     const partTaxable = Math.max(0, (horsAV / nbEnfants) - abattParEnfant);
 
-    // Bareme succession ligne directe
+    // Bareme succession ligne directe — depuis CONFIG
     function calcDroits(base) {
-        let droits = 0;
-        const tranches = [[0,8072,0.05],[8072,12109,0.10],[12109,15932,0.15],[15932,552324,0.20],[552324,902838,0.30],[902838,1805677,0.40],[1805677,Infinity,0.45]];
-        tranches.forEach(([min, max, rate]) => { if (base > min) droits += (Math.min(base, max) - min) * rate; });
-        return droits;
+        return typeof calcBareme === 'function' ? calcBareme(base, cfg.succession.ligneDirecte.tranches) : 0;
     }
 
     const droitsParEnfant = calcDroits(partTaxable);
     const droitsTotaux = droitsParEnfant * nbEnfants;
 
-    const abattAV = 152500;
+    const abattAV = cfg.assuranceVie.transmission.abattementParBeneficiaire;
     const partAV = av / nbEnfants;
     const taxableAV = Math.max(0, partAV - abattAV);
-    const droitsAV = taxableAV * 0.20;
+    const droitsAV = taxableAV * cfg.assuranceVie.transmission.tauxApresAbattement;
     const economieAV = droitsTotaux - droitsAV * nbEnfants;
 
     const fiscEl = document.getElementById('fiscalite-content');
@@ -1473,17 +1460,19 @@ function runMiniSim() {
 
     if (!objectif || montant <= 0 || !resultEl) return;
 
-    // Simple projections
-    const projections = {
-        'valorisation': { vehicle: 'PEA (ETF)', rdt: 0.056, label: 'Valorisation du capital' },
-        'revenus': { vehicle: 'Immobilier locatif', rdt: 0.045, label: 'Revenus complementaires' },
-        'transmission': { vehicle: 'Assurance Vie', rdt: 0.035, label: 'Transmission patrimoniale' },
-        'fiscal': { vehicle: 'PEA + Assurance Vie', rdt: 0.048, label: 'Optimisation fiscale' },
-        'retraite': { vehicle: 'Assurance Vie + PER', rdt: 0.04, label: 'Preparation retraite' },
-        'epargne': { vehicle: 'Assurance Vie', rdt: 0.032, label: 'Constitution d\'epargne' }
+    // Projections depuis CONFIG
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+    const labels = {
+        'valorisation': 'Valorisation du capital',
+        'revenus': 'Revenus complementaires',
+        'transmission': 'Transmission patrimoniale',
+        'fiscal': 'Optimisation fiscale',
+        'retraite': 'Preparation retraite',
+        'epargne': "Constitution d'epargne"
     };
-
-    const p = projections[objectif] || projections['valorisation'];
+    const miniCfg = cfg.miniSimulateur && cfg.miniSimulateur.projections ? cfg.miniSimulateur.projections : {};
+    const proj = miniCfg[objectif] || miniCfg['valorisation'] || { vehicule: 'PEA', rendement: 0.05 };
+    const p = { vehicle: proj.vehicule, rdt: proj.rendement, label: labels[objectif] || objectif };
     const capitalFinal = montant * Math.pow(1 + p.rdt, horizon);
     const gain = capitalFinal - montant;
 

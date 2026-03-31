@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patria Capital | Parametres Produits</title>
+    <link rel="icon" type="image/png" href="icone.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1a1f36; --accent: #4f6ef7; --accent-light: #6c8cff;
+            --green: #059669; --red: #dc2626; --orange: #d97706; --blue: #2563eb;
+            --bg: #f8f9fc; --card-bg: #fff; --border: #e5e7eb;
+            --text: #1f2937; --text-light: #6b7280;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        .admin-header { background: var(--primary); color: #fff; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+        .admin-header h1 { font-size: 20px; }
+        .admin-nav { display: flex; gap: 12px; align-items: center; }
+        .admin-nav a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 13px; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
+        .admin-nav a:hover, .admin-nav a.active { color: #fff; background: rgba(255,255,255,0.15); }
+
+        .page-content { max-width: 1100px; margin: 0 auto; padding: 32px; }
+        .page-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .page-subtitle { color: var(--text-light); font-size: 14px; margin-bottom: 32px; }
+
+        .tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; }
+        .tab { padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: none; color: var(--text-light); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+        .tab:hover { color: var(--text); }
+        .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .param-card { background: var(--card-bg); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 24px; margin-bottom: 20px; }
+        .param-card h3 { font-size: 16px; margin-bottom: 4px; }
+        .param-card .desc { font-size: 12px; color: var(--text-light); margin-bottom: 16px; }
+
+        .param-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+        .param-field { display: flex; flex-direction: column; gap: 4px; }
+        .param-field label { font-size: 12px; color: var(--text-light); font-weight: 500; }
+        .param-field input { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif; }
+        .param-field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,110,247,0.1); }
+        .param-field .unit { font-size: 11px; color: var(--text-light); }
+
+        .alloc-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        .alloc-table th { font-size: 11px; text-transform: uppercase; color: var(--text-light); text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+        .alloc-table td { padding: 6px 8px; font-size: 13px; }
+        .alloc-table td:first-child { font-weight: 500; text-transform: capitalize; }
+        .alloc-table input { width: 80px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; text-align: right; }
+
+        .actions-bar { display: flex; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 2px solid var(--border); }
+        .btn { padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover { background: var(--accent-light); }
+        .btn-danger { background: var(--red); color: #fff; }
+        .btn-danger:hover { opacity: 0.85; }
+        .btn-outline { background: none; border: 1px solid var(--border); color: var(--text); }
+        .btn-outline:hover { background: #f3f4f6; }
+
+        .toast { position: fixed; bottom: 24px; right: 24px; background: var(--green); color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; display: none; z-index: 999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .toast.visible { display: block; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        @media (max-width: 768px) {
+            .page-content { padding: 16px; }
+            .param-grid { grid-template-columns: 1fr; }
+            .admin-nav { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-header">
+        <h1>&#9670; Patria Capital — Parametres Produits</h1>
+        <div class="admin-nav">
+            <a href="admin.html">Clients</a>
+            <a href="admin-fiscal.html">Fiscal</a>
+            <a href="admin-products.html" class="active">Produits</a>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <h1 class="page-title">Parametres Produits</h1>
+        <p class="page-subtitle">Rendements, frais et allocations des enveloppes d'investissement. Les modifications prennent effet immediatement dans les simulateurs.</p>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="av">Assurance Vie</button>
+            <button class="tab" data-tab="pea">PEA</button>
+            <button class="tab" data-tab="cto">CTO</button>
+            <button class="tab" data-tab="immo">Immobilier</button>
+            <button class="tab" data-tab="mini">Mini Simulateur</button>
+        </div>
+
+        <!-- Assurance Vie -->
+        <div class="tab-panel active" id="tab-av">
+            <div class="param-card">
+                <h3>Rendements par support</h3>
+                <div class="desc">Hypotheses centrales de projection nettes de frais de gestion</div>
+                <div class="param-grid">
+                    <div class="param-field">
+                        <label>Fonds Euros</label>
+                        <input type="number" step="0.001" data-path="assuranceVie.rendements.fondsEuros">
+                        <span class="unit">ex: 0.025 = 2,5%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Mandat de gestion</label>
+                        <input type="number" step="0.001" data-path="assuranceVie.rendements.mandatGestion">
+                        <span class="unit">ex: 0.044 = 4,4%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Produit structure</label>
+                        <input type="number" step="0.001" data-path="assuranceVie.rendements.produitStructure">
+                        <span class="unit">ex: 0.07 = 7%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>SCPI</label>
+                        <input type="number" step="0.001" data-path="assuranceVie.rendements.scpi">
+                        <span class="unit">ex: 0.045 = 4,5%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Private Equity</label>
+                        <input type="number" step="0.001" data-path="assuranceVie.rendements.privateEquity">
+                        <span class="unit">ex: 0.08 = 8%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>ETF</label>
+                        <input type="number" step="0.001" data-path="assuranceVie.rendements.etf">
+                        <span class="unit">ex: 0.068 = 6,8%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="param-card">
+                <h3>Frais contrat</h3>
+                <div class="desc">Frais appliques aux contrats distribues par le cabinet</div>
+                <div class="param-grid">
+                    <div class="param-field">
+                        <label>Frais d'entree</label>
+                        <input type="number" step="0.001" data-path="assuranceVie.frais.entree">
+                        <span class="unit">ex: 0 = 0%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Gestion Fonds Euros</label>
+                        <input type="number" step="0.001" data-path="assuranceVie.frais.gestionFE">
+                        <span class="unit">ex: 0.006 = 0,6%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Gestion UC</label>
+                        <input type="number" step="0.001" data-path="assuranceVie.frais.gestionUC">
+                        <span class="unit">ex: 0.008 = 0,8%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Arbitrage</label>
+                        <input type="number" step="0.001" data-path="assuranceVie.frais.arbitrage">
+                        <span class="unit">ex: 0 = 0%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="param-card">
+                <h3>Allocation par profil de risque</h3>
+                <div class="desc">Repartition type Fonds Euros / Mandat / Structure par profil</div>
+                <table class="alloc-table" id="alloc-table">
+                    <thead><tr><th>Profil</th><th>Fonds Euros</th><th>Mandat</th><th>Structure</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PEA -->
+        <div class="tab-panel" id="tab-pea">
+            <div class="param-card">
+                <h3>Plan d'Epargne en Actions</h3>
+                <div class="desc">Plafonds, duree optimale et rendements</div>
+                <div class="param-grid">
+                    <div class="param-field">
+                        <label>Plafond PEA</label>
+                        <input type="number" step="1000" data-path="pea.plafondVersement">
+                        <span class="unit">EUR</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Plafond PEA-PME</label>
+                        <input type="number" step="1000" data-path="pea.plafondPME">
+                        <span class="unit">EUR</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Duree optimale</label>
+                        <input type="number" step="1" data-path="pea.dureeOptimale">
+                        <span class="unit">annees</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Fiscalite avant 5 ans</label>
+                        <input type="number" step="0.01" data-path="pea.fiscaliteAvant5Ans.taux">
+                        <span class="unit">ex: 0.30 = 30%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Fiscalite apres 5 ans</label>
+                        <input type="number" step="0.001" data-path="pea.fiscaliteApres5Ans.taux">
+                        <span class="unit">ex: 0.172 = 17,2%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="param-card">
+                <h3>Rendements PEA</h3>
+                <div class="desc">Hypotheses de rendement par type de support</div>
+                <div class="param-grid">
+                    <div class="param-field">
+                        <label>ETF Monde</label>
+                        <input type="number" step="0.001" data-path="pea.rendements.etfMonde">
+                        <span class="unit">ex: 0.068 = 6,8%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Mandat titres vifs</label>
+                        <input type="number" step="0.001" data-path="pea.rendements.mandatTitresVifs">
+                        <span class="unit">ex: 0.05 = 5%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>TER ETF</label>
+                        <input type="number" step="0.001" data-path="pea.rendements.terETF">
+                        <span class="unit">ex: 0.003 = 0,3%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Frais mandat</label>
+                        <input type="number" step="0.001" data-path="pea.rendements.fraisMandat">
+                        <span class="unit">ex: 0.012 = 1,2%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTO -->
+        <div class="tab-panel" id="tab-cto">
+            <div class="param-card">
+                <h3>Compte-Titres Ordinaire</h3>
+                <div class="desc">Rendement et frais du CTO</div>
+                <div class="param-grid">
+                    <div class="param-field">
+                        <label>Rendement portefeuille diversifie</label>
+                        <input type="number" step="0.001" data-path="cto.rendements.portefeuilleDiversifie">
+                        <span class="unit">ex: 0.0695 = 6,95%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>PFU (flat tax)</label>
+                        <input type="number" step="0.01" data-path="cto.fiscalite.pfu">
+                        <span class="unit">ex: 0.30 = 30%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Courtage</label>
+                        <input type="number" step="0.001" data-path="cto.frais.courtage">
+                        <span class="unit">ex: 0.001 = 0,1%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Droits de garde</label>
+                        <input type="number" step="0.001" data-path="cto.frais.droitsGarde">
+                        <span class="unit">ex: 0 = 0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Immobilier -->
+        <div class="tab-panel" id="tab-immo">
+            <div class="param-card">
+                <h3>Parametres de simulation immobiliere</h3>
+                <div class="desc">Valeurs par defaut pour les projections immobilieres</div>
+                <div class="param-grid">
+                    <div class="param-field">
+                        <label>Taux credit</label>
+                        <input type="number" step="0.001" data-path="immobilier.parametresDefaut.tauxCredit">
+                        <span class="unit">ex: 0.038 = 3,8%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Duree pret (annees)</label>
+                        <input type="number" step="1" data-path="immobilier.parametresDefaut.dureePret">
+                        <span class="unit">annees</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Taux vacance</label>
+                        <input type="number" step="0.01" data-path="immobilier.parametresDefaut.tauxVacance">
+                        <span class="unit">ex: 0.05 = 5%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Frais de gestion</label>
+                        <input type="number" step="0.01" data-path="immobilier.parametresDefaut.fraisGestion">
+                        <span class="unit">ex: 0.07 = 7%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Charges annuelles</label>
+                        <input type="number" step="0.001" data-path="immobilier.parametresDefaut.chargesAnnuelles">
+                        <span class="unit">ex: 0.015 = 1,5%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Revalorisation annuelle</label>
+                        <input type="number" step="0.01" data-path="immobilier.parametresDefaut.revalorisationAnnuelle">
+                        <span class="unit">ex: 0.02 = 2%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Assurance emprunteur</label>
+                        <input type="number" step="0.001" data-path="immobilier.parametresDefaut.assuranceEmprunteur">
+                        <span class="unit">ex: 0.003 = 0,3%</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Garantie bancaire</label>
+                        <input type="number" step="100" data-path="immobilier.parametresDefaut.garantieBancaire">
+                        <span class="unit">EUR</span>
+                    </div>
+                    <div class="param-field">
+                        <label>Rendement locatif brut</label>
+                        <input type="number" step="0.001" data-path="immobilier.rentabilite.rendementLocatifBrut">
+                        <span class="unit">ex: 0.005 = 0,5%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mini Simulateur -->
+        <div class="tab-panel" id="tab-mini">
+            <div class="param-card">
+                <h3>Mini Simulateur — Projections par objectif</h3>
+                <div class="desc">Vehicule recommande et rendement projete pour chaque objectif d'investissement</div>
+                <table class="alloc-table" id="mini-table">
+                    <thead><tr><th>Objectif</th><th>Vehicule</th><th>Rendement</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="actions-bar">
+            <button class="btn btn-primary" onclick="saveAll()">Sauvegarder les modifications</button>
+            <button class="btn btn-danger" onclick="resetAll()">Reinitialiser par defaut</button>
+            <button class="btn btn-outline" onclick="window.location.href='admin.html'">Retour</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="config.js"></script>
+    <script>
+        // Auth check
+        if (sessionStorage.getItem('admin_auth') !== 'true') {
+            window.location.href = 'admin.html';
+        }
+
+        const cfg = getEffectiveConfig();
+
+        // Tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Resolve nested path
+        function getNestedValue(obj, path) {
+            return path.split('.').reduce((o, k) => (o && o[k] !== undefined) ? o[k] : undefined, obj);
+        }
+
+        function setNestedValue(obj, path, value) {
+            const keys = path.split('.');
+            let current = obj;
+            for (let i = 0; i < keys.length - 1; i++) {
+                if (!current[keys[i]]) current[keys[i]] = {};
+                current = current[keys[i]];
+            }
+            current[keys[keys.length - 1]] = value;
+        }
+
+        // Populate simple fields
+        document.querySelectorAll('[data-path]').forEach(input => {
+            const val = getNestedValue(cfg, input.dataset.path);
+            if (val !== undefined) input.value = val;
+        });
+
+        // Allocation table
+        const profiles = cfg.assuranceVie.allocationProfilType;
+        const allocTbody = document.querySelector('#alloc-table tbody');
+        Object.keys(profiles).forEach(profil => {
+            const a = profiles[profil];
+            const tr = document.createElement('tr');
+            tr.innerHTML =
+                '<td>' + profil + '</td>' +
+                '<td><input type="number" step="0.01" value="' + a.fondsEuros + '" data-alloc="' + profil + '.fondsEuros"></td>' +
+                '<td><input type="number" step="0.01" value="' + a.mandat + '" data-alloc="' + profil + '.mandat"></td>' +
+                '<td><input type="number" step="0.01" value="' + a.structure + '" data-alloc="' + profil + '.structure"></td>';
+            allocTbody.appendChild(tr);
+        });
+
+        // Mini simulateur table
+        const miniProj = cfg.miniSimulateur && cfg.miniSimulateur.projections ? cfg.miniSimulateur.projections : {};
+        const miniTbody = document.querySelector('#mini-table tbody');
+        const miniLabels = {
+            valorisation: 'Valorisation du capital',
+            revenus: 'Revenus complementaires',
+            transmission: 'Transmission patrimoniale',
+            fiscal: 'Optimisation fiscale',
+            retraite: 'Preparation retraite',
+            epargne: "Constitution d'epargne"
+        };
+        Object.keys(miniProj).forEach(key => {
+            const p = miniProj[key];
+            const tr = document.createElement('tr');
+            tr.innerHTML =
+                '<td>' + (miniLabels[key] || key) + '</td>' +
+                '<td><input type="text" value="' + (p.vehicule || '') + '" data-mini="' + key + '.vehicule" style="width:200px;"></td>' +
+                '<td><input type="number" step="0.001" value="' + (p.rendement || 0) + '" data-mini="' + key + '.rendement"></td>';
+            miniTbody.appendChild(tr);
+        });
+
+        // Save
+        function saveAll() {
+            const overrides = {};
+
+            // Simple fields
+            document.querySelectorAll('[data-path]').forEach(input => {
+                const val = parseFloat(input.value);
+                if (!isNaN(val)) {
+                    setNestedValue(overrides, input.dataset.path, val);
+                }
+            });
+
+            // Allocations
+            const alloc = {};
+            document.querySelectorAll('[data-alloc]').forEach(input => {
+                const [profil, field] = input.dataset.alloc.split('.');
+                if (!alloc[profil]) alloc[profil] = {};
+                alloc[profil][field] = parseFloat(input.value) || 0;
+            });
+            setNestedValue(overrides, 'assuranceVie.allocationProfilType', alloc);
+
+            // Mini simulateur
+            const miniOverrides = {};
+            document.querySelectorAll('[data-mini]').forEach(input => {
+                const [key, field] = input.dataset.mini.split('.');
+                if (!miniOverrides[key]) miniOverrides[key] = {};
+                miniOverrides[key][field] = field === 'vehicule' ? input.value : (parseFloat(input.value) || 0);
+            });
+            setNestedValue(overrides, 'miniSimulateur.projections', miniOverrides);
+
+            saveConfigOverrides(overrides);
+            showToast('Parametres produits sauvegardes avec succes');
+        }
+
+        // Reset
+        function resetAll() {
+            if (confirm('Reinitialiser tous les parametres produits aux valeurs par defaut ?')) {
+                resetConfigToDefaults();
+                window.location.reload();
+            }
+        }
+
+        // Toast
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('visible');
+            setTimeout(() => t.classList.remove('visible'), 3000);
+        }
+    </script>
+</body>
+</html>
