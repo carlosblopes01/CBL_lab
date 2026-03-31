@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentions légales | Patria Capital — Gestion de Patrimoine</title>
+    <meta name="description" content="Mentions légales du cabinet Patria Capital, conseil en gestion de patrimoine. Informations réglementaires, ORIAS, assurance RCP et propriété intellectuelle.">
+    <meta property="og:title" content="Mentions légales | Patria Capital">
+    <meta property="og:description" content="Informations légales et réglementaires du cabinet Patria Capital, conseil en gestion de patrimoine.">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://www.patriacapital.fr/mentions-legales.html">
+    <link rel="icon" type="image/png" href="icone.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icone.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: block;
+            background: #0c0f1a;
+        }
+
+        /* --- Nav active state --- */
+        .landing-nav-links a.nav-active {
+            color: #fff;
+            position: relative;
+        }
+        .landing-nav-links a.nav-active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-gradient);
+            border-radius: 1px;
+        }
+        .landing-nav.scrolled .landing-nav-links a.nav-active {
+            color: var(--primary);
+        }
+
+        /* --- Hero --- */
+        .page-hero {
+            position: relative;
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 140px 48px 80px;
+            background: #0c0f1a;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(90, 126, 194, 0.10) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .page-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 60%;
+            height: 160%;
+            background: radial-gradient(ellipse at 70% 50%, rgba(193, 146, 94, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .page-hero .hero-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3.5px;
+            text-transform: uppercase;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(36px, 4.5vw, 56px);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.15;
+            max-width: 800px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero .hero-subtitle {
+            font-size: clamp(16px, 1.8vw, 19px);
+            color: rgba(255, 255, 255, 0.50);
+            max-width: 560px;
+            line-height: 1.75;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- Content --- */
+        .legal-content {
+            background: var(--bg);
+            padding: 80px 48px 120px;
+        }
+
+        .legal-inner {
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        .legal-section {
+            margin-bottom: 56px;
+        }
+
+        .legal-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .legal-section h2::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 2px;
+            background: var(--accent-gradient);
+            margin-top: 12px;
+            border-radius: 2px;
+        }
+
+        .legal-section p,
+        .legal-section li {
+            font-size: 15px;
+            color: var(--text-light);
+            line-height: 1.85;
+        }
+
+        .legal-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .legal-section ul li {
+            padding: 4px 0 4px 22px;
+            position: relative;
+        }
+
+        .legal-section ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 14px;
+            width: 8px;
+            height: 1px;
+            background: var(--gold);
+        }
+
+        .legal-section strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* --- Regulatory Box --- */
+        .regulatory-box {
+            background: #0c0f1a;
+            border: 2px solid var(--gold);
+            border-radius: var(--radius-lg);
+            padding: 40px 44px;
+            margin: 48px 0;
+            text-align: center;
+        }
+
+        .regulatory-box .reg-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 16px;
+        }
+
+        .regulatory-box .reg-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .regulatory-box .reg-detail {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.55);
+            line-height: 1.75;
+        }
+
+        .regulatory-box .reg-detail a {
+            color: var(--gold);
+            text-decoration: underline;
+        }
+
+        /* --- Reveal animations --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+
+        /* --- Mobile Nav Toggle --- */
+        .mobile-nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+        }
+        .landing-nav.scrolled .mobile-nav-toggle {
+            color: var(--primary);
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 900px) {
+            .legal-content {
+                padding: 60px 24px 80px;
+            }
+            .page-hero {
+                padding: 120px 24px 60px;
+            }
+            .regulatory-box {
+                padding: 28px 24px;
+            }
+            .regulatory-box .reg-number {
+                font-size: 24px;
+            }
+            .landing-nav-links {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(12, 15, 26, 0.97);
+                backdrop-filter: blur(12px);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 32px;
+                z-index: 999;
+            }
+            .landing-nav-links.open {
+                display: flex;
+            }
+            .landing-nav-links.open a {
+                font-size: 18px;
+                color: rgba(255,255,255,0.85);
+            }
+            .mobile-nav-toggle {
+                display: block;
+                z-index: 1000;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== NAV ========== -->
+    <nav class="landing-nav" id="page-nav">
+        <div class="landing-nav-inner">
+            <a href="index.html" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img"></a>
+            <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+            <div class="landing-nav-links" id="nav-links">
+                <a href="index.html">Accueil</a>
+                <a href="offre.html">Notre offre</a>
+                <a href="equipe.html">L'équipe</a>
+                <a href="index.html#simulator">Simulateur</a>
+                <a href="index.html">Connexion</a>
+                <button class="btn btn-gold btn-sm" onclick="window.location.href='index.html'">Commencer</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== HERO ========== -->
+    <section class="page-hero">
+        <div class="hero-badge reveal">Informations réglementaires</div>
+        <h1 class="hero-title reveal reveal-delay-1">Mentions légales</h1>
+        <p class="hero-subtitle reveal reveal-delay-2">Transparence et conformité réglementaire au service de votre confiance.</p>
+    </section>
+
+    <!-- ========== CONTENT ========== -->
+    <section class="legal-content">
+        <div class="legal-inner">
+
+            <!-- Éditeur du site -->
+            <div class="legal-section reveal">
+                <h2>Éditeur du site</h2>
+                <p>
+                    <strong>[NOM CABINET]</strong><br>
+                    Société par actions simplifiée au capital de [MONTANT] euros<br>
+                    Siège social : [ADRESSE COMPLÈTE]<br>
+                    RCS [VILLE] n° [NUMÉRO RCS]<br>
+                    N° TVA intracommunautaire : FR [NUMÉRO TVA]<br>
+                    Téléphone : [NUMÉRO DE TÉLÉPHONE]<br>
+                    E-mail : contact@patriacapital.fr
+                </p>
+                <p>
+                    <strong>Directeur de la publication :</strong> [PRÉNOM NOM], en qualité de Président.
+                </p>
+            </div>
+
+            <!-- Hébergement -->
+            <div class="legal-section reveal">
+                <h2>Hébergement</h2>
+                <p>
+                    Le site est hébergé par :<br>
+                    <strong>[NOM HÉBERGEUR]</strong><br>
+                    [ADRESSE HÉBERGEUR]<br>
+                    Téléphone : [NUMÉRO HÉBERGEUR]<br>
+                    Site web : [URL HÉBERGEUR]
+                </p>
+            </div>
+
+            <!-- Statut réglementaire -->
+            <div class="legal-section reveal">
+                <h2>Statut réglementaire</h2>
+                <p>
+                    [NOM CABINET] exerce l'activité de Conseil en Investissements Financiers (CIF) au sens de l'article L.541-1 du Code monétaire et financier, et de Courtier en Assurances (COA) conformément aux articles L.511-1 et suivants du Code des assurances.
+                </p>
+                <p>Le cabinet est enregistré auprès de l'ORIAS (Organisme pour le Registre unique des Intermédiaires en Assurance, Banque et Finance) sous le numéro indiqué ci-dessous. Vous pouvez vérifier cette immatriculation sur le site <a href="https://www.orias.fr" target="_blank" rel="noopener">www.orias.fr</a>.</p>
+
+                <!-- Regulatory Box -->
+                <div class="regulatory-box">
+                    <div class="reg-label">Immatriculation ORIAS</div>
+                    <div class="reg-number">N° [XX XXX XXX]</div>
+                    <div class="reg-detail">
+                        Conseil en Investissements Financiers (CIF) — Courtier en Assurances (COA)<br>
+                        Membre de [NOM ASSOCIATION PROFESSIONNELLE AGRÉÉE AMF]<br>
+                        Vérifiable sur <a href="https://www.orias.fr" target="_blank" rel="noopener">www.orias.fr</a>
+                    </div>
+                </div>
+
+                <p>
+                    Le cabinet est soumis au contrôle de l'Autorité des Marchés Financiers (AMF) et de l'Autorité de Contrôle Prudentiel et de Résolution (ACPR).
+                </p>
+            </div>
+
+            <!-- Assurance RCP -->
+            <div class="legal-section reveal">
+                <h2>Assurance Responsabilité Civile Professionnelle</h2>
+                <p>
+                    Conformément aux exigences réglementaires, [NOM CABINET] a souscrit un contrat d'assurance de responsabilité civile professionnelle auprès de :
+                </p>
+                <p>
+                    <strong>[NOM ASSUREUR RCP]</strong><br>
+                    Contrat n° [NUMÉRO CONTRAT]<br>
+                    Couvrant l'ensemble du territoire français et les activités de conseil en investissements financiers et de courtage en assurances.
+                </p>
+            </div>
+
+            <!-- Propriété intellectuelle -->
+            <div class="legal-section reveal">
+                <h2>Propriété intellectuelle</h2>
+                <p>
+                    L'ensemble des contenus présents sur le site patriacapital.fr — textes, images, graphismes, logo, icônes, logiciels et tout autre élément — est protégé par les dispositions du Code de la propriété intellectuelle et par les conventions internationales relatives au droit d'auteur.
+                </p>
+                <p>
+                    Toute reproduction, représentation, modification, publication, transmission ou dénaturation, totale ou partielle, du site ou de son contenu, par quelque procédé que ce soit, et sur quelque support que ce soit, est interdite sans l'autorisation écrite préalable de [NOM CABINET].
+                </p>
+                <p>
+                    La marque Patria Capital, le logo et les signes distinctifs associés sont des marques déposées. Toute utilisation non autorisée constitue une contrefaçon passible de poursuites.
+                </p>
+            </div>
+
+            <!-- Données personnelles -->
+            <div class="legal-section reveal">
+                <h2>Données personnelles et RGPD</h2>
+                <p>
+                    [NOM CABINET] accorde une importance particulière à la protection des données personnelles de ses clients et visiteurs, conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés.
+                </p>
+                <p>
+                    Pour connaître en détail les modalités de collecte, de traitement et de protection de vos données personnelles, veuillez consulter notre <a href="confidentialite.html" style="color: var(--gold); text-decoration: underline;">Politique de confidentialité</a>.
+                </p>
+                <p>
+                    Pour toute question relative à vos données personnelles, vous pouvez nous écrire à : <strong>contact@patriacapital.fr</strong>.
+                </p>
+            </div>
+
+            <!-- Limitation de responsabilité -->
+            <div class="legal-section reveal">
+                <h2>Limitation de responsabilité</h2>
+                <p>
+                    Les informations diffusées sur le site patriacapital.fr sont présentées à titre informatif et ne constituent en aucun cas un conseil en investissement, une recommandation personnalisée ni une sollicitation à l'achat ou à la vente de quelque produit financier que ce soit.
+                </p>
+                <p>
+                    [NOM CABINET] ne saurait être tenu responsable de toute décision prise sur la base des informations contenues sur ce site. L'investissement en produits financiers comporte des risques, y compris un risque de perte en capital.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="landing-footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:36px;"></div>
+            <div style="font-size:0.85rem;opacity:0.6;margin-top:4px;">Cabinet de conseil en gestion de patrimoine</div>
+            <div class="footer-links">
+                <a href="mentions-legales.html">Mentions légales</a>
+                <a href="confidentialite.html">Confidentialité</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div style="font-size:0.75rem;opacity:0.45;margin-top:12px;line-height:1.7;max-width:700px;margin-left:auto;margin-right:auto;">
+                CIF · ORIAS n° [NUMÉRO] · Membre de [ASSOCIATION] · RCP assurée par [ASSUREUR]<br>
+                Les informations présentées ne constituent pas un conseil en investissement au sens de la directive MIF 2 (2014/65/UE). Tout investissement comporte des risques, y compris un risque de perte en capital.
+            </div>
+            <div class="footer-copy">&copy; 2026 Patria Capital. Tous droits réservés.</div>
+        </div>
+    </footer>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script>
+        const nav = document.getElementById('page-nav');
+        function updateNav() {
+            if (window.scrollY > 60) { nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); }
+        }
+        window.addEventListener('scroll', updateNav, { passive: true });
+        updateNav();
+
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const navLinks = document.getElementById('nav-links');
+        mobileToggle.addEventListener('click', function() {
+            navLinks.classList.toggle('open');
+            mobileToggle.innerHTML = navLinks.classList.contains('open') ? '&times;' : '&#9776;';
+        });
+
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        revealElements.forEach(function(el) { revealObserver.observe(el); });
+    </script>
+
+</body>
+</html>

@@ -11,10 +11,13 @@
 }
 
 :root {
-    /* Primary palette */
+    /* Primary palette — Navy */
     --primary: #254a65;
     --primary-light: #2d5a78;
     --primary-dark: #1c3a50;
+    --color-navy-dark: #051C2C;
+    --color-navy: #002147;
+    --color-navy-mid: #0A3055;
     --navy-gradient: linear-gradient(135deg, #254a65 0%, #2d5a78 50%, #1c3a50 100%);
 
     /* Gold accent */
@@ -24,27 +27,59 @@
     --gold-gradient: linear-gradient(135deg, #c1925e 0%, #d4aa76 50%, #c1925e 100%);
     --gold-bg: #faf7f2;
 
-    /* Functional colors */
+    /* Functional / Status colors */
     --green: #059669;
     --green-light: #d1fae5;
+    --color-success: #1A7340;
+    --color-success-bg: #E2F4EA;
     --red: #dc2626;
     --red-light: #fee2e2;
+    --color-danger: #C0392B;
+    --color-danger-bg: #FDECEA;
     --orange: #d97706;
     --orange-light: #fef3c7;
+    --color-warning: #D4860B;
+    --color-warning-bg: #FEF3E2;
     --blue: #2563eb;
     --blue-light: #dbeafe;
+    --color-blue-mid: #2E75B6;
+    --color-blue-pale: #EBF3FA;
 
     /* Surfaces */
     --bg: #f2efec;
     --bg-warm: #f7f5f2;
+    --color-bg-primary: #FFFFFF;
+    --color-bg-secondary: #F8F9FA;
+    --color-bg-tertiary: #F2F4F7;
     --card-bg: #ffffff;
     --border: #dee2e6;
     --border-light: #ede9e5;
+    --color-border: #E5E8EE;
 
     /* Typography */
     --text: #292a2a;
     --text-light: #495057;
     --text-muted: #9ca3af;
+    --color-text-primary: #1A1A1A;
+    --color-text-secondary: #5A6778;
+    --font-primary: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-md: 1.125rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+    --font-size-2xl: 2rem;
+    --font-size-3xl: 2.5rem;
+
+    /* Spacing scale */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    --spacing-3xl: 4rem;
 
     /* Layout */
     --sidebar-width: 260px;
@@ -815,6 +850,39 @@ body {
     color: var(--gold);
 }
 
+/* Footer regulatory */
+.footer-regulatory {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.35);
+    padding: 0.75rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+.footer-regulatory span::before {
+    content: '·';
+    margin-right: 0.5rem;
+    color: var(--gold);
+}
+.footer-disclaimer {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.25);
+    font-style: italic;
+    line-height: 1.5;
+    max-width: 600px;
+    margin: 8px auto 0;
+    text-align: center;
+}
+.footer-links {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
 
 /* ==========================================================================
    2. AUTH SCREEN
@@ -1322,6 +1390,22 @@ body {
 .form-group.field-error select {
     border-color: #dc2626 !important;
     box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+}
+
+/* Simulator disclaimer */
+.sim-disclaimer {
+    background: #ebf3fa;
+    border-left: 3px solid #2e75b6;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    color: var(--text-light, #495057);
+    border-radius: 0 var(--radius-sm, 8px) var(--radius-sm, 8px) 0;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+.sim-disclaimer .icon-info {
+    margin-right: 4px;
+    font-style: normal;
 }
 
 /* Locked sidebar items */
