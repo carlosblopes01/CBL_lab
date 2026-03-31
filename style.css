@@ -1784,6 +1784,32 @@ body {
     color: var(--primary);
 }
 
+/* Submit profile block */
+.profil-submit-block {
+    text-align: center;
+    padding: 32px 24px;
+    margin-top: 24px;
+    background: linear-gradient(135deg, rgba(193, 146, 94, 0.06) 0%, rgba(90, 126, 194, 0.04) 100%);
+    border: 1.5px solid rgba(193, 146, 94, 0.25);
+    border-radius: var(--radius);
+}
+
+.profil-submit-block.hidden {
+    display: none;
+}
+
+.btn-submit-profil {
+    font-size: 16px;
+    padding: 16px 40px;
+    letter-spacing: 0.3px;
+}
+
+.profil-submit-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 12px;
+}
+
 /* Step navigation */
 .step-nav {
     display: flex;

@@ -203,6 +203,11 @@ function saveAndCalculate() {
     saveUserData(data);
     recalcAll();
 
+    // Mark all steps as validated and unlock sidebar
+    for (let i = 0; i < TOTAL_STEPS; i++) stepValidated[i] = true;
+    updateProfileCompletion();
+    updateSidebarLock();
+
     // Pre-fill simulator inputs from profile data
     prefillSimulators(data);
 
@@ -238,6 +243,20 @@ function saveAndCalculate() {
             el.style.transform = 'translateY(0)';
         });
     }, 100);
+}
+
+// ===== SUBMIT PROFILE BUTTON =====
+function submitProfilAndLaunch() {
+    recalcAll();
+
+    // Validate current step (should be step 5)
+    if (!validateCurrentStep()) return;
+
+    // Mark current step validated
+    stepValidated[currentStep - 1] = true;
+
+    // Launch full analysis
+    saveAndCalculate();
 }
 
 // ===== AUTO-RUN ALL SIMULATIONS =====
@@ -2119,6 +2138,13 @@ function showStep(step) {
             nextBtn.innerHTML = 'Continuer &rarr;';
             nextBtn.className = 'btn btn-primary';
         }
+    }
+
+    // Show/hide submit block at step 5
+    const submitBlock = document.getElementById('profil-submit-block');
+    if (submitBlock) {
+        if (step === TOTAL_STEPS) submitBlock.classList.remove('hidden');
+        else submitBlock.classList.add('hidden');
     }
 
     updateStepResults();
