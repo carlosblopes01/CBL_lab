@@ -22,7 +22,8 @@
         <nav class="landing-nav">
             <div class="landing-nav-inner">
                 <a href="index.html" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:44px;"></a>
-                <div class="landing-nav-links">
+                <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+                <div class="landing-nav-links" id="nav-links">
                     <a href="#expertises">Nos expertises</a>
                     <a href="offre.html">Notre offre</a>
                     <a href="equipe.html">L'équipe</a>
@@ -1381,6 +1382,32 @@
     }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
     document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+    // Landing nav scroll effect
+    const landingNav = document.querySelector('.landing-nav');
+    if (landingNav) {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 60) landingNav.classList.add('scrolled');
+            else landingNav.classList.remove('scrolled');
+        }, { passive: true });
+    }
+
+    // Mobile nav toggle
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const navLinks = document.getElementById('nav-links');
+    if (mobileToggle && navLinks) {
+        mobileToggle.addEventListener('click', function() {
+            navLinks.classList.toggle('open');
+            mobileToggle.innerHTML = navLinks.classList.contains('open') ? '&times;' : '&#9776;';
+        });
+        // Close nav on link click
+        navLinks.querySelectorAll('a').forEach(function(a) {
+            a.addEventListener('click', function() {
+                navLinks.classList.remove('open');
+                mobileToggle.innerHTML = '&#9776;';
+            });
+        });
+    }
     </script>
 </body>
 </html>
