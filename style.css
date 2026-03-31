@@ -1737,12 +1737,17 @@ body {
 
 /* Step content area */
 .step-content {
+    display: none;
     background: var(--card-bg);
     border-radius: var(--radius-lg);
     padding: 36px;
     box-shadow: var(--shadow-md);
     margin-bottom: 24px;
     animation: fadeInUp 0.4s var(--ease) both;
+}
+
+.step-content.active {
+    display: block;
 }
 
 .step-content h2 {
