@@ -1489,6 +1489,474 @@ function runMiniSim() {
         '</div>';
 }
 
+// ===== DIRIGEANT TOGGLE =====
+function toggleDirigeantSection() {
+    const cb = document.getElementById('isDirigeant');
+    const navItem = document.getElementById('nav-dirigeant');
+    if (cb && navItem) {
+        if (cb.checked) {
+            navItem.classList.remove('hidden');
+        } else {
+            navItem.classList.add('hidden');
+        }
+    }
+}
+
+// ===== AV RACHAT =====
+function calculateAVRachat() {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+    const encours = getField('av_exist_encours');
+    const versements = getField('av_exist_versements');
+    const anciennete = getField('av_exist_anciennete');
+    const rachat = getField('av_exist_rachat');
+    const situation = document.querySelector('[data-field="av_exist_situation"]')?.value || 'celibataire';
+
+    if (encours <= 0 || rachat <= 0) return;
+
+    const gains = Math.max(0, encours - versements);
+    const partGains = (gains / encours) * rachat;
+    const partCapital = rachat - partGains;
+
+    const apres8 = anciennete >= cfg.assuranceVie.fiscaliteRachat.dureeOptimale;
+    const abattement = apres8 ? (situation === 'couple' ? cfg.assuranceVie.fiscaliteRachat.abattementApres8Ans.couple : cfg.assuranceVie.fiscaliteRachat.abattementApres8Ans.celibataire) : 0;
+    const gainsImposables = Math.max(0, partGains - abattement);
+
+    const tauxPFU = apres8 ? cfg.assuranceVie.fiscaliteRachat.tauxPL.apres8Ans : cfg.assuranceVie.fiscaliteRachat.pfu;
+    const irPFU = gainsImposables * tauxPFU;
+    const ps = partGains * cfg.prelevementsSociaux.taux;
+    const totalFiscalite = irPFU + ps;
+    const netPercu = rachat - totalFiscalite;
+
+    const el = document.getElementById('av-rachat-results');
+    el.classList.remove('hidden');
+    setHTML('av-rachat-results', `
+        <div class="kpi-grid">
+            <div class="kpi-card kpi-primary"><div class="kpi-label">Rachat demande</div><div class="kpi-value">${fmt(rachat)}</div></div>
+            <div class="kpi-card kpi-green"><div class="kpi-label">Net percu</div><div class="kpi-value">${fmt(netPercu)}</div></div>
+            <div class="kpi-card kpi-red"><div class="kpi-label">Fiscalite totale</div><div class="kpi-value">${fmt(totalFiscalite)}</div></div>
+            <div class="kpi-card ${apres8 ? 'kpi-green' : 'kpi-orange'}"><div class="kpi-label">Regime</div><div class="kpi-value">${apres8 ? 'Apres 8 ans' : 'Avant 8 ans'}</div></div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card"><h3>Decomposition du rachat</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Encours total</span><span class="data-value">${fmt(encours)}</span></div>
+                <div class="data-row"><span class="data-label">Versements cumules</span><span class="data-value">${fmt(versements)}</span></div>
+                <div class="data-row"><span class="data-label">Plus-values latentes</span><span class="data-value">${fmt(gains)}</span></div>
+                <div class="data-row"><span class="data-label">Part capital dans rachat</span><span class="data-value">${fmt(partCapital)}</span></div>
+                <div class="data-row"><span class="data-label">Part gains dans rachat</span><span class="data-value">${fmt(partGains)}</span></div>
+            </div></div>
+            <div class="card"><h3>Fiscalite</h3><div class="data-grid">
+                ${apres8 ? '<div class="data-row"><span class="data-label">Abattement ' + situation + '</span><span class="data-value">' + fmt(abattement) + '</span></div>' : ''}
+                <div class="data-row"><span class="data-label">Gains imposables</span><span class="data-value">${fmt(gainsImposables)}</span></div>
+                <div class="data-row"><span class="data-label">IR (taux ${pct(tauxPFU)})</span><span class="data-value">${fmt(irPFU)}</span></div>
+                <div class="data-row"><span class="data-label">Prelevements sociaux (${pct(cfg.prelevementsSociaux.taux)})</span><span class="data-value">${fmt(ps)}</span></div>
+                <div class="data-row highlight"><span class="data-label">TOTAL FISCALITE</span><span class="data-value">${fmt(totalFiscalite)}</span></div>
+                <div class="data-row highlight"><span class="data-label">NET PERCU</span><span class="data-value">${fmt(netPercu)}</span></div>
+            </div></div>
+        </div>
+    `);
+}
+
+// ===== PEA RETRAIT =====
+function calculatePEARetrait() {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+    const valeur = getField('pea_exist_valeur');
+    const versements = getField('pea_exist_versements');
+    const anciennete = getField('pea_exist_anciennete');
+    const retrait = getField('pea_exist_retrait');
+
+    if (valeur <= 0 || retrait <= 0) return;
+
+    const gains = Math.max(0, valeur - versements);
+    const partGains = (gains / valeur) * retrait;
+
+    const apres5 = anciennete >= cfg.pea.dureeOptimale;
+    const taux = apres5 ? cfg.pea.fiscaliteApres5Ans.taux : cfg.pea.fiscaliteAvant5Ans.taux;
+    const fiscalite = partGains * taux;
+    const netPercu = retrait - fiscalite;
+
+    // Consequence sur le PEA
+    const clotureAvant5 = !apres5;
+
+    const el = document.getElementById('pea-retrait-results');
+    el.classList.remove('hidden');
+    setHTML('pea-retrait-results', `
+        <div class="kpi-grid">
+            <div class="kpi-card kpi-primary"><div class="kpi-label">Retrait demande</div><div class="kpi-value">${fmt(retrait)}</div></div>
+            <div class="kpi-card kpi-green"><div class="kpi-label">Net percu</div><div class="kpi-value">${fmt(netPercu)}</div></div>
+            <div class="kpi-card kpi-red"><div class="kpi-label">Fiscalite</div><div class="kpi-value">${fmt(fiscalite)}</div></div>
+            <div class="kpi-card ${apres5 ? 'kpi-green' : 'kpi-red'}"><div class="kpi-label">Statut PEA</div><div class="kpi-value">${apres5 ? 'Retrait partiel OK' : 'Cloture du PEA'}</div></div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card"><h3>Decomposition</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Valorisation actuelle</span><span class="data-value">${fmt(valeur)}</span></div>
+                <div class="data-row"><span class="data-label">Versements cumules</span><span class="data-value">${fmt(versements)}</span></div>
+                <div class="data-row"><span class="data-label">Plus-values latentes</span><span class="data-value">${fmt(gains)}</span></div>
+                <div class="data-row"><span class="data-label">Part gains dans retrait</span><span class="data-value">${fmt(partGains)}</span></div>
+            </div></div>
+            <div class="card"><h3>Fiscalite du retrait</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Anciennete</span><span class="data-value">${anciennete} ans</span></div>
+                <div class="data-row"><span class="data-label">Regime</span><span class="data-value">${apres5 ? 'PS seuls (17,2%)' : 'PFU 30%'}</span></div>
+                <div class="data-row"><span class="data-label">Taux applique</span><span class="data-value">${pct(taux)}</span></div>
+                <div class="data-row highlight"><span class="data-label">FISCALITE TOTALE</span><span class="data-value">${fmt(fiscalite)}</span></div>
+                ${clotureAvant5 ? '<div class="data-row" style="color:#dc2626;"><span class="data-label">⚠ Attention</span><span class="data-value">Retrait avant 5 ans = cloture du PEA</span></div>' : '<div class="data-row" style="color:#059669;"><span class="data-label">&#10003; Apres 5 ans</span><span class="data-value">Retrait partiel sans cloture</span></div>'}
+            </div></div>
+        </div>
+    `);
+}
+
+// ===== CTO CESSION =====
+function calculateCTOCession() {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+    const valeur = getField('cto_exist_valeur');
+    const pru = getField('cto_exist_pru');
+    const duree = getField('cto_exist_duree');
+    const cession = getField('cto_exist_cession');
+    const dateAcq = document.querySelector('[data-field="cto_exist_date_acq"]')?.value || 'apres2018';
+
+    if (valeur <= 0 || cession <= 0) return;
+
+    const pv = Math.max(0, valeur - pru);
+    const partPV = (pv / valeur) * cession;
+
+    // PFU par defaut
+    const fiscPFU = partPV * cfg.cto.fiscalite.pfu;
+
+    // Option bareme progressif (titres avant 2018 uniquement)
+    let abattement = 0;
+    let pvApresAbatt = partPV;
+    if (dateAcq === 'avant2018') {
+        if (duree >= 8) abattement = cfg.cto.fiscalite.abattementDureeDetention.droitCommun.plus8Ans;
+        else if (duree >= 2) abattement = cfg.cto.fiscalite.abattementDureeDetention.droitCommun.entre2et8Ans;
+        pvApresAbatt = partPV * (1 - abattement);
+    }
+
+    const netPFU = cession - fiscPFU;
+
+    const el = document.getElementById('cto-cession-results');
+    el.classList.remove('hidden');
+    setHTML('cto-cession-results', `
+        <div class="kpi-grid">
+            <div class="kpi-card kpi-primary"><div class="kpi-label">Cession</div><div class="kpi-value">${fmt(cession)}</div></div>
+            <div class="kpi-card kpi-orange"><div class="kpi-label">Plus-value</div><div class="kpi-value">${fmt(partPV)}</div></div>
+            <div class="kpi-card kpi-red"><div class="kpi-label">Fiscalite PFU</div><div class="kpi-value">${fmt(fiscPFU)}</div></div>
+            <div class="kpi-card kpi-green"><div class="kpi-label">Net PFU</div><div class="kpi-value">${fmt(netPFU)}</div></div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card"><h3>Plus-value de cession</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Valorisation actuelle</span><span class="data-value">${fmt(valeur)}</span></div>
+                <div class="data-row"><span class="data-label">Prix d'acquisition (PRU)</span><span class="data-value">${fmt(pru)}</span></div>
+                <div class="data-row"><span class="data-label">Plus-value globale</span><span class="data-value">${fmt(pv)}</span></div>
+                <div class="data-row"><span class="data-label">PV proportionnelle (cession)</span><span class="data-value">${fmt(partPV)}</span></div>
+            </div></div>
+            <div class="card"><h3>Comparatif fiscal</h3><div class="data-grid">
+                <div class="data-row highlight"><span class="data-label">Option PFU (30%)</span><span class="data-value">${fmt(fiscPFU)}</span></div>
+                ${dateAcq === 'avant2018' ? `
+                <div class="data-row"><span class="data-label">Abattement duree (${pct(abattement)})</span><span class="data-value">-${fmt(partPV * abattement)}</span></div>
+                <div class="data-row"><span class="data-label">PV apres abattement</span><span class="data-value">${fmt(pvApresAbatt)}</span></div>
+                <div class="data-row" style="color:#6b7280;"><span class="data-label">&#8594; A soumettre au bareme IR</span><span class="data-value">+ PS ${pct(cfg.prelevementsSociaux.taux)}</span></div>
+                ` : '<div class="data-row"><span class="data-label">Titres acquis apres 2018</span><span class="data-value">Pas d\'abattement</span></div>'}
+                <div class="data-row highlight"><span class="data-label">NET PERCU (PFU)</span><span class="data-value">${fmt(netPFU)}</span></div>
+            </div></div>
+        </div>
+    `);
+}
+
+// ===== CESSION DE PARTS (DIRIGEANT) =====
+function calculateCessionParts() {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+    const valeur = getField('dir_cession_valeur');
+    const pru = getField('dir_cession_pru');
+    const duree = getField('dir_cession_duree');
+    const dateAcq = document.querySelector('[data-field="dir_cession_date_acq"]')?.value || 'apres2018';
+    const retraite = document.querySelector('[data-field="dir_cession_retraite"]')?.value || 'non';
+    const bter = document.querySelector('[data-field="dir_cession_150bter"]')?.value || 'non';
+
+    if (valeur <= 0) return;
+    const pv = Math.max(0, valeur - pru);
+
+    // Scenario 1 : PFU
+    const fiscPFU = pv * cfg.dirigeant.cessionParts.pfu;
+
+    // Scenario 2 : Bareme avec abattement (si titres avant 2018)
+    let abattPct = 0;
+    if (dateAcq === 'avant2018') {
+        if (retraite === 'oui') {
+            if (duree >= 8) abattPct = cfg.dirigeant.cessionParts.abattementDureeDetention.dirigeantRetraite.plus8Ans;
+            else if (duree >= 4) abattPct = cfg.dirigeant.cessionParts.abattementDureeDetention.dirigeantRetraite.entre4et8Ans;
+            else if (duree >= 1) abattPct = cfg.dirigeant.cessionParts.abattementDureeDetention.dirigeantRetraite.entre1et4Ans;
+        } else {
+            if (duree >= 8) abattPct = cfg.dirigeant.cessionParts.abattementDureeDetention.droitCommun.plus8Ans;
+            else if (duree >= 2) abattPct = cfg.dirigeant.cessionParts.abattementDureeDetention.droitCommun.entre2et8Ans;
+        }
+    }
+    const pvApresAbatt = pv * (1 - abattPct);
+    const abattFixeRetraite = (retraite === 'oui') ? Math.min(cfg.dirigeant.cessionParts.abattementDureeDetention.abattementFixeRetraite, pvApresAbatt) : 0;
+    const pvImposable = Math.max(0, pvApresAbatt - abattFixeRetraite);
+
+    // Scenario 3 : 150-0 B ter
+    const reinvest = cfg.dirigeant.apportCession150Bter.seuilReinvestissement;
+
+    const el = document.getElementById('cession-results');
+    el.classList.remove('hidden');
+    setHTML('cession-results', `
+        <div class="kpi-grid">
+            <div class="kpi-card kpi-primary"><div class="kpi-label">Plus-value brute</div><div class="kpi-value">${fmt(pv)}</div></div>
+            <div class="kpi-card kpi-red"><div class="kpi-label">Fiscalite PFU</div><div class="kpi-value">${fmt(fiscPFU)}</div></div>
+            <div class="kpi-card kpi-green"><div class="kpi-label">Net PFU</div><div class="kpi-value">${fmt(valeur - fiscPFU)}</div></div>
+            <div class="kpi-card kpi-blue"><div class="kpi-label">150-0 B ter</div><div class="kpi-value">${bter === 'oui' ? 'Report actif' : 'Non utilise'}</div></div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card"><h3>Scenario 1 — PFU 30%</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Plus-value</span><span class="data-value">${fmt(pv)}</span></div>
+                <div class="data-row"><span class="data-label">PFU 30%</span><span class="data-value">${fmt(fiscPFU)}</span></div>
+                <div class="data-row highlight"><span class="data-label">NET PERCU</span><span class="data-value">${fmt(valeur - fiscPFU)}</span></div>
+            </div></div>
+
+            ${dateAcq === 'avant2018' ? `
+            <div class="card card-highlight-green"><h3>Scenario 2 — Bareme + abattement${retraite === 'oui' ? ' (depart retraite)' : ''}</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Abattement duree (${pct(abattPct)})</span><span class="data-value">-${fmt(pv * abattPct)}</span></div>
+                ${retraite === 'oui' ? '<div class="data-row"><span class="data-label">Abattement fixe retraite</span><span class="data-value">-' + fmt(abattFixeRetraite) + '</span></div>' : ''}
+                <div class="data-row"><span class="data-label">PV imposable au bareme</span><span class="data-value">${fmt(pvImposable)}</span></div>
+                <div class="data-row"><span class="data-label">+ PS sur PV totale</span><span class="data-value">${fmt(pv * cfg.prelevementsSociaux.taux)}</span></div>
+                <div class="data-row" style="font-size:11px;color:#6b7280;">A soumettre au bareme progressif IR selon TMI</div>
+            </div></div>
+            ` : ''}
+
+            <div class="card"><h3>Scenario 3 — Report 150-0 B ter</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Apport des titres a une holding</span><span class="data-value">${fmt(valeur)}</span></div>
+                <div class="data-row"><span class="data-label">PV en report d'imposition</span><span class="data-value">${fmt(pv)}</span></div>
+                <div class="data-row"><span class="data-label">Obligation reinvestissement (${pct(reinvest)})</span><span class="data-value">${fmt(pv * reinvest)}</span></div>
+                <div class="data-row"><span class="data-label">Delai reinvestissement</span><span class="data-value">${cfg.dirigeant.apportCession150Bter.delaiReinvestissement} mois</span></div>
+                <div class="data-row highlight"><span class="data-label">IMPOT IMMEDIAT</span><span class="data-value">0 &euro;</span></div>
+                <div class="data-row" style="font-size:11px;color:#6b7280;">PV taxee a la revente des titres de la holding ou apres 2 ans si reinvestissement < ${pct(reinvest)}</div>
+            </div></div>
+        </div>
+    `);
+}
+
+// ===== PACTE DUTREIL =====
+function calculateDutreil() {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+    const valeur = getField('dutreil_valeur');
+    const nbBenef = getField('dutreil_beneficiaires') || 1;
+    const type = document.querySelector('[data-field="dutreil_type"]')?.value || 'succession';
+    const ageDonateur = getField('dutreil_age_donateur');
+
+    if (valeur <= 0) return;
+
+    const exoneration = cfg.dirigeant.pacteDutreil.exoneration;
+    const valeurExoneree = valeur * exoneration;
+    const valeurTaxable = valeur - valeurExoneree;
+
+    // Droits par beneficiaire (en ligne directe)
+    const abattLD = cfg.succession.ligneDirecte.abattement;
+    const partParBenef = valeurTaxable / nbBenef;
+    const partTaxable = Math.max(0, partParBenef - abattLD);
+    const droitsParBenef = typeof calcBareme === 'function' ? calcBareme(partTaxable, cfg.succession.ligneDirecte.tranches) : 0;
+    const droitsTotaux = droitsParBenef * nbBenef;
+
+    // Sans Dutreil
+    const partSansDutreil = valeur / nbBenef;
+    const partTaxableSans = Math.max(0, partSansDutreil - abattLD);
+    const droitsSansParBenef = typeof calcBareme === 'function' ? calcBareme(partTaxableSans, cfg.succession.ligneDirecte.tranches) : 0;
+    const droitsSans = droitsSansParBenef * nbBenef;
+
+    // Reduction donation avant 70 ans
+    const reductionDonation = (type === 'donation' && ageDonateur < cfg.dirigeant.pacteDutreil.ageMaxDonation) ? cfg.dirigeant.pacteDutreil.reductionDonation : 0;
+    const droitsApresReduction = droitsTotaux * (1 - reductionDonation);
+    const economie = droitsSans - droitsApresReduction;
+
+    const el = document.getElementById('dutreil-results');
+    el.classList.remove('hidden');
+    setHTML('dutreil-results', `
+        <div class="kpi-grid">
+            <div class="kpi-card kpi-green"><div class="kpi-label">Economie Dutreil</div><div class="kpi-value">${fmt(economie)}</div></div>
+            <div class="kpi-card kpi-red"><div class="kpi-label">Droits sans Dutreil</div><div class="kpi-value">${fmt(droitsSans)}</div></div>
+            <div class="kpi-card kpi-blue"><div class="kpi-label">Droits avec Dutreil</div><div class="kpi-value">${fmt(droitsApresReduction)}</div></div>
+            <div class="kpi-card kpi-primary"><div class="kpi-label">Exoneration</div><div class="kpi-value">${pct(exoneration)}</div></div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card"><h3>Sans Pacte Dutreil</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Valeur transmise</span><span class="data-value">${fmt(valeur)}</span></div>
+                <div class="data-row"><span class="data-label">Abattement / beneficiaire</span><span class="data-value">${fmt(abattLD)}</span></div>
+                <div class="data-row highlight"><span class="data-label">DROITS TOTAUX</span><span class="data-value">${fmt(droitsSans)}</span></div>
+            </div></div>
+            <div class="card card-highlight-green"><h3>Avec Pacte Dutreil</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Valeur transmise</span><span class="data-value">${fmt(valeur)}</span></div>
+                <div class="data-row"><span class="data-label">Exoneration ${pct(exoneration)}</span><span class="data-value">-${fmt(valeurExoneree)}</span></div>
+                <div class="data-row"><span class="data-label">Valeur taxable</span><span class="data-value">${fmt(valeurTaxable)}</span></div>
+                <div class="data-row"><span class="data-label">Abattement / beneficiaire</span><span class="data-value">${fmt(abattLD)}</span></div>
+                <div class="data-row"><span class="data-label">Droits bruts</span><span class="data-value">${fmt(droitsTotaux)}</span></div>
+                ${reductionDonation > 0 ? '<div class="data-row"><span class="data-label">Reduction donation < 70 ans (-' + pct(reductionDonation) + ')</span><span class="data-value">-' + fmt(droitsTotaux * reductionDonation) + '</span></div>' : ''}
+                <div class="data-row highlight"><span class="data-label">DROITS A PAYER</span><span class="data-value">${fmt(droitsApresReduction)}</span></div>
+            </div></div>
+        </div>
+        <div class="card" style="margin-top:16px;"><h3>Conditions du Pacte Dutreil</h3><div class="data-grid">
+            <div class="data-row"><span class="data-label">Engagement collectif</span><span class="data-value">${cfg.dirigeant.pacteDutreil.engagementCollectif} ans minimum</span></div>
+            <div class="data-row"><span class="data-label">Engagement individuel</span><span class="data-value">${cfg.dirigeant.pacteDutreil.engagementIndividuel} ans minimum</span></div>
+            <div class="data-row"><span class="data-label">Fonction de direction</span><span class="data-value">${cfg.dirigeant.pacteDutreil.dureeDirection} ans</span></div>
+            <div class="data-row"><span class="data-label">Seuil detention (non cotee)</span><span class="data-value">${pct(cfg.dirigeant.pacteDutreil.seuilDetention.societeNonCotee)}</span></div>
+        </div></div>
+    `);
+}
+
+// ===== EPARGNE SALARIALE =====
+function calculateEpargneSalariale() {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+    const budget = getField('es_budget');
+    const type = document.querySelector('[data-field="es_type"]')?.value || 'interessement';
+    const nbBenef = getField('es_beneficiaires') || 1;
+    const placementPEE = document.querySelector('[data-field="es_placement_pee"]')?.value === 'oui';
+    const tauxAbondement = getField('es_abondement') / 100;
+
+    if (budget <= 0) return;
+
+    const montantParSalarie = budget / nbBenef;
+
+    let coutEmployeur = budget;
+    let forfaitSocial = 0;
+    let netSalarie = 0;
+    let economieCotisations = 0;
+    let exonerationIR = false;
+    let label = '';
+
+    if (type === 'interessement') {
+        forfaitSocial = budget * cfg.epargneSalariale.interessement.forfaitSocialReduit;
+        coutEmployeur = budget + forfaitSocial;
+        netSalarie = placementPEE ? montantParSalarie : montantParSalarie * (1 - cfg.prelevementsSociaux.taux);
+        exonerationIR = placementPEE;
+        label = 'Interessement';
+    } else if (type === 'participation') {
+        forfaitSocial = budget * cfg.epargneSalariale.participation.forfaitSocial;
+        coutEmployeur = budget + forfaitSocial;
+        netSalarie = placementPEE ? montantParSalarie : montantParSalarie * (1 - cfg.prelevementsSociaux.taux);
+        exonerationIR = placementPEE;
+        label = 'Participation';
+    } else if (type === 'prime_ppv') {
+        forfaitSocial = 0;
+        coutEmployeur = budget;
+        const exoIR = cfg.epargneSalariale.primePartageValeur.exonerationIR;
+        const plafond = cfg.epargneSalariale.primePartageValeur.plafondExoneration;
+        netSalarie = Math.min(montantParSalarie, plafond);
+        exonerationIR = exoIR;
+        label = 'Prime de Partage de la Valeur';
+    } else {
+        // Prime classique soumise
+        const chargesPatronales = 0.45;
+        const chargesSalariales = 0.22;
+        coutEmployeur = budget * (1 + chargesPatronales);
+        netSalarie = montantParSalarie * (1 - chargesSalariales);
+        exonerationIR = false;
+        label = 'Prime classique';
+    }
+
+    // Comparaison prime classique
+    const primeClassiqueCout = budget * 1.45;
+    const primeClassiqueNet = montantParSalarie * 0.78;
+    economieCotisations = primeClassiqueCout - coutEmployeur;
+
+    // Abondement PEE
+    const abondement = placementPEE ? Math.min(montantParSalarie * tauxAbondement, cfg.epargneSalariale.pee.abondementMax) : 0;
+
+    const el = document.getElementById('es-results');
+    el.classList.remove('hidden');
+    setHTML('es-results', `
+        <div class="kpi-grid">
+            <div class="kpi-card kpi-primary"><div class="kpi-label">Cout employeur</div><div class="kpi-value">${fmt(coutEmployeur)}</div></div>
+            <div class="kpi-card kpi-green"><div class="kpi-label">Net par salarie</div><div class="kpi-value">${fmt(netSalarie)}</div></div>
+            <div class="kpi-card kpi-blue"><div class="kpi-label">Economie vs prime</div><div class="kpi-value">${fmt(economieCotisations)}</div></div>
+            <div class="kpi-card ${exonerationIR ? 'kpi-green' : 'kpi-orange'}"><div class="kpi-label">Exoneration IR</div><div class="kpi-value">${exonerationIR ? 'Oui' : 'Non'}</div></div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card card-highlight-green"><h3>${label}</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Budget brut</span><span class="data-value">${fmt(budget)}</span></div>
+                <div class="data-row"><span class="data-label">Forfait social</span><span class="data-value">${fmt(forfaitSocial)}</span></div>
+                <div class="data-row"><span class="data-label">Cout total employeur</span><span class="data-value">${fmt(coutEmployeur)}</span></div>
+                <div class="data-row"><span class="data-label">Montant par salarie</span><span class="data-value">${fmt(montantParSalarie)}</span></div>
+                <div class="data-row"><span class="data-label">Net percu par salarie</span><span class="data-value">${fmt(netSalarie)}</span></div>
+                ${placementPEE ? '<div class="data-row"><span class="data-label">Abondement PEE / salarie</span><span class="data-value">' + fmt(abondement) + '</span></div>' : ''}
+                <div class="data-row"><span class="data-label">Exoneration IR</span><span class="data-value">${exonerationIR ? 'Oui (si placement PEE 5 ans)' : 'Non'}</span></div>
+            </div></div>
+            <div class="card"><h3>Comparaison — Prime classique</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Meme budget brut</span><span class="data-value">${fmt(budget)}</span></div>
+                <div class="data-row"><span class="data-label">Charges patronales (~45%)</span><span class="data-value">${fmt(budget * 0.45)}</span></div>
+                <div class="data-row"><span class="data-label">Cout total employeur</span><span class="data-value">${fmt(primeClassiqueCout)}</span></div>
+                <div class="data-row"><span class="data-label">Net par salarie (apres charges + IR)</span><span class="data-value">${fmt(primeClassiqueNet)}</span></div>
+                <div class="data-row highlight"><span class="data-label">ECONOMIE EMPLOYEUR</span><span class="data-value">${fmt(economieCotisations)}</span></div>
+                <div class="data-row highlight"><span class="data-label">GAIN NET SALARIE</span><span class="data-value">+${fmt(netSalarie - primeClassiqueNet)}</span></div>
+            </div></div>
+        </div>
+    `);
+}
+
+// ===== PER DIRIGEANT =====
+function calculatePERDirigeant() {
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+    const revenu = getField('per_revenu');
+    const tmi = parseFloat(document.querySelector('[data-field="per_tmi"]')?.value) || 0.30;
+    const versement = getField('per_versement');
+    const plafondN1 = getField('per_plafond_n1');
+    const plafondN2 = getField('per_plafond_n2');
+    const plafondN3 = getField('per_plafond_n3');
+    const horizon = getField('per_horizon') || 15;
+    const profil = document.querySelector('[data-field="per_profil"]')?.value || 'equilibre';
+
+    if (versement <= 0) return;
+
+    // Plafond de deduction
+    const plafondAnnuel = Math.min(revenu * cfg.per.plafondDeduction.tauxRevenus, cfg.per.plafondDeduction.plafondAbsolu);
+    const plafondEffectif = Math.max(plafondAnnuel, cfg.per.plafondDeduction.plancher);
+    const plafondTotal = plafondEffectif + plafondN1 + plafondN2 + plafondN3;
+    const versementDeductible = Math.min(versement, plafondTotal);
+    const economieIR = versementDeductible * tmi;
+
+    // Projection du capital
+    const rdt = cfg.per.rendements[profil] || 0.045;
+    let capital = 0;
+    for (let i = 0; i < horizon; i++) {
+        capital = (capital + versement) * (1 + rdt);
+    }
+    const totalVerse = versement * horizon;
+    const gains = capital - totalVerse;
+    const totalEconomieIR = economieIR * horizon;
+
+    const el = document.getElementById('per-results');
+    el.classList.remove('hidden');
+    setHTML('per-results', `
+        <div class="kpi-grid">
+            <div class="kpi-card kpi-green"><div class="kpi-label">Economie IR / an</div><div class="kpi-value">${fmt(economieIR)}</div></div>
+            <div class="kpi-card kpi-primary"><div class="kpi-label">Capital projete</div><div class="kpi-value">${fmt(capital)}</div></div>
+            <div class="kpi-card kpi-blue"><div class="kpi-label">Total economie IR</div><div class="kpi-value">${fmt(totalEconomieIR)}</div></div>
+            <div class="kpi-card kpi-orange"><div class="kpi-label">Rendement (${profil})</div><div class="kpi-value">${pct(rdt)}</div></div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card"><h3>Deductibilite</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Revenu net imposable</span><span class="data-value">${fmt(revenu)}</span></div>
+                <div class="data-row"><span class="data-label">TMI</span><span class="data-value">${pct(tmi)}</span></div>
+                <div class="data-row"><span class="data-label">Plafond annuel (10% revenus)</span><span class="data-value">${fmt(plafondAnnuel)}</span></div>
+                <div class="data-row"><span class="data-label">Reports N-1/N-2/N-3</span><span class="data-value">${fmt(plafondN1 + plafondN2 + plafondN3)}</span></div>
+                <div class="data-row"><span class="data-label">Plafond total disponible</span><span class="data-value">${fmt(plafondTotal)}</span></div>
+                <div class="data-row"><span class="data-label">Versement deductible</span><span class="data-value">${fmt(versementDeductible)}</span></div>
+                <div class="data-row highlight"><span class="data-label">ECONOMIE IR ANNUELLE</span><span class="data-value">${fmt(economieIR)}</span></div>
+            </div></div>
+            <div class="card"><h3>Projection a ${horizon} ans</h3><div class="data-grid">
+                <div class="data-row"><span class="data-label">Versement annuel</span><span class="data-value">${fmt(versement)}</span></div>
+                <div class="data-row"><span class="data-label">Total verse</span><span class="data-value">${fmt(totalVerse)}</span></div>
+                <div class="data-row"><span class="data-label">Rendement annuel (${profil})</span><span class="data-value">${pct(rdt)}</span></div>
+                <div class="data-row"><span class="data-label">Gains estimes</span><span class="data-value">${fmt(gains)}</span></div>
+                <div class="data-row highlight"><span class="data-label">CAPITAL PROJETE</span><span class="data-value">${fmt(capital)}</span></div>
+                <div class="data-row highlight"><span class="data-label">TOTAL ECONOMIE IR</span><span class="data-value">${fmt(totalEconomieIR)}</span></div>
+            </div></div>
+        </div>
+        <div class="card" style="margin-top:16px;"><h3>Sortie du PER</h3><div class="data-grid">
+            <div class="data-row"><span class="data-label">Sortie en capital (versements)</span><span class="data-value">Soumis au bareme IR</span></div>
+            <div class="data-row"><span class="data-label">Sortie en capital (gains)</span><span class="data-value">PFU ${pct(cfg.per.sortieCapital.gains)}</span></div>
+            <div class="data-row"><span class="data-label">Sortie en rente</span><span class="data-value">Regime des rentes</span></div>
+            <div class="data-row" style="font-size:11px;color:#6b7280;">Le PER est debloquable a la retraite ou pour l'achat de la residence principale</div>
+        </div></div>
+    `);
+}
+
 // ===== LIVE FORM UPDATES =====
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-field]').forEach(el => {
@@ -1496,4 +1964,6 @@ document.addEventListener('DOMContentLoaded', () => {
             recalcAll();
         });
     });
+    // Init dirigeant visibility
+    toggleDirigeantSection();
 });

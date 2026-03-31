@@ -560,6 +560,167 @@ const CONFIG = {
         }
     ]
 
+    // =========================================================================
+    // 20. DIRIGEANT — Cession de parts, 150-0 B ter, Pacte Dutreil
+    // =========================================================================
+    dirigeant: {
+        /** Article 150-0 B ter — Report d'imposition en cas d'apport-cession */
+        apportCession150Bter: {
+            /** Condition de reinvestissement : 60% dans les 24 mois */
+            seuilReinvestissement: 0.60,
+            delaiReinvestissement: 24, // mois
+            /** Activites eligibles au reinvestissement */
+            activitesEligibles: ['operationnelle', 'immobilier_professionnel', 'fonds_investissement'],
+            /** PV en report : taxee a la cession des titres recus ou a la dissolution de la holding */
+            fiscalitePV: {
+                tauxIR: 0.128,      // PFU part IR
+                ps: 0.172,          // Prelevements sociaux
+                total: 0.30         // PFU total
+            }
+        },
+
+        /** Pacte Dutreil — Exoneration partielle des droits de mutation (art. 787 B et C CGI) */
+        pacteDutreil: {
+            /** Exoneration de 75% de la valeur des titres transmis */
+            exoneration: 0.75,
+            /** Engagement collectif de conservation : minimum 2 ans */
+            engagementCollectif: 2,
+            /** Engagement individuel de conservation : minimum 4 ans */
+            engagementIndividuel: 4,
+            /** Seuil de detention minimale pendant l'engagement collectif */
+            seuilDetention: {
+                societeNonCotee: 0.34, // 34% des droits financiers et de vote
+                societeCotee: 0.20     // 20% des droits financiers et de vote
+            },
+            /** Obligation d'exercer une fonction de direction pendant 3 ans */
+            dureeDirection: 3,
+            /** Reduction supplementaire de 50% si donation en pleine propriete avant 70 ans */
+            reductionDonation: 0.50,
+            ageMaxDonation: 70
+        },
+
+        /** Cession de parts — fiscalite applicable */
+        cessionParts: {
+            /** PFU 30% (defaut depuis 2018) */
+            pfu: 0.30,
+            /** Option bareme progressif + abattement pour duree de detention (titres acquis avant 2018) */
+            abattementDureeDetention: {
+                droitCommun: {
+                    entre2et8Ans: 0.50,
+                    plus8Ans: 0.65
+                },
+                dirigeantRetraite: {
+                    entre1et4Ans: 0.50,
+                    entre4et8Ans: 0.65,
+                    plus8Ans: 0.85
+                },
+                /** Abattement fixe de 500 000 EUR pour depart en retraite du dirigeant */
+                abattementFixeRetraite: 500000
+            }
+        },
+
+        /** Formes juridiques de societe */
+        formesJuridiques: ['SAS', 'SARL', 'SA', 'EURL', 'SCI', 'SNC', 'SASU'],
+        /** Taux IS 2026 */
+        is: {
+            tauxReduit: 0.15,
+            plafondTauxReduit: 42500,
+            tauxNormal: 0.25
+        }
+    },
+
+    // =========================================================================
+    // 21. EPARGNE SALARIALE — Interessement, participation, abondement
+    // =========================================================================
+    epargneSalariale: {
+        /** Plafonds d'interessement et participation */
+        interessement: {
+            /** Plafond individuel : 75% du PASS */
+            plafondIndividuel: 34776, // 75% x 46368 (PASS 2026)
+            /** Forfait social taux reduit (entreprises < 250 salaries) */
+            forfaitSocialReduit: 0,
+            /** Forfait social taux normal */
+            forfaitSocialNormal: 0.20
+        },
+        participation: {
+            /** Obligatoire a partir de 50 salaries */
+            seuilObligatoire: 50,
+            forfaitSocial: 0.20
+        },
+
+        /** PEE — Plan d'Epargne Entreprise */
+        pee: {
+            /** Abondement maximal : 300% du versement, plafonné a 8% du PASS */
+            abondementMax: 3709,  // 8% x 46368
+            tauxAbondementMax: 3.0,
+            /** Duree de blocage : 5 ans (sauf cas de deblocage anticipe) */
+            dureeBlocage: 5,
+            /** Exoneration IR sur les sommes recues (interessement, participation, abondement) */
+            exonerationIR: true,
+            /** PS sur les gains a la sortie */
+            psGains: 0.172
+        },
+
+        /** PERCO / PER Collectif */
+        perCollectif: {
+            /** Abondement maximal : 300% du versement, plafonné a 16% du PASS */
+            abondementMax: 7418,  // 16% x 46368
+            /** Blocage jusqu'a la retraite (sauf cas de deblocage) */
+            blocageRetraite: true,
+            /** Deductibilite des versements volontaires du revenu imposable */
+            deductible: true,
+            psGains: 0.172
+        },
+
+        /** Prime de partage de la valeur (ex-prime Macron) */
+        primePartageValeur: {
+            /** Exoneration totale si remuneration < 3 SMIC */
+            seuilExoneration: 3,  // en multiple du SMIC
+            /** Plafond d'exoneration */
+            plafondExoneration: 3000,
+            /** Plafond si accord d'interessement */
+            plafondAvecInteressement: 6000,
+            /** Exoneration de cotisations sociales */
+            exonerationCotisations: true,
+            /** Exoneration IR (jusqu'au 31/12/2026 pour entreprises < 50 salaries) */
+            exonerationIR: true
+        },
+
+        /** PASS 2026 (Plafond Annuel de la Securite Sociale) */
+        pass2026: 46368
+    },
+
+    // =========================================================================
+    // 22. PER — Plan d'Epargne Retraite (individuel et dirigeant)
+    // =========================================================================
+    per: {
+        /** Plafond de deduction : 10% des revenus nets, plafonne a 10% de 8 PASS */
+        plafondDeduction: {
+            tauxRevenus: 0.10,
+            plafondAbsolu: 37094,  // 10% x 8 x 46368
+            plancher: 4637         // 10% du PASS
+        },
+        /** Report des plafonds non utilises sur 3 ans + mutualisation couple */
+        reportPlafond: 3,
+        mutualisationCouple: true,
+
+        /** Sortie en capital : imposition au bareme IR (versements) + PFU (gains) */
+        sortieCapital: {
+            versements: 'bareme_ir',
+            gains: 0.30
+        },
+        /** Sortie en rente : regime des rentes a titre gratuit ou onereux selon l'origine */
+        sortieRente: {
+            abattement: { '60_69': 0.40, '70_plus': 0.30 }
+        },
+        /** Rendements projetes */
+        rendements: {
+            prudent: 0.03,
+            equilibre: 0.045,
+            dynamique: 0.06
+        }
+    }
+
 }; // Fin de CONFIG
 
 

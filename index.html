@@ -257,6 +257,7 @@
             <li><a href="#" class="nav-link" data-section="assurance-vie"><span class="nav-icon">&#9878;</span> Assurance Vie</a></li>
             <li><a href="#" class="nav-link" data-section="pea"><span class="nav-icon">&#9650;</span> PEA</a></li>
             <li><a href="#" class="nav-link" data-section="cto"><span class="nav-icon">&#9632;</span> CTO</a></li>
+            <li id="nav-dirigeant" class="hidden"><a href="#" class="nav-link" data-section="dirigeant"><span class="nav-icon">&#9670;</span> Dirigeant</a></li>
             <li class="nav-separator">Analyse</li>
             <li><a href="#" class="nav-link" data-section="comparatif"><span class="nav-icon">&#8644;</span> Comparatif</a></li>
             <li><a href="#" class="nav-link" data-section="recommandation"><span class="nav-icon">&#9733;</span> Recommandation</a></li>
@@ -407,6 +408,12 @@
                         </div>
                         <div class="form-group"><label>Profession / Fonction</label><input type="text" data-field="profession" placeholder="Votre profession"></div>
                         <div class="form-group"><label>Secteur d'activite</label><input type="text" data-field="secteur" placeholder="Secteur"></div>
+                        <div class="form-group" style="grid-column: 1/-1;">
+                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                                <input type="checkbox" data-field="isDirigeant" id="isDirigeant" onchange="toggleDirigeantSection()">
+                                <span>Je suis dirigeant / actionnaire d'une societe</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -645,9 +652,30 @@
         </section>
 
         <section id="assurance-vie" class="section">
-            <div class="section-header"><h1>Simulation Assurance Vie</h1><p class="section-subtitle">Multi-support — 4 poches complementaires</p></div>
+            <div class="section-header"><h1>Assurance Vie</h1><p class="section-subtitle">Contrat existant &amp; simulation nouveau contrat</p></div>
+
             <div class="card">
-                <h3>Parametres</h3>
+                <h3>Mon contrat existant</h3>
+                <div class="desc" style="font-size:12px;color:#6b7280;margin-bottom:12px;">Renseignez votre contrat actuel pour simuler la fiscalite en cas de rachat</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Encours total (&euro;)</label><input type="number" data-field="av_exist_encours" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Total versements (&euro;)</label><input type="number" data-field="av_exist_versements" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Anciennete du contrat (ans)</label><input type="number" data-field="av_exist_anciennete" min="0" max="50" value="0" class="sim-input"></div>
+                    <div class="form-group"><label>Montant du rachat souhaite (&euro;)</label><input type="number" data-field="av_exist_rachat" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group">
+                        <label>Situation</label>
+                        <select data-field="av_exist_situation">
+                            <option value="celibataire">Celibataire</option>
+                            <option value="couple">Couple</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="calculateAVRachat()" style="margin-top:16px;">Simuler le rachat</button>
+            </div>
+            <div id="av-rachat-results" class="hidden"></div>
+
+            <div class="card" style="margin-top:20px;">
+                <h3>Simulation nouveau contrat</h3>
                 <div class="form-grid">
                     <div class="form-group"><label>Apport initial (&euro;)</label><input type="number" data-field="av_apport" min="0" value="60000" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Versements mensuels (&euro;)</label><input type="number" data-field="av_mensuel" min="0" value="0" class="input-currency sim-input"></div>
@@ -665,9 +693,23 @@
         </section>
 
         <section id="pea" class="section">
-            <div class="section-header"><h1>Simulation PEA</h1><p class="section-subtitle">Gestion libre ETF vs Mandat titres vifs</p></div>
+            <div class="section-header"><h1>PEA</h1><p class="section-subtitle">Contrat existant &amp; simulation nouveau PEA</p></div>
+
             <div class="card">
-                <h3>Parametres</h3>
+                <h3>Mon PEA existant</h3>
+                <div class="desc" style="font-size:12px;color:#6b7280;margin-bottom:12px;">Renseignez votre PEA actuel pour simuler la fiscalite en cas de retrait</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Valorisation actuelle (&euro;)</label><input type="number" data-field="pea_exist_valeur" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Total versements (&euro;)</label><input type="number" data-field="pea_exist_versements" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Anciennete du PEA (ans)</label><input type="number" data-field="pea_exist_anciennete" min="0" max="40" value="0" class="sim-input"></div>
+                    <div class="form-group"><label>Montant du retrait (&euro;)</label><input type="number" data-field="pea_exist_retrait" min="0" value="0" class="input-currency sim-input"></div>
+                </div>
+                <button class="btn btn-primary" onclick="calculatePEARetrait()" style="margin-top:16px;">Simuler le retrait</button>
+            </div>
+            <div id="pea-retrait-results" class="hidden"></div>
+
+            <div class="card" style="margin-top:20px;">
+                <h3>Simulation nouveau PEA</h3>
                 <div class="form-grid">
                     <div class="form-group"><label>Capital investi (&euro;)</label><input type="number" data-field="pea_capital" min="0" max="150000" value="60000" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Horizon (ans)</label><input type="number" data-field="pea_horizon" min="1" max="40" value="8" class="sim-input"></div>
@@ -682,9 +724,30 @@
         </section>
 
         <section id="cto" class="section">
-            <div class="section-header"><h1>Simulation CTO</h1><p class="section-subtitle">Compte-titres ordinaire — PFU 30%</p></div>
+            <div class="section-header"><h1>CTO</h1><p class="section-subtitle">Compte-titres existant &amp; simulation</p></div>
+
             <div class="card">
-                <h3>Parametres</h3>
+                <h3>Mon CTO existant</h3>
+                <div class="desc" style="font-size:12px;color:#6b7280;margin-bottom:12px;">Renseignez votre CTO actuel pour simuler la fiscalite en cas de cession</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Valorisation actuelle (&euro;)</label><input type="number" data-field="cto_exist_valeur" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Prix d'acquisition total (&euro;)</label><input type="number" data-field="cto_exist_pru" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Duree de detention (ans)</label><input type="number" data-field="cto_exist_duree" min="0" max="40" value="0" class="sim-input"></div>
+                    <div class="form-group"><label>Montant de la cession (&euro;)</label><input type="number" data-field="cto_exist_cession" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group">
+                        <label>Acquisition</label>
+                        <select data-field="cto_exist_date_acq">
+                            <option value="apres2018">Apres le 01/01/2018</option>
+                            <option value="avant2018">Avant le 01/01/2018</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="calculateCTOCession()" style="margin-top:16px;">Simuler la cession</button>
+            </div>
+            <div id="cto-cession-results" class="hidden"></div>
+
+            <div class="card" style="margin-top:20px;">
+                <h3>Simulation nouveau CTO</h3>
                 <div class="form-grid">
                     <div class="form-group"><label>Capital investi (&euro;)</label><input type="number" data-field="cto_capital" min="0" value="300000" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Horizon (ans)</label><input type="number" data-field="cto_horizon" min="1" max="40" value="8" class="sim-input"></div>
@@ -730,6 +793,161 @@
         <section id="demembrement" class="section">
             <div class="section-header"><h1>Demembrement</h1><p class="section-subtitle">Usufruit / Nue-propriete — Optimisation transmission</p></div>
             <div id="demembrement-content"><p class="empty-state">Remplissez votre profil pour generer l'analyse de demembrement.</p></div>
+        </section>
+
+        <!-- ===== DIRIGEANT ===== -->
+        <section id="dirigeant" class="section">
+            <div class="section-header"><h1>Espace Dirigeant</h1><p class="section-subtitle">Cession de parts, transmission, epargne salariale et retraite du dirigeant</p></div>
+
+            <!-- Informations societe -->
+            <div class="card">
+                <h3>Ma societe</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Raison sociale</label><input type="text" data-field="dir_raison_sociale" placeholder="Nom de la societe"></div>
+                    <div class="form-group">
+                        <label>Forme juridique</label>
+                        <select data-field="dir_forme_juridique">
+                            <option value="">Selectionnez</option>
+                            <option value="SAS">SAS</option>
+                            <option value="SASU">SASU</option>
+                            <option value="SARL">SARL</option>
+                            <option value="EURL">EURL</option>
+                            <option value="SA">SA</option>
+                            <option value="SCI">SCI</option>
+                            <option value="SNC">SNC</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Capital social (&euro;)</label><input type="number" data-field="dir_capital_social" min="0" value="0" class="input-currency"></div>
+                    <div class="form-group"><label>% de detention</label><input type="number" data-field="dir_detention" min="0" max="100" step="0.1" value="100"></div>
+                    <div class="form-group"><label>Valorisation estimee de la societe (&euro;)</label><input type="number" data-field="dir_valorisation" min="0" value="0" class="input-currency"></div>
+                    <div class="form-group"><label>Chiffre d'affaires annuel (&euro;)</label><input type="number" data-field="dir_ca" min="0" value="0" class="input-currency"></div>
+                    <div class="form-group"><label>Resultat net annuel (&euro;)</label><input type="number" data-field="dir_resultat" min="0" value="0" class="input-currency"></div>
+                    <div class="form-group"><label>Tresorerie disponible (&euro;)</label><input type="number" data-field="dir_tresorerie" min="0" value="0" class="input-currency"></div>
+                    <div class="form-group"><label>Nombre de salaries</label><input type="number" data-field="dir_salaries" min="0" value="0"></div>
+                    <div class="form-group"><label>Date de creation</label><input type="number" data-field="dir_annee_creation" min="1900" max="2026" value="2020" placeholder="Annee"></div>
+                    <div class="form-group"><label>Remuneration annuelle du dirigeant (&euro;)</label><input type="number" data-field="dir_remuneration" min="0" value="0" class="input-currency"></div>
+                    <div class="form-group"><label>Dividendes annuels verses (&euro;)</label><input type="number" data-field="dir_dividendes" min="0" value="0" class="input-currency"></div>
+                </div>
+            </div>
+
+            <!-- Cession de parts -->
+            <div class="card">
+                <h3>Simulation de cession de parts</h3>
+                <div class="desc" style="font-size:12px;color:#6b7280;margin-bottom:12px;">PFU 30%, option bareme progressif ou report via 150-0 B ter</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Valeur des parts cedees (&euro;)</label><input type="number" data-field="dir_cession_valeur" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Prix d'acquisition (&euro;)</label><input type="number" data-field="dir_cession_pru" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Duree de detention (ans)</label><input type="number" data-field="dir_cession_duree" min="0" value="5" class="sim-input"></div>
+                    <div class="form-group">
+                        <label>Titres acquis</label>
+                        <select data-field="dir_cession_date_acq">
+                            <option value="apres2018">Apres le 01/01/2018</option>
+                            <option value="avant2018">Avant le 01/01/2018</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Depart en retraite ?</label>
+                        <select data-field="dir_cession_retraite">
+                            <option value="non">Non</option>
+                            <option value="oui">Oui</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Report 150-0 B ter (apport-cession) ?</label>
+                        <select data-field="dir_cession_150bter">
+                            <option value="non">Non — Cession directe</option>
+                            <option value="oui">Oui — Apport a holding</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="calculateCessionParts()" style="margin-top:16px;">Simuler la cession</button>
+            </div>
+            <div id="cession-results" class="hidden"></div>
+
+            <!-- Pacte Dutreil -->
+            <div class="card">
+                <h3>Pacte Dutreil — Transmission</h3>
+                <div class="desc" style="font-size:12px;color:#6b7280;margin-bottom:12px;">Exoneration de 75% des droits de mutation sur les titres transmis</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Valeur des titres a transmettre (&euro;)</label><input type="number" data-field="dutreil_valeur" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Nombre de beneficiaires</label><input type="number" data-field="dutreil_beneficiaires" min="1" value="1" class="sim-input"></div>
+                    <div class="form-group">
+                        <label>Type de transmission</label>
+                        <select data-field="dutreil_type">
+                            <option value="succession">Succession</option>
+                            <option value="donation">Donation</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Age du donateur (si donation)</label>
+                        <input type="number" data-field="dutreil_age_donateur" min="18" max="100" value="55" class="sim-input">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="calculateDutreil()" style="margin-top:16px;">Simuler Dutreil</button>
+            </div>
+            <div id="dutreil-results" class="hidden"></div>
+
+            <!-- Epargne salariale -->
+            <div class="card">
+                <h3>Epargne salariale &amp; Primes</h3>
+                <div class="desc" style="font-size:12px;color:#6b7280;margin-bottom:12px;">Interessement, participation, prime de partage de la valeur, PEE/PERCO</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Budget annuel enveloppe (&euro;)</label><input type="number" data-field="es_budget" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group">
+                        <label>Type de dispositif</label>
+                        <select data-field="es_type">
+                            <option value="interessement">Interessement</option>
+                            <option value="participation">Participation</option>
+                            <option value="prime_ppv">Prime de Partage de la Valeur</option>
+                            <option value="prime_classique">Prime classique (soumise)</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Nombre de salaries beneficiaires</label><input type="number" data-field="es_beneficiaires" min="1" value="1" class="sim-input"></div>
+                    <div class="form-group">
+                        <label>Placement sur PEE ?</label>
+                        <select data-field="es_placement_pee">
+                            <option value="oui">Oui — blocage 5 ans</option>
+                            <option value="non">Non — disponible</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Abondement employeur (%)</label><input type="number" data-field="es_abondement" min="0" max="300" value="100" class="sim-input"></div>
+                </div>
+                <button class="btn btn-primary" onclick="calculateEpargneSalariale()" style="margin-top:16px;">Simuler</button>
+            </div>
+            <div id="es-results" class="hidden"></div>
+
+            <!-- PER Dirigeant -->
+            <div class="card">
+                <h3>PER Individuel — Dirigeant</h3>
+                <div class="desc" style="font-size:12px;color:#6b7280;margin-bottom:12px;">Optimisation de la deductibilite fiscale des versements</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Revenu net imposable (&euro;)</label><input type="number" data-field="per_revenu" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>TMI actuelle (%)</label>
+                        <select data-field="per_tmi">
+                            <option value="0.11">11%</option>
+                            <option value="0.30" selected>30%</option>
+                            <option value="0.41">41%</option>
+                            <option value="0.45">45%</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Versement annuel envisage (&euro;)</label><input type="number" data-field="per_versement" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Plafond non utilise N-1 (&euro;)</label><input type="number" data-field="per_plafond_n1" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Plafond non utilise N-2 (&euro;)</label><input type="number" data-field="per_plafond_n2" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Plafond non utilise N-3 (&euro;)</label><input type="number" data-field="per_plafond_n3" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Horizon retraite (ans)</label><input type="number" data-field="per_horizon" min="1" max="40" value="15" class="sim-input"></div>
+                    <div class="form-group">
+                        <label>Profil d'investissement</label>
+                        <select data-field="per_profil">
+                            <option value="prudent">Prudent</option>
+                            <option value="equilibre" selected>Equilibre</option>
+                            <option value="dynamique">Dynamique</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="calculatePERDirigeant()" style="margin-top:16px;">Simuler le PER</button>
+            </div>
+            <div id="per-results" class="hidden"></div>
+
         </section>
 
     </main>
