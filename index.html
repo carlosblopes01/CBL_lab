@@ -295,9 +295,11 @@
                     <h3>Completez votre profil pour debloquer votre analyse</h3>
                     <p>En 3 etapes simples, obtenez votre bilan patrimonial complet et des recommandations personnalisees.</p>
                     <div class="completion-steps">
-                        <div class="completion-step"><span>1</span> Identite &amp; Revenus</div>
-                        <div class="completion-step"><span>2</span> Patrimoine</div>
-                        <div class="completion-step"><span>3</span> Objectifs</div>
+                        <div class="completion-step"><span>1</span> Etat civil</div>
+                        <div class="completion-step"><span>2</span> Revenus</div>
+                        <div class="completion-step"><span>3</span> Patrimoine</div>
+                        <div class="completion-step"><span>4</span> Fiscalite</div>
+                        <div class="completion-step"><span>5</span> Objectifs</div>
                     </div>
                 </div>
                 <a href="#" class="btn btn-gold nav-link" data-section="profil">Completer mon profil</a>
@@ -349,54 +351,109 @@
             </div>
         </section>
 
-        <!-- ===== PROFIL (ONBOARDING WIZARD) ===== -->
+        <!-- ===== PROFIL (ONBOARDING WIZARD — Big Expert) ===== -->
         <section id="profil" class="section">
             <div class="section-header">
                 <h1>Mon Profil</h1>
-                <p class="section-subtitle">Completez vos informations en 3 etapes</p>
+                <p class="section-subtitle">Collecte d'informations &mdash; <span id="profile-completion" class="badge badge-gold">0%</span></p>
             </div>
 
-            <!-- PROGRESS BAR -->
+            <!-- PROGRESS BAR 5 STEPS -->
             <div class="step-progress">
                 <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
                 <div class="step-indicators">
-                    <div class="step-indicator active" id="indicator-1" onclick="showStep(1)"><span class="step-num">1</span><span class="step-label">Identite &amp; Revenus</span></div>
-                    <div class="step-indicator" id="indicator-2" onclick="showStep(2)"><span class="step-num">2</span><span class="step-label">Patrimoine</span></div>
-                    <div class="step-indicator" id="indicator-3" onclick="showStep(3)"><span class="step-num">3</span><span class="step-label">Objectifs</span></div>
+                    <div class="step-indicator active" id="indicator-1" onclick="goToStep(1)"><span class="step-num">1</span><span class="step-label">Etat civil</span></div>
+                    <div class="step-indicator" id="indicator-2" onclick="goToStep(2)"><span class="step-num">2</span><span class="step-label">Revenus</span></div>
+                    <div class="step-indicator" id="indicator-3" onclick="goToStep(3)"><span class="step-num">3</span><span class="step-label">Patrimoine</span></div>
+                    <div class="step-indicator" id="indicator-4" onclick="goToStep(4)"><span class="step-num">4</span><span class="step-label">Fiscalite</span></div>
+                    <div class="step-indicator" id="indicator-5" onclick="goToStep(5)"><span class="step-num">5</span><span class="step-label">Objectifs</span></div>
                 </div>
             </div>
 
-            <!-- STEP 1: Identite & Revenus -->
+            <!-- VALIDATION ALERT -->
+            <div id="step-validation-alert" class="validation-alert hidden">
+                <span class="validation-icon">&#9888;</span>
+                <span id="step-validation-msg"></span>
+            </div>
+
+            <!-- STEP 1: Etat Civil -->
             <div class="step-content active" id="step-1">
                 <div class="card">
-                    <h3>Identite &amp; Situation Civile</h3>
+                    <h3>Identite du Client <span class="required-badge">* obligatoire</span></h3>
                     <div class="form-grid">
-                        <div class="form-group"><label>Nom</label><input type="text" data-field="nom" placeholder="Votre nom"></div>
-                        <div class="form-group"><label>Prenom</label><input type="text" data-field="prenom" placeholder="Votre prenom"></div>
-                        <div class="form-group"><label>Date de naissance</label><input type="date" data-field="dateNaissance"></div>
-                        <div class="form-group">
-                            <label>Situation matrimoniale</label>
-                            <select data-field="situationMatri">
-                                <option value="">Selectionnez</option>
-                                <option value="Celibataire">Celibataire</option>
-                                <option value="Marie(e)">Marie(e)</option>
-                                <option value="Pacse(e)">Pacse(e)</option>
-                                <option value="Divorce(e)">Divorce(e)</option>
-                                <option value="Veuf(ve)">Veuf(ve)</option>
-                            </select>
-                        </div>
-                        <div class="form-group"><label>Regime matrimonial</label><input type="text" data-field="regimeMatri" placeholder="Communaute reduite aux acquets..."></div>
-                        <div class="form-group"><label>Nombre d'enfants</label><input type="number" data-field="nbEnfants" min="0" value="0"></div>
-                        <div class="form-group"><label>Dont enfants a charge</label><input type="number" data-field="enfantsCharge" min="0" value="0"></div>
+                        <div class="form-group required"><label>Nom *</label><input type="text" data-field="nom" placeholder="Votre nom" required></div>
+                        <div class="form-group required"><label>Prenom *</label><input type="text" data-field="prenom" placeholder="Votre prenom" required></div>
+                        <div class="form-group required"><label>Date de naissance *</label><input type="date" data-field="dateNaissance" required></div>
+                        <div class="form-group"><label>Lieu de naissance</label><input type="text" data-field="lieuNaissance" placeholder="Ville"></div>
+                        <div class="form-group"><label>Nationalite</label><input type="text" data-field="nationalite" placeholder="Francaise" value="Francaise"></div>
+                        <div class="form-group"><label>Adresse</label><input type="text" data-field="adresse" placeholder="Adresse postale"></div>
+                        <div class="form-group"><label>Code postal</label><input type="text" data-field="codePostal" placeholder="75000"></div>
+                        <div class="form-group"><label>Ville</label><input type="text" data-field="ville" placeholder="Paris"></div>
+                        <div class="form-group"><label>Telephone</label><input type="tel" data-field="telephone" placeholder="06 XX XX XX XX"></div>
                     </div>
                 </div>
 
                 <div class="card">
-                    <h3>Situation Professionnelle</h3>
+                    <h3>Situation Familiale</h3>
                     <div class="form-grid">
+                        <div class="form-group required">
+                            <label>Situation matrimoniale *</label>
+                            <select data-field="situationMatri" required onchange="toggleConjointFields()">
+                                <option value="">Selectionnez</option>
+                                <option value="Celibataire">Celibataire</option>
+                                <option value="Marie(e)">Marie(e)</option>
+                                <option value="Pacse(e)">Pacse(e)</option>
+                                <option value="Concubinage">Concubinage</option>
+                                <option value="Divorce(e)">Divorce(e)</option>
+                                <option value="Veuf(ve)">Veuf(ve)</option>
+                            </select>
+                        </div>
+                        <div class="form-group conjoint-field hidden">
+                            <label>Regime matrimonial</label>
+                            <select data-field="regimeMatri">
+                                <option value="">Selectionnez</option>
+                                <option value="Communaute reduite aux acquets">Communaute reduite aux acquets</option>
+                                <option value="Communaute universelle">Communaute universelle</option>
+                                <option value="Separation de biens">Separation de biens</option>
+                                <option value="Participation aux acquets">Participation aux acquets</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Nombre d'enfants</label><input type="number" data-field="nbEnfants" min="0" value="0" onchange="updatePartsFiscales()"></div>
+                        <div class="form-group"><label>Dont enfants a charge</label><input type="number" data-field="enfantsCharge" min="0" value="0" onchange="updatePartsFiscales()"></div>
+                    </div>
+                </div>
+
+                <!-- CONJOINT (conditionnel) -->
+                <div id="conjoint-card" class="card hidden">
+                    <h3>Identite du Conjoint</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Nom du conjoint</label><input type="text" data-field="nomConjoint" placeholder="Nom"></div>
+                        <div class="form-group"><label>Prenom du conjoint</label><input type="text" data-field="prenomConjoint" placeholder="Prenom"></div>
+                        <div class="form-group"><label>Date de naissance</label><input type="date" data-field="dateNaissanceConjoint"></div>
                         <div class="form-group">
                             <label>Statut professionnel</label>
-                            <select data-field="statutPro">
+                            <select data-field="statutProConjoint">
+                                <option value="">Selectionnez</option>
+                                <option value="Salarie cadre">Salarie cadre</option>
+                                <option value="Salarie non-cadre">Salarie non-cadre</option>
+                                <option value="TNS / Independant">TNS / Independant</option>
+                                <option value="Profession liberale">Profession liberale</option>
+                                <option value="Chef d'entreprise">Chef d'entreprise</option>
+                                <option value="Fonctionnaire">Fonctionnaire</option>
+                                <option value="Retraite">Retraite</option>
+                                <option value="Sans activite">Sans activite</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Profession du conjoint</label><input type="text" data-field="professionConjoint" placeholder="Profession"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Situation Professionnelle du Client</h3>
+                    <div class="form-grid">
+                        <div class="form-group required">
+                            <label>Statut professionnel *</label>
+                            <select data-field="statutPro" required>
                                 <option value="">Selectionnez</option>
                                 <option value="Salarie cadre">Salarie cadre</option>
                                 <option value="Salarie non-cadre">Salarie non-cadre</option>
@@ -410,6 +467,7 @@
                         </div>
                         <div class="form-group"><label>Profession / Fonction</label><input type="text" data-field="profession" placeholder="Votre profession"></div>
                         <div class="form-group"><label>Secteur d'activite</label><input type="text" data-field="secteur" placeholder="Secteur"></div>
+                        <div class="form-group"><label>Employeur / Societe</label><input type="text" data-field="employeur" placeholder="Nom de l'entreprise"></div>
                         <div class="form-group" style="grid-column: 1/-1;">
                             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
                                 <input type="checkbox" data-field="isDirigeant" id="isDirigeant" onchange="toggleDirigeantSection()">
@@ -419,11 +477,16 @@
                     </div>
                 </div>
 
+                <div id="step-result-1" class="step-result"></div>
+            </div>
+
+            <!-- STEP 2: Revenus & Charges -->
+            <div class="step-content" id="step-2">
                 <div class="card">
-                    <h3>Revenus Annuels Nets</h3>
+                    <h3>Revenus Annuels Nets du Foyer <span class="required-badge">* au moins un revenu</span></h3>
                     <div class="form-grid">
-                        <div class="form-group"><label>Salaires nets (client, &euro;/an)</label><input type="number" data-field="salairesClient" min="0" value="0" class="input-currency"></div>
-                        <div class="form-group"><label>Salaires nets (conjoint, &euro;/an)</label><input type="number" data-field="salairesConjoint" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group required"><label>Salaires nets client (&euro;/an) *</label><input type="number" data-field="salairesClient" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group conjoint-field hidden"><label>Salaires nets conjoint (&euro;/an)</label><input type="number" data-field="salairesConjoint" min="0" value="0" class="input-currency"></div>
                         <div class="form-group"><label>Revenus BIC/BNC (&euro;/an)</label><input type="number" data-field="revenusBIC" min="0" value="0" class="input-currency"></div>
                         <div class="form-group"><label>Dividendes percus (&euro;/an)</label><input type="number" data-field="dividendes" min="0" value="0" class="input-currency"></div>
                         <div class="form-group"><label>Revenus fonciers bruts (&euro;/an)</label><input type="number" data-field="revenusFonciers" min="0" value="0" class="input-currency"></div>
@@ -458,11 +521,11 @@
                     </div>
                 </div>
 
-                <div id="step-result-1" class="step-result"></div>
+                <div id="step-result-2" class="step-result"></div>
             </div>
 
-            <!-- STEP 2: Patrimoine -->
-            <div class="step-content" id="step-2">
+            <!-- STEP 3: Patrimoine -->
+            <div class="step-content" id="step-3">
                 <div class="card">
                     <h3>Residence Principale</h3>
                     <div class="form-grid">
@@ -542,18 +605,32 @@
                     </div>
                 </div>
 
+                <div id="step-result-3" class="step-result"></div>
+            </div>
+
+            <!-- STEP 4: Fiscalite & Protection -->
+            <div class="step-content" id="step-4">
                 <div class="card">
-                    <h3>Situation Fiscale</h3>
+                    <h3>Fiscalite du Foyer <span class="required-badge">* obligatoire</span></h3>
                     <div class="form-grid">
-                        <div class="form-group"><label>Nombre de parts fiscales</label><input type="number" data-field="partsFiscales" min="1" step="0.5" value="1"></div>
+                        <div class="form-group"><label>Nombre de parts fiscales</label><input type="number" data-field="partsFiscales" min="1" step="0.5" value="1" id="partsFiscalesInput"></div>
                         <div class="form-group">
                             <label>TMI (Tranche Marginale)</label>
                             <select data-field="tmi">
                                 <option value="0">0%</option>
                                 <option value="0.11">11%</option>
-                                <option value="0.30">30%</option>
+                                <option value="0.30" selected>30%</option>
                                 <option value="0.41">41%</option>
                                 <option value="0.45">45%</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Revenu fiscal de reference (N-1, &euro;)</label><input type="number" data-field="revenuFiscalRef" min="0" value="0" class="input-currency"></div>
+                        <div class="form-group">
+                            <label>Regime d'imposition revenus fonciers</label>
+                            <select data-field="regimeFoncier">
+                                <option value="">Non concerne</option>
+                                <option value="micro">Micro-foncier (abattement 30%)</option>
+                                <option value="reel">Reel (deduction charges)</option>
                             </select>
                         </div>
                     </div>
@@ -561,19 +638,64 @@
                         <span>Impot sur le revenu estime</span>
                         <span class="computed-value" id="ir-estime">0 &euro;</span>
                     </div>
+                    <div class="computed-row">
+                        <span>TMI calculee</span>
+                        <span class="computed-value" id="tmi-calculee">—</span>
+                    </div>
                 </div>
 
-                <div id="step-result-2" class="step-result"></div>
-            </div>
-
-            <!-- STEP 3: Objectifs -->
-            <div class="step-content" id="step-3">
                 <div class="card">
-                    <h3>Objectifs d'Investissement</h3>
+                    <h3>Protection &amp; Prevoyance</h3>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label>Objectif patrimonial principal</label>
-                            <select data-field="objectifPrincipal">
+                            <label>Couverture prevoyance</label>
+                            <select data-field="prevoyance">
+                                <option value="">Selectionnez</option>
+                                <option value="Aucune">Aucune</option>
+                                <option value="Minimale (employeur)">Minimale (employeur)</option>
+                                <option value="Complementaire privee">Complementaire privee</option>
+                                <option value="Complete">Complete</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Assurance emprunteur</label>
+                            <select data-field="assuranceEmprunteur">
+                                <option value="">Non concerne</option>
+                                <option value="Oui - groupe bancaire">Oui - groupe bancaire</option>
+                                <option value="Oui - delegation">Oui - delegation externe</option>
+                                <option value="Non">Non couverte</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Testament ou dispositions ?</label>
+                            <select data-field="testament">
+                                <option value="Non">Non</option>
+                                <option value="Oui">Oui</option>
+                                <option value="En projet">En projet</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Donation deja realisee ?</label>
+                            <select data-field="donationRealisee">
+                                <option value="Non">Non</option>
+                                <option value="Oui - moins de 15 ans">Oui - moins de 15 ans</option>
+                                <option value="Oui - plus de 15 ans">Oui - plus de 15 ans</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step-result-4" class="step-result"></div>
+            </div>
+
+            <!-- STEP 5: Objectifs & Strategie -->
+            <div class="step-content" id="step-5">
+                <div class="card">
+                    <h3>Objectifs Patrimoniaux <span class="required-badge">* obligatoire</span></h3>
+                    <div class="form-grid">
+                        <div class="form-group required">
+                            <label>Objectif patrimonial principal *</label>
+                            <select data-field="objectifPrincipal" required>
                                 <option value="">Selectionnez</option>
                                 <option value="Valorisation du capital">Valorisation du capital</option>
                                 <option value="Revenus complementaires">Revenus complementaires</option>
@@ -583,9 +705,9 @@
                                 <option value="Preparation retraite">Preparation retraite</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Horizon d'investissement</label>
-                            <select data-field="horizon">
+                        <div class="form-group required">
+                            <label>Horizon d'investissement *</label>
+                            <select data-field="horizon" required>
                                 <option value="">Selectionnez</option>
                                 <option value="Moins de 3 ans">Moins de 3 ans</option>
                                 <option value="3 a 5 ans">3 a 5 ans</option>
@@ -601,11 +723,11 @@
                 </div>
 
                 <div class="card">
-                    <h3>Profil de Risque</h3>
+                    <h3>Profil de Risque <span class="required-badge">* obligatoire</span></h3>
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label>Profil de risque</label>
-                            <select data-field="profilRisque">
+                        <div class="form-group required">
+                            <label>Profil de risque *</label>
+                            <select data-field="profilRisque" required>
                                 <option value="">Selectionnez</option>
                                 <option value="Securitaire (pas de risque)">Securitaire (pas de risque)</option>
                                 <option value="Prudent (risque faible)">Prudent (risque faible)</option>
@@ -656,7 +778,8 @@
             <!-- STEP NAVIGATION -->
             <div class="step-nav">
                 <button class="btn btn-outline" id="step-back" onclick="prevStep()" style="display:none;">&larr; Retour</button>
-                <button class="btn btn-primary" id="step-next" onclick="nextStep()">Continuer</button>
+                <span id="step-counter" class="step-counter">Etape 1/5</span>
+                <button class="btn btn-primary" id="step-next" onclick="nextStep()">Continuer &rarr;</button>
             </div>
         </section>
 

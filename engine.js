@@ -2049,107 +2049,291 @@ function prendreRDV() {
     window.location.href = `mailto:${CGP_EMAIL}?subject=${subject}&body=${body}`;
 }
 
-// ===== ONBOARDING WIZARD =====
-// NOTE: Also update enterApp() in auth.js to call updateDashboardContext()
-const ONBOARDING_STEPS = [
-    { id: 1, title: 'Identite & Revenus', fields: ['nom','prenom','dateNaissance','situationMatri','regimeMatri','nbEnfants','enfantsCharge','statutPro','profession','secteur','salairesClient','salairesConjoint','revenusBIC','dividendes','revenusFonciers','pensions','autresRevenus','loyer','creditRP','capitalRestantRP','echeanceRP','creditLocatif','creditConso','pensionAlim','autresCharges'] },
-    { id: 2, title: 'Patrimoine', fields: ['immoRP','immoRS','immoLoc1','immoLoc2','immoPro','immoAutres','livrets','pel','assuranceVie','pea','cto','per','epargneSalariale','autresPlacement','partsFiscales','tmi'] },
-    { id: 3, title: 'Objectifs & Strategie', fields: ['objectifPrincipal','horizon','horizonAnnees','apportDispo','epargneMensuelle','profilRisque','besoinRevenus','preoccSucc'] }
-];
+// ===== ONBOARDING WIZARD (Big Expert Style — 5 steps with validation) =====
+const TOTAL_STEPS = 5;
+
+// Required fields per step — progression blocked if missing
+const STEP_REQUIRED = {
+    1: { fields: ['nom', 'prenom', 'dateNaissance', 'situationMatri', 'statutPro'], label: 'Etat civil' },
+    2: { fields: ['salairesClient'], label: 'Revenus', custom: function(d) {
+        const rev = (d.salairesClient || 0) + (d.salairesConjoint || 0) + (d.revenusBIC || 0) + (d.dividendes || 0) + (d.revenusFonciers || 0) + (d.pensions || 0) + (d.autresRevenus || 0);
+        if (rev <= 0) return 'Renseignez au moins un revenu pour continuer.';
+        return null;
+    }},
+    3: { fields: [], label: 'Patrimoine' },
+    4: { fields: [], label: 'Fiscalite' },
+    5: { fields: ['objectifPrincipal', 'horizon', 'profilRisque'], label: 'Objectifs' }
+};
+
+// All fields per step (for completion tracking)
+const STEP_ALL_FIELDS = {
+    1: ['nom','prenom','dateNaissance','situationMatri','regimeMatri','nbEnfants','enfantsCharge','statutPro','profession','secteur','lieuNaissance','nationalite','adresse','codePostal','ville','telephone','nomConjoint','prenomConjoint','dateNaissanceConjoint','statutProConjoint','professionConjoint','employeur'],
+    2: ['salairesClient','salairesConjoint','revenusBIC','dividendes','revenusFonciers','pensions','autresRevenus','loyer','creditRP','capitalRestantRP','echeanceRP','creditLocatif','creditConso','pensionAlim','autresCharges'],
+    3: ['immoRP','immoRP_dateAcq','immoRP_prixAcq','immoRP_creditRestant','immoRS','immoRS_creditRestant','immoLoc1','immoLoc1_loyer','immoLoc1_creditRestant','immoLoc2','immoSCPI','livrets','pel','assuranceVie','pea','cto','per','epargneSalariale','autresPlacement'],
+    4: ['partsFiscales','tmi','revenuFiscalRef','regimeFoncier','prevoyance','assuranceEmprunteur','testament','donationRealisee'],
+    5: ['objectifPrincipal','horizon','horizonAnnees','apportDispo','epargneMensuelle','profilRisque','besoinRevenus','preoccSucc']
+};
 
 let currentStep = 1;
+let stepValidated = [false, false, false, false, false]; // tracks which steps have been validated
 
 function initOnboarding() {
     showStep(1);
-    updateStepProgress();
+    updateProfileCompletion();
+    updateSidebarLock();
+}
+
+// Navigate to step (from indicator click) — only allowed if all previous steps validated
+function goToStep(step) {
+    if (step > 1) {
+        for (let i = 1; i < step; i++) {
+            if (!stepValidated[i - 1]) {
+                showValidationAlert('Completez l\'etape ' + i + ' (' + STEP_REQUIRED[i].label + ') avant de passer a la suivante.');
+                return;
+            }
+        }
+    }
+    showStep(step);
 }
 
 function showStep(step) {
     currentStep = step;
-    // Hide all step contents
+    hideValidationAlert();
+
     document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
     const stepEl = document.getElementById('step-' + step);
     if (stepEl) stepEl.classList.add('active');
 
-    // Update progress indicators
     updateStepProgress();
 
-    // Update nav buttons
     const backBtn = document.getElementById('step-back');
     const nextBtn = document.getElementById('step-next');
+    const counter = document.getElementById('step-counter');
     if (backBtn) backBtn.style.display = step === 1 ? 'none' : 'inline-flex';
+    if (counter) counter.textContent = 'Etape ' + step + '/' + TOTAL_STEPS;
     if (nextBtn) {
-        if (step === 3) {
+        if (step === TOTAL_STEPS) {
             nextBtn.textContent = 'Lancer mon analyse';
             nextBtn.className = 'btn btn-gold';
         } else {
-            nextBtn.textContent = 'Continuer';
+            nextBtn.innerHTML = 'Continuer &rarr;';
             nextBtn.className = 'btn btn-primary';
         }
     }
 
-    // Show step result if previous steps completed
     updateStepResults();
-
     window.scrollTo(0, 0);
 }
 
 function updateStepProgress() {
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= TOTAL_STEPS; i++) {
         const indicator = document.getElementById('indicator-' + i);
         if (!indicator) continue;
         indicator.classList.remove('active', 'completed');
         if (i === currentStep) indicator.classList.add('active');
-        else if (i < currentStep) indicator.classList.add('completed');
+        else if (stepValidated[i - 1]) indicator.classList.add('completed');
     }
-    // Update progress bar fill
     const fill = document.getElementById('progress-fill');
-    if (fill) fill.style.width = ((currentStep - 1) / 2 * 100) + '%';
+    if (fill) fill.style.width = ((currentStep - 1) / (TOTAL_STEPS - 1) * 100) + '%';
+}
+
+// ===== STEP VALIDATION =====
+function validateCurrentStep() {
+    const d = collectFormData();
+    const req = STEP_REQUIRED[currentStep];
+    if (!req) return true;
+
+    // Clear previous field errors
+    document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
+
+    // Check required fields
+    const missing = [];
+    for (const field of req.fields) {
+        const val = d[field];
+        const isEmpty = val === undefined || val === null || val === '' || val === 0;
+        if (isEmpty) {
+            missing.push(field);
+            const el = document.querySelector('[data-field="' + field + '"]');
+            if (el) el.closest('.form-group')?.classList.add('field-error');
+        }
+    }
+
+    if (missing.length > 0) {
+        const labels = missing.map(f => {
+            const el = document.querySelector('[data-field="' + f + '"]');
+            const label = el?.closest('.form-group')?.querySelector('label');
+            return label ? label.textContent.replace('*', '').trim() : f;
+        });
+        showValidationAlert('Champs obligatoires manquants : ' + labels.join(', '));
+        return false;
+    }
+
+    // Custom validation
+    if (req.custom) {
+        const err = req.custom(d);
+        if (err) {
+            showValidationAlert(err);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function showValidationAlert(msg) {
+    const el = document.getElementById('step-validation-alert');
+    const msgEl = document.getElementById('step-validation-msg');
+    if (el && msgEl) {
+        msgEl.textContent = msg;
+        el.classList.remove('hidden');
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function hideValidationAlert() {
+    const el = document.getElementById('step-validation-alert');
+    if (el) el.classList.add('hidden');
+    document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
 }
 
 function nextStep() {
     recalcAll();
-    if (currentStep === 3) {
-        // Final step: save and launch analysis
+
+    if (!validateCurrentStep()) return; // BLOCK if validation fails
+
+    stepValidated[currentStep - 1] = true;
+
+    if (currentStep === TOTAL_STEPS) {
         saveAndCalculate();
         return;
     }
     showStep(currentStep + 1);
+    updateProfileCompletion();
+    updateSidebarLock();
 }
 
 function prevStep() {
     if (currentStep > 1) showStep(currentStep - 1);
 }
 
+// ===== COMPLETION TRACKING =====
+function updateProfileCompletion() {
+    const d = collectFormData();
+    let filled = 0;
+    let total = 0;
+
+    for (let s = 1; s <= TOTAL_STEPS; s++) {
+        const fields = STEP_ALL_FIELDS[s] || [];
+        for (const f of fields) {
+            total++;
+            const val = d[f];
+            if (val !== undefined && val !== null && val !== '' && val !== 0) filled++;
+        }
+    }
+
+    const pct = total > 0 ? Math.round(filled / total * 100) : 0;
+    setHTML('profile-completion', pct + '%');
+
+    // Store completion for sidebar locking
+    sessionStorage.setItem('profileCompletion', pct);
+    sessionStorage.setItem('profileComplete', stepValidated[TOTAL_STEPS - 1] ? 'true' : 'false');
+}
+
+// ===== SIDEBAR LOCKING =====
+function updateSidebarLock() {
+    const isComplete = sessionStorage.getItem('profileComplete') === 'true';
+    const pct = parseInt(sessionStorage.getItem('profileCompletion')) || 0;
+
+    // Sections requiring profile completion
+    const lockedSections = ['immobilier', 'assurance-vie', 'pea', 'cto', 'comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef'];
+
+    lockedSections.forEach(section => {
+        const link = document.querySelector('.nav-link[data-section="' + section + '"]');
+        if (!link) return;
+        if (isComplete || pct >= 60) {
+            link.classList.remove('locked');
+        } else {
+            link.classList.add('locked');
+        }
+    });
+}
+
+// ===== CONDITIONAL FIELDS =====
+function toggleConjointFields() {
+    const d = collectFormData();
+    const sm = d.situationMatri;
+    const hasConjoint = (sm === 'Marie(e)' || sm === 'Pacse(e)' || sm === 'Concubinage');
+
+    document.querySelectorAll('.conjoint-field').forEach(el => {
+        if (hasConjoint) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+    });
+    const conjointCard = document.getElementById('conjoint-card');
+    if (conjointCard) {
+        if (hasConjoint) conjointCard.classList.remove('hidden');
+        else conjointCard.classList.add('hidden');
+    }
+    // Show regime matrimonial only for married/PACS
+    const regimeFields = document.querySelectorAll('.conjoint-field');
+    regimeFields.forEach(el => {
+        if (hasConjoint) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+    });
+}
+
+function updatePartsFiscales() {
+    const d = collectFormData();
+    const sm = d.situationMatri;
+    const couple = (sm === 'Marie(e)' || sm === 'Pacse(e)');
+    const enfCharge = d.enfantsCharge || 0;
+    let parts = couple ? 2 : 1;
+    if (enfCharge >= 1) parts += 0.5;
+    if (enfCharge >= 2) parts += 0.5;
+    if (enfCharge >= 3) parts += (enfCharge - 2) * 1;
+    const el = document.getElementById('partsFiscalesInput');
+    if (el) el.value = parts;
+}
+
 function updateStepResults() {
     const d = collectFormData();
 
-    // Step 1 result: revenus + capacité épargne
+    // Step 1 result
+    const result1 = document.getElementById('step-result-1');
+    if (result1 && d.nom && currentStep > 1) {
+        result1.classList.add('visible');
+        result1.innerHTML = '<div class="result-grid"><div class="result-item"><span class="result-label">Client</span><span class="result-value">' + (d.prenom || '') + ' ' + (d.nom || '') + '</span></div><div class="result-item"><span class="result-label">Situation</span><span class="result-value">' + (d.situationMatri || '—') + ' / ' + (d.statutPro || '—') + '</span></div></div>';
+    }
+
+    // Step 2 result
     const totalRevenus = (d.salairesClient || 0) + (d.salairesConjoint || 0) + (d.revenusBIC || 0) + (d.dividendes || 0) + (d.revenusFonciers || 0) + (d.pensions || 0) + (d.autresRevenus || 0);
     const totalCharges = (d.loyer || 0) + (d.creditRP || 0) + (d.creditLocatif || 0) + (d.creditConso || 0) + (d.pensionAlim || 0) + (d.autresCharges || 0);
     const capacite = Math.round(totalRevenus / 12 - totalCharges);
-
-    const result1 = document.getElementById('step-result-1');
-    if (result1 && totalRevenus > 0 && currentStep > 1) {
-        result1.classList.add('visible');
-        result1.innerHTML = '<div class="result-grid"><div class="result-item"><span class="result-label">Revenus annuels</span><span class="result-value">' + fmt(totalRevenus) + '</span></div><div class="result-item"><span class="result-label">Capacite d\'epargne</span><span class="result-value">' + fmt(capacite) + '/mois</span></div></div>';
+    const result2 = document.getElementById('step-result-2');
+    if (result2 && totalRevenus > 0 && currentStep > 2) {
+        result2.classList.add('visible');
+        result2.innerHTML = '<div class="result-grid"><div class="result-item"><span class="result-label">Revenus annuels</span><span class="result-value">' + fmt(totalRevenus) + '</span></div><div class="result-item"><span class="result-label">Capacite epargne</span><span class="result-value">' + fmt(capacite) + '/mois</span></div></div>';
     }
 
-    // Step 2 result: patrimoine + classe
-    const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
+    // Step 3 result
+    const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoSCPI || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
     const totalFin = (d.livrets || 0) + (d.pel || 0) + (d.assuranceVie || 0) + (d.pea || 0) + (d.cto || 0) + (d.per || 0) + (d.epargneSalariale || 0) + (d.autresPlacement || 0);
-    const patriNet = totalImmo + totalFin - (d.capitalRestantRP || 0);
+    const patriNet = totalImmo + totalFin - (d.capitalRestantRP || 0) - (d.immoRP_creditRestant || 0) - (d.immoRS_creditRestant || 0) - (d.immoLoc1_creditRestant || 0) - (d.immoLoc2_creditRestant || 0);
+    const result3 = document.getElementById('step-result-3');
+    if (result3 && (totalImmo + totalFin) > 0 && currentStep > 3) {
+        let classe = 'En construction';
+        if (patriNet >= 5000000) classe = 'Grande fortune';
+        else if (patriNet >= 1000000) classe = 'Patrimoine > 1M';
+        else if (patriNet >= 500000) classe = 'Patrimoine aise';
+        else if (patriNet >= 100000) classe = 'Patrimoine moyen';
+        result3.classList.add('visible');
+        result3.innerHTML = '<div class="result-grid"><div class="result-item"><span class="result-label">Patrimoine net</span><span class="result-value">' + fmt(patriNet) + '</span></div><div class="result-item"><span class="result-label">Classe</span><span class="result-value">' + classe + '</span></div></div>';
+    }
 
-    let classe = 'En construction';
-    if (patriNet >= 5000000) classe = 'Grande fortune';
-    else if (patriNet >= 1000000) classe = 'Patrimoine > 1M';
-    else if (patriNet >= 500000) classe = 'Patrimoine aise';
-    else if (patriNet >= 100000) classe = 'Patrimoine moyen';
-
-    const result2 = document.getElementById('step-result-2');
-    if (result2 && (totalImmo + totalFin) > 0 && currentStep > 2) {
-        result2.classList.add('visible');
-        result2.innerHTML = '<div class="result-grid"><div class="result-item"><span class="result-label">Patrimoine net</span><span class="result-value">' + fmt(patriNet) + '</span></div><div class="result-item"><span class="result-label">Classe</span><span class="result-value">' + classe + '</span></div></div>';
+    // Step 4 result
+    const result4 = document.getElementById('step-result-4');
+    if (result4 && d.tmi && currentStep > 4) {
+        result4.classList.add('visible');
+        result4.innerHTML = '<div class="result-grid"><div class="result-item"><span class="result-label">TMI</span><span class="result-value">' + pct(parseFloat(d.tmi) || 0) + '</span></div><div class="result-item"><span class="result-label">Parts fiscales</span><span class="result-value">' + (d.partsFiscales || 1) + '</span></div></div>';
     }
 }
 
@@ -2163,8 +2347,8 @@ function updateDashboardContext() {
     const dashboardFull = document.getElementById('dashboard-full');
     const dashInsights = document.getElementById('dash-insights');
 
+    updateSidebarLock();
     if (!hasProfile) {
-        // Show completion guide
         if (completionBanner) completionBanner.classList.remove('hidden');
         if (dashboardFull) dashboardFull.classList.add('hidden');
     } else {
