@@ -28,18 +28,18 @@ const ACCESS = {
         },
         strategie: {
             level: 2,
-            sections: ['accueil', 'profil', 'patrimoine', 'immobilier', 'assurance-vie', 'pea', 'cto', 'comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef', 'dirigeant', 'obo'],
+            sections: ['accueil', 'profil', 'patrimoine', 'immobilier', 'assurance-vie', 'pea', 'cto', 'comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef', 'dirigeant', 'obo', 'plan-action', 'allocation', 'alertes'],
             features: ['saisie', 'vue-globale', 'indicateurs', 'simulations-base', 'dashboard', 'optimisation-fiscale', 'allocation', 'arbitrages', 'comparatifs', 'projections', 'rapport']
         },
         accompagnement: {
             level: 3,
-            sections: ['accueil', 'profil', 'patrimoine', 'immobilier', 'assurance-vie', 'pea', 'cto', 'comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef', 'dirigeant', 'obo'],
+            sections: ['accueil', 'profil', 'patrimoine', 'immobilier', 'assurance-vie', 'pea', 'cto', 'comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef', 'dirigeant', 'obo', 'plan-action', 'allocation', 'alertes'],
             features: ['saisie', 'vue-globale', 'indicateurs', 'simulations-base', 'dashboard', 'optimisation-fiscale', 'allocation', 'arbitrages', 'comparatifs', 'projections', 'rapport', 'suivi', 'reporting', 'coordination']
         }
     },
 
     // Locked sections for simulation users (shown with lock overlay)
-    lockedForSimulation: ['comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef'],
+    lockedForSimulation: ['comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef', 'plan-action', 'allocation', 'alertes'],
 
     // Upgrade messages per locked feature
     upgradeMessages: {
@@ -71,6 +71,21 @@ const ACCESS = {
         'clause-benef': {
             title: 'Clause bénéficiaire',
             message: 'Optimisation des clauses bénéficiaires de vos contrats d\'assurance-vie.',
+            cta: 'Débloquer avec la Stratégie patrimoniale'
+        },
+        'plan-action': {
+            title: 'Plan d\'action priorisé',
+            message: 'Actions concrètes classées par urgence et impact, avec suivi de réalisation en temps réel.',
+            cta: 'Débloquer avec la Stratégie patrimoniale'
+        },
+        'allocation': {
+            title: 'Allocation patrimoniale',
+            message: 'Comparaison détaillée entre votre allocation actuelle et l\'allocation cible recommandée.',
+            cta: 'Débloquer avec la Stratégie patrimoniale'
+        },
+        'alertes': {
+            title: 'Alertes patrimoniales',
+            message: 'Système d\'alertes intelligent détectant les risques, opportunités et points de vigilance.',
             cta: 'Débloquer avec la Stratégie patrimoniale'
         }
     }

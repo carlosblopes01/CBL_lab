@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Back-Office | Patria Capital</title>
+    <link rel="icon" type="image/png" href="icone.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== RESET & BASE ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background: #f2efec; color: #1a1a2e; min-height: 100vh; }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; color: #0c0f1a; }
+        a { text-decoration: none; color: inherit; }
+
+        /* ===== TOP NAV (matches site) ===== */
+        .landing-nav { background: #0c0f1a; padding: 0 2rem; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(193,146,94,0.15); }
+        .landing-nav-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+        .landing-logo img { height: 40px; }
+        .landing-nav-links { display: flex; align-items: center; gap: 1.5rem; }
+        .landing-nav-links a { color: #ccc; font-size: 0.9rem; font-weight: 500; transition: color .2s; }
+        .landing-nav-links a:hover { color: #c1925e; }
+        .btn-gold { background: #c1925e; color: #fff; border: none; padding: 0.55rem 1.3rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background .2s; }
+        .btn-gold:hover { background: #a97d4e; }
+        .mobile-nav-toggle { display: none; background: none; border: none; color: #c1925e; font-size: 1.5rem; cursor: pointer; }
+
+        /* ===== LOGIN SCREEN ===== */
+        .login-overlay { position: fixed; inset: 0; background: #0c0f1a; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: #fff; border-radius: 12px; padding: 3rem 2.5rem; width: 400px; max-width: 90vw; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .login-card h2 { margin-bottom: 0.5rem; font-size: 1.6rem; }
+        .login-card p { color: #666; font-size: 0.9rem; margin-bottom: 2rem; }
+        .login-card .form-group { margin-bottom: 1.2rem; text-align: left; }
+        .login-card label { display: block; font-size: 0.8rem; font-weight: 600; color: #555; margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .login-card input { width: 100%; padding: 0.75rem 1rem; border: 1.5px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-family: inherit; transition: border-color .2s; }
+        .login-card input:focus { outline: none; border-color: #c1925e; }
+        .login-btn { width: 100%; padding: 0.85rem; background: #c1925e; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background .2s; }
+        .login-btn:hover { background: #a97d4e; }
+        .login-error { color: #e74c3c; font-size: 0.85rem; margin-top: 0.75rem; display: none; }
+        .login-logo { height: 48px; margin-bottom: 1.5rem; }
+
+        /* ===== ADMIN LAYOUT ===== */
+        .admin-wrapper { display: none; min-height: calc(100vh - 64px); }
+        .admin-wrapper.active { display: flex; }
+
+        /* ===== SIDEBAR ===== */
+        .admin-sidebar { width: 260px; min-height: calc(100vh - 64px); background: #0c0f1a; color: #ccc; padding: 1.5rem 0; display: flex; flex-direction: column; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; flex-shrink: 0; }
+        .sidebar-header { padding: 0 1.5rem 1.5rem; border-bottom: 1px solid rgba(193,146,94,0.15); margin-bottom: 0.5rem; }
+        .sidebar-header h3 { color: #c1925e; font-size: 1rem; font-family: 'Inter', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .sidebar-header p { font-size: 0.75rem; color: #888; margin-top: 0.25rem; }
+        .sidebar-nav { flex: 1; }
+        .sidebar-nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1.5rem; font-size: 0.88rem; font-weight: 500; cursor: pointer; transition: all .2s; border-left: 3px solid transparent; }
+        .sidebar-nav-item:hover { background: rgba(193,146,94,0.08); color: #fff; }
+        .sidebar-nav-item.active { background: rgba(193,146,94,0.12); color: #c1925e; border-left-color: #c1925e; }
+        .sidebar-nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+        .sidebar-section-label { padding: 1.2rem 1.5rem 0.4rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: #555; font-weight: 700; }
+        .sidebar-logout { margin-top: auto; padding: 1rem 1.5rem; border-top: 1px solid rgba(193,146,94,0.15); }
+        .sidebar-logout button { width: 100%; padding: 0.65rem; background: rgba(231,76,60,0.1); color: #e74c3c; border: 1px solid rgba(231,76,60,0.2); border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all .2s; font-family: inherit; }
+        .sidebar-logout button:hover { background: rgba(231,76,60,0.2); }
+
+        /* ===== CONTENT AREA ===== */
+        .admin-content { flex: 1; padding: 2rem 2.5rem; min-width: 0; overflow-y: auto; }
+        .admin-content-section { display: none; }
+        .admin-content-section.active { display: block; }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header { margin-bottom: 2rem; }
+        .page-header h1 { font-size: 1.8rem; margin-bottom: 0.3rem; }
+        .page-header p { color: #777; font-size: 0.95rem; }
+
+        /* ===== STAT CARDS ===== */
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+        .stat-card { background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.05); }
+        .stat-card .stat-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: #888; font-weight: 600; margin-bottom: 0.5rem; }
+        .stat-card .stat-value { font-size: 2rem; font-weight: 800; color: #0c0f1a; }
+        .stat-card .stat-change { font-size: 0.8rem; margin-top: 0.3rem; }
+        .stat-card .stat-change.up { color: #27ae60; }
+        .stat-card .stat-change.down { color: #e74c3c; }
+        .stat-card.gold { border-left: 4px solid #c1925e; }
+        .stat-card.navy { border-left: 4px solid #254a65; }
+        .stat-card.green { border-left: 4px solid #27ae60; }
+
+        /* ===== ACTIVITY FEED ===== */
+        .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        .panel { background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.05); }
+        .panel h3 { font-size: 1.1rem; margin-bottom: 1rem; font-family: 'Inter', sans-serif; font-weight: 700; }
+        .activity-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid #f0f0f0; }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+        .activity-dot.gold { background: #c1925e; }
+        .activity-dot.green { background: #27ae60; }
+        .activity-dot.blue { background: #3498db; }
+        .activity-dot.red { background: #e74c3c; }
+        .activity-text { font-size: 0.88rem; color: #333; }
+        .activity-time { font-size: 0.75rem; color: #999; margin-top: 0.2rem; }
+
+        /* ===== HEALTH STATUS ===== */
+        .health-item { display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 0; border-bottom: 1px solid #f0f0f0; }
+        .health-item:last-child { border-bottom: none; }
+        .health-label { font-size: 0.88rem; color: #333; }
+        .health-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .health-badge.ok { background: #e8f5e9; color: #27ae60; }
+        .health-badge.warn { background: #fff3e0; color: #f39c12; }
+
+        /* ===== TABLE ===== */
+        .table-controls { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
+        .search-input { padding: 0.6rem 1rem; border: 1.5px solid #ddd; border-radius: 8px; font-size: 0.9rem; width: 300px; max-width: 100%; font-family: inherit; transition: border-color .2s; }
+        .search-input:focus { outline: none; border-color: #c1925e; }
+        .filter-select { padding: 0.6rem 1rem; border: 1.5px solid #ddd; border-radius: 8px; font-size: 0.9rem; font-family: inherit; background: #fff; cursor: pointer; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table thead th { background: #0c0f1a; color: #ccc; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.85rem 1rem; text-align: left; font-weight: 600; }
+        .data-table thead th:first-child { border-radius: 8px 0 0 0; }
+        .data-table thead th:last-child { border-radius: 0 8px 0 0; }
+        .data-table tbody td { padding: 0.85rem 1rem; font-size: 0.88rem; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+        .data-table tbody tr:hover { background: rgba(193,146,94,0.04); }
+        .role-badge { padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; }
+        .role-badge.admin { background: #0c0f1a; color: #c1925e; }
+        .role-badge.accompagnement { background: #e8f5e9; color: #27ae60; }
+        .role-badge.strategie { background: #e3f2fd; color: #1976d2; }
+        .role-badge.simulation { background: #fff3e0; color: #f39c12; }
+        .role-badge.free { background: #f5f5f5; color: #999; }
+        .score-bar { width: 60px; height: 6px; background: #eee; border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 0.4rem; }
+        .score-bar-fill { height: 100%; border-radius: 3px; }
+        .action-btn { padding: 0.3rem 0.7rem; border: 1px solid #ddd; border-radius: 6px; font-size: 0.78rem; cursor: pointer; background: #fff; font-family: inherit; transition: all .2s; }
+        .action-btn:hover { border-color: #c1925e; color: #c1925e; }
+        .action-btn.danger { color: #e74c3c; border-color: rgba(231,76,60,0.3); }
+        .action-btn.danger:hover { background: rgba(231,76,60,0.05); }
+        .role-select { padding: 0.3rem 0.5rem; border: 1px solid #ddd; border-radius: 6px; font-size: 0.8rem; font-family: inherit; background: #fff; cursor: pointer; }
+
+        /* ===== CLIENT DETAIL MODAL ===== */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-card { background: #fff; border-radius: 12px; padding: 2rem; width: 600px; max-width: 90vw; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+        .modal-card h2 { font-size: 1.4rem; margin-bottom: 1rem; }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .detail-item label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #888; font-weight: 600; margin-bottom: 0.2rem; }
+        .detail-item span { font-size: 0.95rem; color: #333; }
+
+        /* ===== SETTINGS PANELS ===== */
+        .settings-section { margin-bottom: 2rem; }
+        .settings-section h3 { font-size: 1.15rem; margin-bottom: 1rem; font-family: 'Inter', sans-serif; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+        .settings-card { background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
+        .settings-card h4 { font-size: 0.95rem; font-family: 'Inter', sans-serif; font-weight: 700; color: #254a65; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; margin-bottom: 0.75rem; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-size: 0.78rem; font-weight: 600; color: #555; margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.3px; }
+        .form-group input, .form-group textarea, .form-group select { padding: 0.6rem 0.8rem; border: 1.5px solid #ddd; border-radius: 8px; font-size: 0.9rem; font-family: inherit; transition: border-color .2s; background: #fff; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #c1925e; }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-group .unit { font-size: 0.75rem; color: #999; margin-top: 0.2rem; }
+
+        /* Profile tabs for allocations */
+        .profile-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+        .profile-tab { padding: 0.5rem 1.1rem; border-radius: 8px; border: 1.5px solid #ddd; background: #fff; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all .2s; font-family: inherit; }
+        .profile-tab.active { background: #0c0f1a; color: #c1925e; border-color: #0c0f1a; }
+        .profile-tab:hover:not(.active) { border-color: #c1925e; color: #c1925e; }
+
+        .alloc-table { width: 100%; border-collapse: collapse; }
+        .alloc-table th { text-align: left; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: #888; font-weight: 600; padding: 0.5rem 0.75rem; border-bottom: 2px solid #eee; }
+        .alloc-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #f0f0f0; }
+        .alloc-table input { width: 80px; padding: 0.45rem 0.6rem; border: 1.5px solid #ddd; border-radius: 6px; font-size: 0.9rem; text-align: center; font-family: inherit; }
+        .alloc-table input:focus { outline: none; border-color: #c1925e; }
+        .alloc-total { font-weight: 700; color: #0c0f1a; }
+        .alloc-total.error { color: #e74c3c; }
+
+        /* IR / IFI tables */
+        .tranche-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+        .tranche-table th { text-align: left; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: #888; font-weight: 600; padding: 0.5rem 0.75rem; border-bottom: 2px solid #eee; }
+        .tranche-table td { padding: 0.4rem 0.75rem; border-bottom: 1px solid #f0f0f0; }
+        .tranche-table input { width: 120px; padding: 0.45rem 0.6rem; border: 1.5px solid #ddd; border-radius: 6px; font-size: 0.9rem; font-family: inherit; }
+        .tranche-table input:focus { outline: none; border-color: #c1925e; }
+
+        /* Weight total */
+        .weight-total { font-size: 0.9rem; margin-top: 0.5rem; }
+        .weight-total.valid { color: #27ae60; }
+        .weight-total.invalid { color: #e74c3c; }
+
+        /* ===== SAVE BUTTON ===== */
+        .save-bar { display: flex; justify-content: flex-end; margin-top: 1.5rem; gap: 0.75rem; }
+        .save-btn { padding: 0.7rem 2rem; background: #c1925e; color: #fff; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background .2s; font-family: inherit; }
+        .save-btn:hover { background: #a97d4e; }
+        .save-btn.secondary { background: #254a65; }
+        .save-btn.secondary:hover { background: #1a3a50; }
+
+        /* ===== TOAST ===== */
+        .toast-container { position: fixed; top: 80px; right: 2rem; z-index: 3000; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { padding: 0.85rem 1.5rem; background: #0c0f1a; color: #fff; border-radius: 8px; font-size: 0.88rem; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.2); transform: translateX(120%); transition: transform .3s ease; border-left: 4px solid #c1925e; }
+        .toast.show { transform: translateX(0); }
+        .toast.error { border-left-color: #e74c3c; }
+        .toast.success { border-left-color: #27ae60; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .admin-sidebar { width: 220px; }
+            .admin-content { padding: 1.5rem; }
+            .content-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .landing-nav-links { display: none; }
+            .mobile-nav-toggle { display: block; }
+            .admin-wrapper.active { flex-direction: column; }
+            .admin-sidebar { width: 100%; min-height: auto; height: auto; position: relative; top: 0; flex-direction: row; overflow-x: auto; padding: 0; }
+            .sidebar-header { display: none; }
+            .sidebar-section-label { display: none; }
+            .sidebar-nav { display: flex; overflow-x: auto; }
+            .sidebar-nav-item { white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; padding: 0.75rem 1rem; font-size: 0.8rem; }
+            .sidebar-nav-item.active { border-bottom-color: #c1925e; border-left-color: transparent; }
+            .sidebar-logout { display: none; }
+            .admin-content { padding: 1rem; }
+            .stat-grid { grid-template-columns: 1fr 1fr; }
+            .search-input { width: 100%; }
+            .table-controls { flex-direction: column; align-items: stretch; }
+            .data-table { font-size: 0.8rem; }
+            .detail-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .stat-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="landing-nav">
+    <div class="landing-nav-inner">
+        <a href="index.html" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:40px;"></a>
+        <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+        <div class="landing-nav-links" id="nav-links">
+            <a href="index.html">Accueil</a>
+            <a href="index.html#expertises">Expertises</a>
+            <a href="outil.html">Notre outil</a>
+            <a href="cas-concrets.html">Cas concrets</a>
+            <a href="equipe.html">Le cabinet</a>
+            <a href="contact.html">Contact</a>
+            <button class="btn-gold" onclick="window.location.href='offres.html'">Nos offres</button>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-card">
+        <img src="logo.png" alt="Patria Capital" class="login-logo">
+        <h2>Administration</h2>
+        <p>Espace restreint aux administrateurs Patria Capital</p>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="loginEmail" placeholder="admin@patriacapital.fr" autocomplete="email">
+        </div>
+        <div class="form-group">
+            <label>Mot de passe</label>
+            <input type="password" id="loginPassword" placeholder="Mot de passe" autocomplete="current-password">
+        </div>
+        <button class="login-btn" onclick="handleLogin()">Se connecter</button>
+        <div class="login-error" id="loginError">Email ou mot de passe incorrect.</div>
+    </div>
+</div>
+
+<!-- ===== ADMIN DASHBOARD ===== -->
+<div class="admin-wrapper" id="adminWrapper">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <h3>Back-Office</h3>
+            <p id="adminEmailDisplay">carlos@patriacapital.fr</p>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-section-label">Vue d'ensemble</div>
+            <div class="sidebar-nav-item active" data-section="dashboard">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                Dashboard
+            </div>
+            <div class="sidebar-nav-item" data-section="clients">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                Gestion Clients
+            </div>
+            <div class="sidebar-section-label">Parametrage</div>
+            <div class="sidebar-nav-item" data-section="allocations">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0110 10"/><path d="M12 12L12 2"/><path d="M12 12l7.07 7.07"/></svg>
+                Allocations
+            </div>
+            <div class="sidebar-nav-item" data-section="enveloppes">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 8h10M7 12h6"/></svg>
+                Enveloppes
+            </div>
+            <div class="sidebar-nav-item" data-section="fiscalite">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                Fiscalite
+            </div>
+            <div class="sidebar-nav-item" data-section="scoring">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                Scoring
+            </div>
+            <div class="sidebar-nav-item" data-section="offres">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                Offres
+            </div>
+            <div class="sidebar-nav-item" data-section="recommandations">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Recommandations
+            </div>
+        </nav>
+        <div class="sidebar-logout">
+            <button onclick="handleLogout()">Deconnexion</button>
+        </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="admin-content">
+
+        <!-- ===== DASHBOARD ===== -->
+        <section class="admin-content-section active" id="section-dashboard">
+            <div class="page-header">
+                <h1>Dashboard</h1>
+                <p>Vue d'ensemble de la plateforme Patria Capital</p>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-card gold">
+                    <div class="stat-label">Total clients</div>
+                    <div class="stat-value">127</div>
+                    <div class="stat-change up">+12 ce mois</div>
+                </div>
+                <div class="stat-card navy">
+                    <div class="stat-label">Utilisateurs actifs</div>
+                    <div class="stat-value">84</div>
+                    <div class="stat-change up">+8% vs mois dernier</div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-label">Revenus mensuels</div>
+                    <div class="stat-value">24 800 &euro;</div>
+                    <div class="stat-change up">+15% vs mois dernier</div>
+                </div>
+                <div class="stat-card gold">
+                    <div class="stat-label">Simulations lancees</div>
+                    <div class="stat-value">342</div>
+                    <div class="stat-change up">+23 cette semaine</div>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="panel">
+                    <h3>Activite recente</h3>
+                    <div class="activity-item"><span class="activity-dot green"></span><div><div class="activity-text">Marie Dupont a complete son profil patrimonial</div><div class="activity-time">Il y a 12 minutes</div></div></div>
+                    <div class="activity-item"><span class="activity-dot gold"></span><div><div class="activity-text">Jean Martin a souscrit a l'offre Strategie</div><div class="activity-time">Il y a 45 minutes</div></div></div>
+                    <div class="activity-item"><span class="activity-dot blue"></span><div><div class="activity-text">Sophie Bernard a lance une simulation PEA</div><div class="activity-time">Il y a 1 heure</div></div></div>
+                    <div class="activity-item"><span class="activity-dot green"></span><div><div class="activity-text">Pierre Durand a reserve un RDV accompagnement</div><div class="activity-time">Il y a 2 heures</div></div></div>
+                    <div class="activity-item"><span class="activity-dot gold"></span><div><div class="activity-text">Claire Moreau a souscrit a l'offre Simulation</div><div class="activity-time">Il y a 3 heures</div></div></div>
+                    <div class="activity-item"><span class="activity-dot red"></span><div><div class="activity-text">Alerte : tentative de connexion echouee (IP 85.23.xxx)</div><div class="activity-time">Il y a 5 heures</div></div></div>
+                    <div class="activity-item"><span class="activity-dot blue"></span><div><div class="activity-text">Thomas Leroy a telecharge son rapport patrimonial</div><div class="activity-time">Il y a 6 heures</div></div></div>
+                </div>
+                <div class="panel">
+                    <h3>Etat du systeme</h3>
+                    <div class="health-item"><span class="health-label">Serveur principal</span><span class="health-badge ok">Operationnel</span></div>
+                    <div class="health-item"><span class="health-label">Base de donnees</span><span class="health-badge ok">Operationnel</span></div>
+                    <div class="health-item"><span class="health-label">API Stripe</span><span class="health-badge ok">Connecte</span></div>
+                    <div class="health-item"><span class="health-label">API Calendly</span><span class="health-badge ok">Connecte</span></div>
+                    <div class="health-item"><span class="health-label">Envoi emails</span><span class="health-badge ok">Operationnel</span></div>
+                    <div class="health-item"><span class="health-label">Certificat SSL</span><span class="health-badge ok">Valide</span></div>
+                    <div class="health-item"><span class="health-label">Stockage</span><span class="health-badge warn">78% utilise</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== GESTION CLIENTS ===== -->
+        <section class="admin-content-section" id="section-clients">
+            <div class="page-header">
+                <h1>Gestion Clients</h1>
+                <p>Gerer les utilisateurs et leurs permissions</p>
+            </div>
+            <div class="panel">
+                <div class="table-controls">
+                    <input type="text" class="search-input" id="clientSearch" placeholder="Rechercher un client (nom, email)..." oninput="filterClients()">
+                    <select class="filter-select" id="clientRoleFilter" onchange="filterClients()">
+                        <option value="">Tous les roles</option>
+                        <option value="admin">Admin</option>
+                        <option value="accompagnement">Accompagnement</option>
+                        <option value="strategie">Strategie</option>
+                        <option value="simulation">Simulation</option>
+                        <option value="free">Gratuit</option>
+                    </select>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="data-table" id="clientTable">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Score</th>
+                                <th>Derniere connexion</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PARAMETRES ALLOCATIONS ===== -->
+        <section class="admin-content-section" id="section-allocations">
+            <div class="page-header">
+                <h1>Parametres Allocations</h1>
+                <p>Cibles d'allocation par profil de risque</p>
+            </div>
+            <div class="settings-card">
+                <div class="profile-tabs" id="allocProfileTabs"></div>
+                <div id="allocTableContainer"></div>
+                <div class="save-bar">
+                    <button class="save-btn" onclick="saveAllocations()">Enregistrer les allocations</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PARAMETRES ENVELOPPES ===== -->
+        <section class="admin-content-section" id="section-enveloppes">
+            <div class="page-header">
+                <h1>Parametres Enveloppes</h1>
+                <p>Rendements, plafonds et frais par enveloppe fiscale</p>
+            </div>
+            <div id="enveloppesForm"></div>
+            <div class="save-bar">
+                <button class="save-btn" onclick="saveEnveloppes()">Enregistrer les enveloppes</button>
+            </div>
+        </section>
+
+        <!-- ===== PARAMETRES FISCALITE ===== -->
+        <section class="admin-content-section" id="section-fiscalite">
+            <div class="page-header">
+                <h1>Parametres Fiscalite</h1>
+                <p>Baremes IR, IFI, prelevements et abattements</p>
+            </div>
+            <div id="fiscaliteForm"></div>
+            <div class="save-bar">
+                <button class="save-btn" onclick="saveFiscalite()">Enregistrer la fiscalite</button>
+            </div>
+        </section>
+
+        <!-- ===== PARAMETRES SCORING ===== -->
+        <section class="admin-content-section" id="section-scoring">
+            <div class="page-header">
+                <h1>Parametres Scoring</h1>
+                <p>Poids et seuils du moteur de scoring patrimonial</p>
+            </div>
+            <div id="scoringForm"></div>
+            <div class="save-bar">
+                <button class="save-btn" onclick="saveScoring()">Enregistrer le scoring</button>
+            </div>
+        </section>
+
+        <!-- ===== PARAMETRES OFFRES ===== -->
+        <section class="admin-content-section" id="section-offres">
+            <div class="page-header">
+                <h1>Parametres Offres</h1>
+                <p>Tarifs, liens Stripe et Calendly</p>
+            </div>
+            <div id="offresForm"></div>
+            <div class="save-bar">
+                <button class="save-btn" onclick="saveOffres()">Enregistrer les offres</button>
+            </div>
+        </section>
+
+        <!-- ===== PARAMETRES RECOMMANDATIONS ===== -->
+        <section class="admin-content-section" id="section-recommandations">
+            <div class="page-header">
+                <h1>Parametres Recommandations</h1>
+                <p>Templates et poids du moteur de recommandation</p>
+            </div>
+            <div id="recommandationsForm"></div>
+            <div class="save-bar">
+                <button class="save-btn" onclick="saveRecommandations()">Enregistrer les recommandations</button>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- Client detail modal -->
+<div class="modal-overlay" id="clientModal">
+    <div class="modal-card" id="clientModalContent"></div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ================================================================
+   PATRIA CAPITAL — ADMIN BACK-OFFICE v2
+   ================================================================ */
+
+// ===== DATA DEFAULTS =====
+const DEFAULT_CLIENTS = [
+    { id: 1, nom: "Carlos Lopes", email: "carlos@patriacapital.fr", role: "admin", score: 95, lastLogin: "2026-04-04 09:12", patrimoine: "2 450 000 EUR", telephone: "+33 6 12 34 56 78", dateInscription: "2024-01-15" },
+    { id: 2, nom: "Marie Dupont", email: "marie.dupont@gmail.com", role: "accompagnement", score: 82, lastLogin: "2026-04-04 08:47", patrimoine: "1 200 000 EUR", telephone: "+33 6 98 76 54 32", dateInscription: "2024-03-22" },
+    { id: 3, nom: "Jean Martin", email: "j.martin@entreprise.fr", role: "strategie", score: 74, lastLogin: "2026-04-03 17:30", patrimoine: "850 000 EUR", telephone: "+33 6 11 22 33 44", dateInscription: "2024-05-10" },
+    { id: 4, nom: "Sophie Bernard", email: "sophie.b@outlook.fr", role: "simulation", score: 68, lastLogin: "2026-04-03 14:15", patrimoine: "420 000 EUR", telephone: "+33 6 55 66 77 88", dateInscription: "2024-06-18" },
+    { id: 5, nom: "Pierre Durand", email: "p.durand@mail.com", role: "accompagnement", score: 88, lastLogin: "2026-04-02 11:00", patrimoine: "3 100 000 EUR", telephone: "+33 6 33 44 55 66", dateInscription: "2024-02-08" },
+    { id: 6, nom: "Claire Moreau", email: "claire.moreau@free.fr", role: "simulation", score: 55, lastLogin: "2026-04-01 16:45", patrimoine: "280 000 EUR", telephone: "+33 6 77 88 99 00", dateInscription: "2025-01-12" },
+    { id: 7, nom: "Thomas Leroy", email: "thomas.leroy@pro.fr", role: "strategie", score: 71, lastLogin: "2026-03-30 09:20", patrimoine: "960 000 EUR", telephone: "+33 6 22 33 44 55", dateInscription: "2024-09-05" },
+    { id: 8, nom: "Isabelle Petit", email: "i.petit@hotmail.fr", role: "free", score: 42, lastLogin: "2026-03-28 13:10", patrimoine: "150 000 EUR", telephone: "+33 6 66 55 44 33", dateInscription: "2025-02-20" },
+    { id: 9, nom: "Nicolas Roux", email: "n.roux@gmail.com", role: "free", score: 38, lastLogin: "2026-03-25 10:55", patrimoine: "95 000 EUR", telephone: "+33 6 44 33 22 11", dateInscription: "2025-03-15" },
+    { id: 10, nom: "Camille Fournier", email: "camille.f@yahoo.fr", role: "accompagnement", score: 91, lastLogin: "2026-04-04 07:30", patrimoine: "4 200 000 EUR", telephone: "+33 6 88 77 66 55", dateInscription: "2024-04-01" }
+];
+
+const ALLOC_PROFILES = ['securitaire','prudent','equilibre','dynamique','offensif'];
+const ALLOC_VEHICLES = ['Immobilier','Assurance-vie','PEA','CTO','PER','SCPI','Liquidites'];
+
+const DEFAULT_ALLOCATIONS = {
+    securitaire:  { immobilier:10, assuranceVie:40, pea:5, cto:5, per:10, scpi:10, liquidites:20 },
+    prudent:      { immobilier:15, assuranceVie:30, pea:10, cto:5, per:15, scpi:15, liquidites:10 },
+    equilibre:    { immobilier:20, assuranceVie:25, pea:15, cto:10, per:15, scpi:10, liquidites:5 },
+    dynamique:    { immobilier:25, assuranceVie:15, pea:25, cto:15, per:10, scpi:5, liquidites:5 },
+    offensif:     { immobilier:30, assuranceVie:10, pea:30, cto:20, per:5, scpi:3, liquidites:2 }
+};
+
+const DEFAULT_ENVELOPPES = {
+    av: { rendementFondsEuros: 2.5, rendementMandat: 5.0, rendementStructure: 7.0, fraisGestion: 0.75, fraisEntree: 0, fraisArbitage: 0.5 },
+    pea: { plafond: 150000, rendementEstime: 7.0, fraisCourtage: 0.5, fraisGarde: 0 },
+    per: { plafondDeduction: 32909, rendementEstime: 5.5, fraisGestion: 0.8, fraisSortie: 0 },
+    cto: { fraisCourtage: 0.5, fraisGarde: 0.1, fraisChange: 0.3, rendementEstime: 6.0 },
+    scpi: { rendementDistribution: 4.5, revalorisationParts: 1.5, fraisSouscription: 8.0, fraisGestion: 10.0, delaiJouissance: 5 }
+};
+
+const DEFAULT_FISCALITE = {
+    irTranches: [
+        { seuil: 11294, taux: 0 },
+        { seuil: 28797, taux: 11 },
+        { seuil: 82341, taux: 30 },
+        { seuil: 177106, taux: 41 },
+        { seuil: 999999999, taux: 45 }
+    ],
+    ifiTranches: [
+        { seuil: 800000, taux: 0 },
+        { seuil: 1300000, taux: 0.5 },
+        { seuil: 2570000, taux: 0.7 },
+        { seuil: 5000000, taux: 1.0 },
+        { seuil: 10000000, taux: 1.25 },
+        { seuil: 999999999, taux: 1.5 }
+    ],
+    pfuTaux: 12.8,
+    psTaux: 17.2,
+    abattementSuccession: { ligneDirect: 100000, conjoint: 0, fratrie: 15932, neveux: 7967, tiers: 1594 }
+};
+
+const DEFAULT_SCORING = {
+    weights: { diversification: 20, fiscalite: 20, liquidite: 15, risque: 20, coherence: 15, structuration: 10 },
+    thresholds: { immoPctMax: 60, liquiditePctMin: 5, endettementMax: 33, diversificationMin: 3, scoreFiscalMin: 40, concentrationMax: 50 }
+};
+
+const DEFAULT_OFFRES = {
+    simulation: { prix: 49, stripeLink: "https://buy.stripe.com/simulation_link", calendlyLink: "https://calendly.com/patriacapital/simulation" },
+    strategie: { prix: 1900, stripeLink: "https://buy.stripe.com/strategie_link", calendlyLink: "https://calendly.com/patriacapital/strategie" },
+    accompagnement: { prix: 0, stripeLink: "", calendlyLink: "https://calendly.com/patriacapital/accompagnement" }
+};
+
+const DEFAULT_RECOMMANDATIONS = {
+    templates: {
+        av: "Nous recommandons l'ouverture d'un contrat d'assurance-vie en gestion mandat pour capitaliser sur le fonds euros securise tout en profitant de la diversification des unites de compte.",
+        pea: "L'ouverture d'un PEA permettra de beneficier d'une fiscalite allegee apres 5 ans de detention, avec une exposition actions europeennes diversifiee.",
+        per: "Le Plan d'Epargne Retraite offre un avantage fiscal immediat en deduction du revenu imposable, particulierement pertinent au vu de votre tranche marginale d'imposition.",
+        cto: "Le Compte-Titres Ordinaire permet un acces sans plafond aux marches internationaux, adapte pour une strategie de diversification globale.",
+        scpi: "L'investissement en SCPI offre un rendement regulier avec une gestion entierement deleguee, ideal pour une exposition immobilier sans les contraintes de gestion directe.",
+        immobilier: "L'investissement immobilier direct en LMNP ou via un dispositif fiscal (Pinel, Denormandie) permet de combiner constitution de patrimoine et optimisation fiscale."
+    },
+    priorityWeights: { av: 25, pea: 20, per: 15, cto: 10, scpi: 15, immobilier: 15 }
+};
+
+// ===== UTILITY FUNCTIONS =====
+function loadData(key, defaults) {
+    try {
+        const stored = localStorage.getItem('patria_admin_' + key);
+        return stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(defaults));
+    } catch(e) { return JSON.parse(JSON.stringify(defaults)); }
+}
+function saveData(key, data) {
+    localStorage.setItem('patria_admin_' + key, JSON.stringify(data));
+}
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.textContent = message;
+    container.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// ===== AUTH =====
+function checkAuth() {
+    const user = localStorage.getItem('patria_admin_user');
+    if (user) {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('adminWrapper').classList.add('active');
+        document.getElementById('adminEmailDisplay').textContent = user;
+        initDashboard();
+    }
+}
+function handleLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pw = document.getElementById('loginPassword').value;
+    if (email === 'carlos@patriacapital.fr' && pw === 'admin2024') {
+        localStorage.setItem('patria_admin_user', email);
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('adminWrapper').classList.add('active');
+        document.getElementById('adminEmailDisplay').textContent = email;
+        document.getElementById('loginError').style.display = 'none';
+        initDashboard();
+    } else {
+        document.getElementById('loginError').style.display = 'block';
+    }
+}
+function handleLogout() {
+    localStorage.removeItem('patria_admin_user');
+    location.reload();
+}
+// Enter key on password
+document.getElementById('loginPassword').addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+document.getElementById('loginEmail').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginPassword').focus(); });
+
+// ===== SIDEBAR NAVIGATION =====
+document.querySelectorAll('.sidebar-nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+        document.querySelectorAll('.sidebar-nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        const section = item.dataset.section;
+        document.querySelectorAll('.admin-content-section').forEach(s => s.classList.remove('active'));
+        document.getElementById('section-' + section).classList.add('active');
+    });
+});
+
+// ===== MOBILE NAV =====
+document.getElementById('mobile-toggle').addEventListener('click', () => {
+    document.getElementById('nav-links').classList.toggle('mobile-open');
+});
+
+// ===== INIT ALL =====
+function initDashboard() {
+    renderClients();
+    initAllocations();
+    initEnveloppes();
+    initFiscalite();
+    initScoring();
+    initOffres();
+    initRecommandations();
+}
+
+// ===== CLIENTS =====
+let clients = loadData('clients', DEFAULT_CLIENTS);
+
+function renderClients() {
+    const tbody = document.getElementById('clientTableBody');
+    const search = (document.getElementById('clientSearch').value || '').toLowerCase();
+    const roleFilter = document.getElementById('clientRoleFilter').value;
+    const filtered = clients.filter(c => {
+        const matchSearch = !search || c.nom.toLowerCase().includes(search) || c.email.toLowerCase().includes(search);
+        const matchRole = !roleFilter || c.role === roleFilter;
+        return matchSearch && matchRole;
+    });
+    tbody.innerHTML = filtered.map(c => {
+        const scoreColor = c.score >= 75 ? '#27ae60' : c.score >= 50 ? '#f39c12' : '#e74c3c';
+        return `<tr>
+            <td><strong>${c.nom}</strong></td>
+            <td>${c.email}</td>
+            <td>
+                <select class="role-select" onchange="changeClientRole(${c.id}, this.value)">
+                    ${['admin','accompagnement','strategie','simulation','free'].map(r =>
+                        `<option value="${r}" ${c.role===r?'selected':''}>${r.charAt(0).toUpperCase()+r.slice(1)}</option>`
+                    ).join('')}
+                </select>
+            </td>
+            <td><span class="score-bar"><span class="score-bar-fill" style="width:${c.score}%;background:${scoreColor}"></span></span>${c.score}/100</td>
+            <td>${c.lastLogin}</td>
+            <td>
+                <button class="action-btn" onclick="viewClient(${c.id})">Voir</button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+function filterClients() { renderClients(); }
+function changeClientRole(id, newRole) {
+    const client = clients.find(c => c.id === id);
+    if (client) {
+        client.role = newRole;
+        saveData('clients', clients);
+        showToast(`Role de ${client.nom} mis a jour : ${newRole}`);
+    }
+}
+function viewClient(id) {
+    const c = clients.find(cl => cl.id === id);
+    if (!c) return;
+    const scoreColor = c.score >= 75 ? '#27ae60' : c.score >= 50 ? '#f39c12' : '#e74c3c';
+    document.getElementById('clientModalContent').innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+            <h2 style="margin:0">${c.nom}</h2>
+            <button class="action-btn" onclick="closeClientModal()" style="font-size:1.2rem;padding:0.3rem 0.6rem;">&#10005;</button>
+        </div>
+        <div class="detail-grid">
+            <div class="detail-item"><label>Email</label><span>${c.email}</span></div>
+            <div class="detail-item"><label>Telephone</label><span>${c.telephone || 'N/A'}</span></div>
+            <div class="detail-item"><label>Role</label><span class="role-badge ${c.role}">${c.role}</span></div>
+            <div class="detail-item"><label>Score patrimonial</label><span style="color:${scoreColor};font-weight:700">${c.score}/100</span></div>
+            <div class="detail-item"><label>Patrimoine estime</label><span>${c.patrimoine || 'N/A'}</span></div>
+            <div class="detail-item"><label>Date d'inscription</label><span>${c.dateInscription || 'N/A'}</span></div>
+            <div class="detail-item"><label>Derniere connexion</label><span>${c.lastLogin}</span></div>
+            <div class="detail-item"><label>ID client</label><span>#${String(c.id).padStart(4,'0')}</span></div>
+        </div>
+    `;
+    document.getElementById('clientModal').classList.add('active');
+}
+function closeClientModal() { document.getElementById('clientModal').classList.remove('active'); }
+document.getElementById('clientModal').addEventListener('click', e => { if (e.target === document.getElementById('clientModal')) closeClientModal(); });
+
+// ===== ALLOCATIONS =====
+let allocations = loadData('allocations', DEFAULT_ALLOCATIONS);
+let currentAllocProfile = 'securitaire';
+const allocKeys = ['immobilier','assuranceVie','pea','cto','per','scpi','liquidites'];
+
+function initAllocations() {
+    const tabsContainer = document.getElementById('allocProfileTabs');
+    tabsContainer.innerHTML = ALLOC_PROFILES.map(p =>
+        `<button class="profile-tab ${p===currentAllocProfile?'active':''}" onclick="switchAllocProfile('${p}')">${p.charAt(0).toUpperCase()+p.slice(1)}</button>`
+    ).join('');
+    renderAllocTable();
+}
+function switchAllocProfile(profile) {
+    currentAllocProfile = profile;
+    document.querySelectorAll('.profile-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase() === profile));
+    renderAllocTable();
+}
+function renderAllocTable() {
+    const data = allocations[currentAllocProfile];
+    const container = document.getElementById('allocTableContainer');
+    const total = allocKeys.reduce((s,k) => s + (Number(data[k]) || 0), 0);
+    container.innerHTML = `
+        <table class="alloc-table">
+            <thead><tr><th>Vehicule</th><th>Allocation cible (%)</th></tr></thead>
+            <tbody>
+                ${allocKeys.map((k, i) => `<tr>
+                    <td>${ALLOC_VEHICLES[i]}</td>
+                    <td><input type="number" min="0" max="100" value="${data[k]}" onchange="updateAlloc('${k}', this.value)"></td>
+                </tr>`).join('')}
+            </tbody>
+            <tfoot><tr>
+                <td><strong>Total</strong></td>
+                <td><strong class="alloc-total ${total===100?'':'error'}">${total}%</strong> ${total!==100?'<span style="color:#e74c3c;font-size:0.8rem;margin-left:0.5rem;">(doit etre 100%)</span>':''}</td>
+            </tr></tfoot>
+        </table>`;
+}
+function updateAlloc(key, value) {
+    allocations[currentAllocProfile][key] = Number(value) || 0;
+    renderAllocTable();
+}
+function saveAllocations() {
+    for (const profile of ALLOC_PROFILES) {
+        const total = allocKeys.reduce((s,k) => s + (Number(allocations[profile][k]) || 0), 0);
+        if (total !== 100) {
+            showToast(`Profil "${profile}" : total = ${total}% (doit etre 100%)`, 'error');
+            return;
+        }
+    }
+    saveData('allocations', allocations);
+    showToast('Allocations enregistrees avec succes');
+}
+
+// ===== ENVELOPPES =====
+let enveloppes = loadData('enveloppes', DEFAULT_ENVELOPPES);
+
+function initEnveloppes() {
+    const container = document.getElementById('enveloppesForm');
+    container.innerHTML = `
+        <div class="settings-card">
+            <h4>Assurance-Vie (AV)</h4>
+            <div class="form-row">
+                <div class="form-group"><label>Rendement fonds euros (%)</label><input type="number" step="0.1" value="${enveloppes.av.rendementFondsEuros}" data-path="av.rendementFondsEuros"></div>
+                <div class="form-group"><label>Rendement mandat (%)</label><input type="number" step="0.1" value="${enveloppes.av.rendementMandat}" data-path="av.rendementMandat"></div>
+                <div class="form-group"><label>Rendement structure (%)</label><input type="number" step="0.1" value="${enveloppes.av.rendementStructure}" data-path="av.rendementStructure"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Frais de gestion (%)</label><input type="number" step="0.01" value="${enveloppes.av.fraisGestion}" data-path="av.fraisGestion"></div>
+                <div class="form-group"><label>Frais d'entree (%)</label><input type="number" step="0.01" value="${enveloppes.av.fraisEntree}" data-path="av.fraisEntree"></div>
+                <div class="form-group"><label>Frais d'arbitrage (%)</label><input type="number" step="0.01" value="${enveloppes.av.fraisArbitage}" data-path="av.fraisArbitage"></div>
+            </div>
+        </div>
+        <div class="settings-card">
+            <h4>Plan d'Epargne en Actions (PEA)</h4>
+            <div class="form-row">
+                <div class="form-group"><label>Plafond versements (EUR)</label><input type="number" value="${enveloppes.pea.plafond}" data-path="pea.plafond"></div>
+                <div class="form-group"><label>Rendement estime (%)</label><input type="number" step="0.1" value="${enveloppes.pea.rendementEstime}" data-path="pea.rendementEstime"></div>
+                <div class="form-group"><label>Frais courtage (%)</label><input type="number" step="0.01" value="${enveloppes.pea.fraisCourtage}" data-path="pea.fraisCourtage"></div>
+                <div class="form-group"><label>Frais de garde (%)</label><input type="number" step="0.01" value="${enveloppes.pea.fraisGarde}" data-path="pea.fraisGarde"></div>
+            </div>
+        </div>
+        <div class="settings-card">
+            <h4>Plan d'Epargne Retraite (PER)</h4>
+            <div class="form-row">
+                <div class="form-group"><label>Plafond deduction (EUR)</label><input type="number" value="${enveloppes.per.plafondDeduction}" data-path="per.plafondDeduction"></div>
+                <div class="form-group"><label>Rendement estime (%)</label><input type="number" step="0.1" value="${enveloppes.per.rendementEstime}" data-path="per.rendementEstime"></div>
+                <div class="form-group"><label>Frais de gestion (%)</label><input type="number" step="0.01" value="${enveloppes.per.fraisGestion}" data-path="per.fraisGestion"></div>
+                <div class="form-group"><label>Frais de sortie (%)</label><input type="number" step="0.01" value="${enveloppes.per.fraisSortie}" data-path="per.fraisSortie"></div>
+            </div>
+        </div>
+        <div class="settings-card">
+            <h4>Compte-Titres Ordinaire (CTO)</h4>
+            <div class="form-row">
+                <div class="form-group"><label>Frais courtage (%)</label><input type="number" step="0.01" value="${enveloppes.cto.fraisCourtage}" data-path="cto.fraisCourtage"></div>
+                <div class="form-group"><label>Frais de garde (%)</label><input type="number" step="0.01" value="${enveloppes.cto.fraisGarde}" data-path="cto.fraisGarde"></div>
+                <div class="form-group"><label>Frais de change (%)</label><input type="number" step="0.01" value="${enveloppes.cto.fraisChange}" data-path="cto.fraisChange"></div>
+                <div class="form-group"><label>Rendement estime (%)</label><input type="number" step="0.1" value="${enveloppes.cto.rendementEstime}" data-path="cto.rendementEstime"></div>
+            </div>
+        </div>
+        <div class="settings-card">
+            <h4>SCPI</h4>
+            <div class="form-row">
+                <div class="form-group"><label>Rendement distribution (%)</label><input type="number" step="0.1" value="${enveloppes.scpi.rendementDistribution}" data-path="scpi.rendementDistribution"></div>
+                <div class="form-group"><label>Revalorisation parts (%)</label><input type="number" step="0.1" value="${enveloppes.scpi.revalorisationParts}" data-path="scpi.revalorisationParts"></div>
+                <div class="form-group"><label>Frais souscription (%)</label><input type="number" step="0.1" value="${enveloppes.scpi.fraisSouscription}" data-path="scpi.fraisSouscription"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Frais gestion (%)</label><input type="number" step="0.1" value="${enveloppes.scpi.fraisGestion}" data-path="scpi.fraisGestion"></div>
+                <div class="form-group"><label>Delai jouissance (mois)</label><input type="number" value="${enveloppes.scpi.delaiJouissance}" data-path="scpi.delaiJouissance"></div>
+            </div>
+        </div>`;
+}
+function saveEnveloppes() {
+    document.querySelectorAll('#enveloppesForm input[data-path]').forEach(input => {
+        const [group, key] = input.dataset.path.split('.');
+        enveloppes[group][key] = Number(input.value);
+    });
+    saveData('enveloppes', enveloppes);
+    showToast('Parametres enveloppes enregistres');
+}
+
+// ===== FISCALITE =====
+let fiscalite = loadData('fiscalite', DEFAULT_FISCALITE);
+
+function initFiscalite() {
+    const container = document.getElementById('fiscaliteForm');
+    container.innerHTML = `
+        <div class="settings-card">
+            <h4>Bareme IR (Impot sur le Revenu)</h4>
+            <table class="tranche-table">
+                <thead><tr><th>Tranche</th><th>Seuil (EUR)</th><th>Taux (%)</th></tr></thead>
+                <tbody>
+                    ${fiscalite.irTranches.map((t, i) => `<tr>
+                        <td>Tranche ${i+1}</td>
+                        <td><input type="number" value="${t.seuil}" data-ir="${i}" data-field="seuil"></td>
+                        <td><input type="number" step="0.1" value="${t.taux}" data-ir="${i}" data-field="taux"></td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+        <div class="settings-card">
+            <h4>Bareme IFI (Impot sur la Fortune Immobiliere)</h4>
+            <table class="tranche-table">
+                <thead><tr><th>Tranche</th><th>Seuil (EUR)</th><th>Taux (%)</th></tr></thead>
+                <tbody>
+                    ${fiscalite.ifiTranches.map((t, i) => `<tr>
+                        <td>Tranche ${i+1}</td>
+                        <td><input type="number" value="${t.seuil}" data-ifi="${i}" data-field="seuil"></td>
+                        <td><input type="number" step="0.01" value="${t.taux}" data-ifi="${i}" data-field="taux"></td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+        <div class="settings-card">
+            <h4>Prelevements</h4>
+            <div class="form-row">
+                <div class="form-group"><label>PFU - Prelevement Forfaitaire Unique (%)</label><input type="number" step="0.1" value="${fiscalite.pfuTaux}" id="fisc_pfu"></div>
+                <div class="form-group"><label>PS - Prelevements Sociaux (%)</label><input type="number" step="0.1" value="${fiscalite.psTaux}" id="fisc_ps"></div>
+            </div>
+        </div>
+        <div class="settings-card">
+            <h4>Abattements Succession</h4>
+            <div class="form-row">
+                <div class="form-group"><label>Ligne directe (EUR)</label><input type="number" value="${fiscalite.abattementSuccession.ligneDirect}" id="succ_direct"></div>
+                <div class="form-group"><label>Conjoint (EUR)</label><input type="number" value="${fiscalite.abattementSuccession.conjoint}" id="succ_conjoint"></div>
+                <div class="form-group"><label>Fratrie (EUR)</label><input type="number" value="${fiscalite.abattementSuccession.fratrie}" id="succ_fratrie"></div>
+                <div class="form-group"><label>Neveux / Nieces (EUR)</label><input type="number" value="${fiscalite.abattementSuccession.neveux}" id="succ_neveux"></div>
+                <div class="form-group"><label>Tiers (EUR)</label><input type="number" value="${fiscalite.abattementSuccession.tiers}" id="succ_tiers"></div>
+            </div>
+        </div>`;
+}
+function saveFiscalite() {
+    document.querySelectorAll('[data-ir]').forEach(input => {
+        const i = Number(input.dataset.ir);
+        const field = input.dataset.field;
+        fiscalite.irTranches[i][field] = Number(input.value);
+    });
+    document.querySelectorAll('[data-ifi]').forEach(input => {
+        const i = Number(input.dataset.ifi);
+        const field = input.dataset.field;
+        fiscalite.ifiTranches[i][field] = Number(input.value);
+    });
+    fiscalite.pfuTaux = Number(document.getElementById('fisc_pfu').value);
+    fiscalite.psTaux = Number(document.getElementById('fisc_ps').value);
+    fiscalite.abattementSuccession = {
+        ligneDirect: Number(document.getElementById('succ_direct').value),
+        conjoint: Number(document.getElementById('succ_conjoint').value),
+        fratrie: Number(document.getElementById('succ_fratrie').value),
+        neveux: Number(document.getElementById('succ_neveux').value),
+        tiers: Number(document.getElementById('succ_tiers').value)
+    };
+    saveData('fiscalite', fiscalite);
+    showToast('Parametres fiscalite enregistres');
+}
+
+// ===== SCORING =====
+let scoring = loadData('scoring', DEFAULT_SCORING);
+
+function initScoring() {
+    const container = document.getElementById('scoringForm');
+    const wKeys = Object.keys(scoring.weights);
+    const wLabels = { diversification: 'Diversification', fiscalite: 'Fiscalite', liquidite: 'Liquidite', risque: 'Risque', coherence: 'Coherence', structuration: 'Structuration' };
+    const tKeys = Object.keys(scoring.thresholds);
+    const tLabels = { immoPctMax: 'Immo % max', liquiditePctMin: 'Liquidite % min', endettementMax: 'Endettement max (%)', diversificationMin: 'Diversification min (nb)', scoreFiscalMin: 'Score fiscal min', concentrationMax: 'Concentration max (%)' };
+    const wTotal = wKeys.reduce((s,k) => s + Number(scoring.weights[k]), 0);
+
+    container.innerHTML = `
+        <div class="settings-card">
+            <h4>Poids des sous-scores (total = 100)</h4>
+            <div class="form-row">
+                ${wKeys.map(k => `<div class="form-group"><label>${wLabels[k]}</label><input type="number" min="0" max="100" value="${scoring.weights[k]}" id="sw_${k}" onchange="updateWeightTotal()"></div>`).join('')}
+            </div>
+            <div class="weight-total ${wTotal===100?'valid':'invalid'}" id="weightTotalDisplay">Total : ${wTotal}/100 ${wTotal===100?'':'- doit etre egal a 100'}</div>
+        </div>
+        <div class="settings-card">
+            <h4>Seuils</h4>
+            <div class="form-row">
+                ${tKeys.map(k => `<div class="form-group"><label>${tLabels[k]}</label><input type="number" value="${scoring.thresholds[k]}" id="st_${k}"></div>`).join('')}
+            </div>
+        </div>`;
+}
+function updateWeightTotal() {
+    const wKeys = Object.keys(scoring.weights);
+    const total = wKeys.reduce((s,k) => s + (Number(document.getElementById('sw_'+k).value) || 0), 0);
+    const el = document.getElementById('weightTotalDisplay');
+    el.textContent = `Total : ${total}/100 ${total===100?'':'- doit etre egal a 100'}`;
+    el.className = 'weight-total ' + (total === 100 ? 'valid' : 'invalid');
+}
+function saveScoring() {
+    const wKeys = Object.keys(scoring.weights);
+    const tKeys = Object.keys(scoring.thresholds);
+    wKeys.forEach(k => scoring.weights[k] = Number(document.getElementById('sw_'+k).value) || 0);
+    const total = wKeys.reduce((s,k) => s + scoring.weights[k], 0);
+    if (total !== 100) {
+        showToast(`Total des poids = ${total} (doit etre 100)`, 'error');
+        return;
+    }
+    tKeys.forEach(k => scoring.thresholds[k] = Number(document.getElementById('st_'+k).value) || 0);
+    saveData('scoring', scoring);
+    showToast('Parametres scoring enregistres');
+}
+
+// ===== OFFRES =====
+let offres = loadData('offres', DEFAULT_OFFRES);
+
+function initOffres() {
+    const container = document.getElementById('offresForm');
+    container.innerHTML = `
+        <div class="settings-card">
+            <h4>Offre Simulation</h4>
+            <div class="form-row">
+                <div class="form-group"><label>Prix (EUR)</label><input type="number" value="${offres.simulation.prix}" id="off_sim_prix"></div>
+                <div class="form-group"><label>Lien Stripe</label><input type="text" value="${offres.simulation.stripeLink}" id="off_sim_stripe"></div>
+                <div class="form-group"><label>Lien Calendly</label><input type="text" value="${offres.simulation.calendlyLink}" id="off_sim_calendly"></div>
+            </div>
+        </div>
+        <div class="settings-card">
+            <h4>Offre Strategie</h4>
+            <div class="form-row">
+                <div class="form-group"><label>Prix (EUR)</label><input type="number" value="${offres.strategie.prix}" id="off_str_prix"></div>
+                <div class="form-group"><label>Lien Stripe</label><input type="text" value="${offres.strategie.stripeLink}" id="off_str_stripe"></div>
+                <div class="form-group"><label>Lien Calendly</label><input type="text" value="${offres.strategie.calendlyLink}" id="off_str_calendly"></div>
+            </div>
+        </div>
+        <div class="settings-card">
+            <h4>Offre Accompagnement</h4>
+            <div class="form-row">
+                <div class="form-group"><label>Prix (EUR)</label><input type="number" value="${offres.accompagnement.prix}" id="off_acc_prix"><div class="unit">0 = sur devis</div></div>
+                <div class="form-group"><label>Lien Stripe</label><input type="text" value="${offres.accompagnement.stripeLink}" id="off_acc_stripe"></div>
+                <div class="form-group"><label>Lien Calendly</label><input type="text" value="${offres.accompagnement.calendlyLink}" id="off_acc_calendly"></div>
+            </div>
+        </div>`;
+}
+function saveOffres() {
+    offres.simulation = { prix: Number(document.getElementById('off_sim_prix').value), stripeLink: document.getElementById('off_sim_stripe').value, calendlyLink: document.getElementById('off_sim_calendly').value };
+    offres.strategie = { prix: Number(document.getElementById('off_str_prix').value), stripeLink: document.getElementById('off_str_stripe').value, calendlyLink: document.getElementById('off_str_calendly').value };
+    offres.accompagnement = { prix: Number(document.getElementById('off_acc_prix').value), stripeLink: document.getElementById('off_acc_stripe').value, calendlyLink: document.getElementById('off_acc_calendly').value };
+    saveData('offres', offres);
+    showToast('Parametres offres enregistres');
+}
+
+// ===== RECOMMANDATIONS =====
+let recommandations = loadData('recommandations', DEFAULT_RECOMMANDATIONS);
+
+function initRecommandations() {
+    const container = document.getElementById('recommandationsForm');
+    const vehicles = [
+        { key: 'av', label: 'Assurance-Vie' },
+        { key: 'pea', label: 'PEA' },
+        { key: 'per', label: 'PER' },
+        { key: 'cto', label: 'CTO' },
+        { key: 'scpi', label: 'SCPI' },
+        { key: 'immobilier', label: 'Immobilier' }
+    ];
+    container.innerHTML = `
+        <div class="settings-card">
+            <h4>Templates de recommandation</h4>
+            ${vehicles.map(v => `
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label>${v.label}</label>
+                    <textarea id="reco_tpl_${v.key}" rows="3">${recommandations.templates[v.key]}</textarea>
+                </div>
+            `).join('')}
+        </div>
+        <div class="settings-card">
+            <h4>Poids de priorite</h4>
+            <div class="form-row">
+                ${vehicles.map(v => `<div class="form-group"><label>${v.label}</label><input type="number" min="0" max="100" value="${recommandations.priorityWeights[v.key]}" id="reco_w_${v.key}"></div>`).join('')}
+            </div>
+            <div class="weight-total" id="recoWeightDisplay"></div>
+        </div>`;
+    updateRecoWeightDisplay();
+    vehicles.forEach(v => {
+        document.getElementById('reco_w_'+v.key).addEventListener('change', updateRecoWeightDisplay);
+    });
+}
+function updateRecoWeightDisplay() {
+    const keys = ['av','pea','per','cto','scpi','immobilier'];
+    const total = keys.reduce((s,k) => s + (Number(document.getElementById('reco_w_'+k).value) || 0), 0);
+    const el = document.getElementById('recoWeightDisplay');
+    el.textContent = `Total : ${total}/100 ${total===100?'':'- doit etre egal a 100'}`;
+    el.className = 'weight-total ' + (total === 100 ? 'valid' : 'invalid');
+}
+function saveRecommandations() {
+    const keys = ['av','pea','per','cto','scpi','immobilier'];
+    keys.forEach(k => {
+        recommandations.templates[k] = document.getElementById('reco_tpl_'+k).value;
+        recommandations.priorityWeights[k] = Number(document.getElementById('reco_w_'+k).value) || 0;
+    });
+    const total = keys.reduce((s,k) => s + recommandations.priorityWeights[k], 0);
+    if (total !== 100) {
+        showToast(`Total poids priorite = ${total} (doit etre 100)`, 'error');
+        return;
+    }
+    saveData('recommandations', recommandations);
+    showToast('Parametres recommandations enregistres');
+}
+
+// ===== BOOT =====
+checkAuth();
+</script>
+</body>
+</html>

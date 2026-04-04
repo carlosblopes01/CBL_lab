@@ -405,6 +405,10 @@
             <li><a href="#" class="nav-link" data-section="pea"><span class="nav-icon">&#9650;</span> PEA</a></li>
             <li><a href="#" class="nav-link" data-section="cto"><span class="nav-icon">&#9632;</span> CTO</a></li>
             <li id="nav-dirigeant" class="hidden"><a href="#" class="nav-link" data-section="dirigeant"><span class="nav-icon">&#9670;</span> Dirigeant</a></li>
+            <li class="nav-separator">Cockpit</li>
+            <li><a href="#" class="nav-link" data-section="plan-action"><span class="nav-icon">&#9745;</span> Plan d'action</a></li>
+            <li><a href="#" class="nav-link" data-section="allocation"><span class="nav-icon">&#9878;</span> Allocation</a></li>
+            <li><a href="#" class="nav-link" data-section="alertes"><span class="nav-icon">&#9888;</span> Alertes</a></li>
             <li class="nav-separator">Analyse</li>
             <li><a href="#" class="nav-link" data-section="comparatif"><span class="nav-icon">&#8644;</span> Comparatif</a></li>
             <li><a href="#" class="nav-link" data-section="recommandation"><span class="nav-icon">&#9733;</span> Recommandation</a></li>
@@ -432,7 +436,7 @@
         <section id="accueil" class="section active">
             <div class="section-header">
                 <h1>Tableau de Bord</h1>
-                <p class="section-subtitle">Bienvenue, <span id="dash-client-name">Client</span></p>
+                <p class="section-subtitle">Bienvenue, <span id="dash-client-name">Client</span> <span id="dash-score" class="badge badge-gold" style="margin-left:12px;font-size:0.8rem;"></span></p>
             </div>
 
             <!-- COMPLETION BANNER (shown when profile incomplete) -->
@@ -459,6 +463,15 @@
                     <div class="kpi-card kpi-green"><div class="kpi-label">Revenus Annuels</div><div class="kpi-value" id="kpi-revenus">— &euro;</div><div class="kpi-detail" id="kpi-revenus-detail"></div></div>
                     <div class="kpi-card kpi-blue"><div class="kpi-label">Capacité d'Épargne</div><div class="kpi-value" id="kpi-epargne">— &euro;/mois</div><div class="kpi-detail" id="kpi-epargne-pct"></div></div>
                     <div class="kpi-card kpi-orange"><div class="kpi-label">Taux d'Endettement</div><div class="kpi-value" id="kpi-endettement">—%</div><div class="kpi-detail" id="kpi-dette-detail"></div></div>
+                </div>
+
+                <!-- SCORING PATRIMONIAL V2 -->
+                <div class="scoring-dashboard">
+                    <div class="scoring-header">
+                        <div id="score-gauge-main" class="score-gauge-container"></div>
+                        <div id="sub-scores-container" class="sub-scores-container"></div>
+                    </div>
+                    <div id="dashboard-alerts" class="dashboard-alerts-container"></div>
                 </div>
 
                 <!-- INSIGHTS -->
@@ -488,6 +501,13 @@
                         <p id="dash-reco-text">Remplissez votre profil pour obtenir une recommandation personnalisée.</p>
                     </div>
                     <a href="#" class="btn btn-gold nav-link" data-section="recommandation">Voir le détail</a>
+                </div>
+
+                <!-- ALLOCATION COMPARISON -->
+                <div class="card" id="dash-allocation-card">
+                    <h3>Allocation patrimoniale</h3>
+                    <p class="card-subtitle">Comparaison entre votre allocation actuelle et l'allocation cible recommandée selon votre profil.</p>
+                    <div id="allocation-comparison"></div>
                 </div>
 
                 <div id="dash-actions" class="action-buttons-row">
@@ -1391,6 +1411,69 @@
             <div id="obo-structure-reco" class="hidden"></div>
         </section>
 
+        <!-- ===== PLAN D'ACTION ===== -->
+        <section id="plan-action" class="section">
+            <div class="section-header">
+                <h1>Plan d'action</h1>
+                <p class="section-subtitle">Actions priorisées pour optimiser votre patrimoine</p>
+            </div>
+            <div class="scoring-section-intro">
+                <div class="scoring-intro-gauge" id="score-gauge-actions"></div>
+                <div class="scoring-intro-text">
+                    <h3>Votre score patrimonial : <span id="score-badge-actions" class="badge badge-gold">--/100</span></h3>
+                    <p>Chaque action ci-dessous est classée par priorité et impact attendu. Mettez à jour le statut au fur et à mesure de leur réalisation.</p>
+                </div>
+            </div>
+            <div class="action-plan-filters">
+                <button class="filter-btn active" data-filter="all" onclick="filterActions('all', this)">Toutes</button>
+                <button class="filter-btn" data-filter="urgent" onclick="filterActions('urgent', this)">Urgentes</button>
+                <button class="filter-btn" data-filter="important" onclick="filterActions('important', this)">Importantes</button>
+                <button class="filter-btn" data-filter="opportunite" onclick="filterActions('opportunite', this)">Opportunités</button>
+            </div>
+            <div id="action-plan-container"></div>
+            <div class="card" style="margin-top:24px;">
+                <div class="rec-icon">&#128197;</div>
+                <div class="rec-content">
+                    <h3>Besoin d'aide pour mettre en oeuvre ces actions ?</h3>
+                    <p>Nos conseillers patrimoniaux vous accompagnent dans le déploiement de chaque recommandation.</p>
+                </div>
+                <button class="btn btn-gold" onclick="prendreRDV()">Prendre rendez-vous</button>
+            </div>
+        </section>
+
+        <!-- ===== ALLOCATION ===== -->
+        <section id="allocation" class="section">
+            <div class="section-header">
+                <h1>Allocation patrimoniale</h1>
+                <p class="section-subtitle">Analyse de votre répartition actuelle vs allocation cible recommandée</p>
+            </div>
+            <div class="scoring-section-intro">
+                <div class="scoring-intro-gauge" id="score-gauge-alloc"></div>
+                <div class="scoring-intro-text">
+                    <h3>Diversification : <span id="score-badge-diversif" class="badge badge-gold">--/100</span></h3>
+                    <p>L'allocation cible est calculée en fonction de votre profil de risque, de votre horizon d'investissement et de vos objectifs patrimoniaux.</p>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Comparaison des allocations</h3>
+                <div id="allocation-detail-comparison"></div>
+            </div>
+            <div class="card" style="margin-top:24px;">
+                <h3>Recommandations d'ajustement</h3>
+                <div id="allocation-recommendations"></div>
+            </div>
+        </section>
+
+        <!-- ===== ALERTES ===== -->
+        <section id="alertes" class="section">
+            <div class="section-header">
+                <h1>Alertes patrimoniales</h1>
+                <p class="section-subtitle">Points de vigilance et opportunités détectés dans votre situation</p>
+            </div>
+            <div class="alert-summary-bar" id="alert-summary-bar"></div>
+            <div id="alerts-container"></div>
+        </section>
+
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -1400,6 +1483,7 @@
     <script src="config.js"></script>
     <script src="auth.js"></script>
     <script src="engine.js"></script>
+    <script src="scoring.js"></script>
     <script src="access.js"></script>
     <script src="app.js"></script>
     <script>

@@ -236,6 +236,11 @@ function saveAndCalculate() {
     // Reinit charts
     setTimeout(() => initCharts(), 200);
 
+    // Refresh scoring V2
+    if (typeof refreshScoring === 'function') {
+        setTimeout(() => refreshScoring(), 300);
+    }
+
     // Animate
     setTimeout(() => {
         document.querySelectorAll('.section.active .kpi-card, .section.active .card').forEach(el => {
