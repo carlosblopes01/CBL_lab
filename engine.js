@@ -117,6 +117,11 @@ function recalcAll() {
 
     // Patrimoine page
     updatePatrimoinePage(d, totalImmo, totalFin, dettes, patriBrut, patriNet);
+
+    if (typeof recalcComptesBancaires === 'function') recalcComptesBancaires();
+
+    // Risk profile verification
+    if (typeof renderRiskProfileCheck === 'function') renderRiskProfileCheck();
 }
 
 function setHTML(id, html) {
@@ -677,6 +682,198 @@ function generateRecommendation(d) {
     `;
 }
 
+// ===== RISK PROFILE VERIFICATION =====
+function analyzeRealRiskProfile() {
+    const d = typeof collectFormData === 'function' ? collectFormData() : {};
+    const declaredProfile = d.profilRisque || '';
+
+    if (!declaredProfile) return null;
+
+    // Gather actual allocation data from existing contracts
+    // AV allocation
+    const avEncours = d.av_exist_encours || 0;
+    const avPctFE = (d.av_exist_pct_fe || 0) / 100;
+    const avPctUC = (d.av_exist_pct_uc || 0) / 100;
+    const avPctStruct = (d.av_exist_pct_struct || 0) / 100;
+
+    // PEA = 100% actions/ETF
+    const peaValeur = d.pea_exist_valeur || d.pea_capital || 0;
+
+    // CTO = variable but typically equity-heavy
+    const ctoValeur = d.cto_exist_valeur || d.cto_capital || 0;
+
+    // PER
+    const perEncours = d.per_exist_encours || 0;
+
+    // Bank accounts (safe/liquid)
+    const userData = typeof getUserData === 'function' ? getUserData() : {};
+    const comptesBancaires = userData.comptesBancaires || [];
+    const totalBancaire = comptesBancaires.reduce((s, c) => s + (c.solde || 0), 0);
+
+    // Total patrimoine financier
+    const totalFinancier = avEncours + peaValeur + ctoValeur + perEncours + totalBancaire;
+
+    if (totalFinancier <= 0) return null;
+
+    // Calculate actual allocation percentages
+    // "Safe" = fonds euros part of AV + bank accounts
+    const safePart = (avEncours * avPctFE) + totalBancaire;
+    // "Moderate" = UC/mandat part of AV + PER
+    const moderatePart = (avEncours * avPctUC) + perEncours;
+    // "Dynamic" = structures + PEA + CTO
+    const dynamicPart = (avEncours * avPctStruct) + peaValeur + ctoValeur;
+
+    const pctSafe = safePart / totalFinancier;
+    const pctModerate = moderatePart / totalFinancier;
+    const pctDynamic = dynamicPart / totalFinancier;
+
+    // Determine actual profile based on allocation
+    let actualProfile = 'equilibre';
+    if (pctSafe >= 0.65) actualProfile = 'prudent';
+    else if (pctSafe >= 0.50 && pctDynamic < 0.25) actualProfile = 'prudent';
+    else if (pctDynamic >= 0.60) actualProfile = 'offensif';
+    else if (pctDynamic >= 0.45) actualProfile = 'dynamique';
+    else if (pctDynamic >= 0.30 && pctSafe < 0.35) actualProfile = 'dynamique';
+    else actualProfile = 'equilibre';
+
+    // Normalize declared profile for comparison
+    const declaredNorm = declaredProfile.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, '');
+    let declaredKey = 'equilibre';
+    if (declaredNorm.indexOf('securitaire') >= 0) declaredKey = 'prudent';
+    else if (declaredNorm.indexOf('prudent') >= 0) declaredKey = 'prudent';
+    else if (declaredNorm.indexOf('equilibre') >= 0) declaredKey = 'equilibre';
+    else if (declaredNorm.indexOf('dynamique') >= 0) declaredKey = 'dynamique';
+    else if (declaredNorm.indexOf('offensif') >= 0) declaredKey = 'offensif';
+
+    // Determine mismatch severity
+    const profileOrder = ['prudent', 'equilibre', 'dynamique', 'offensif'];
+    const declaredIdx = profileOrder.indexOf(declaredKey);
+    const actualIdx = profileOrder.indexOf(actualProfile);
+    const diff = Math.abs(declaredIdx - actualIdx);
+
+    let mismatch = 'none';
+    let severity = 'coherent';
+    if (diff === 0) {
+        mismatch = 'none';
+        severity = 'coherent';
+    } else if (diff === 1) {
+        mismatch = 'minor';
+        severity = 'warning';
+    } else {
+        mismatch = 'major';
+        severity = 'critical';
+    }
+
+    return {
+        declaredProfile: declaredKey,
+        declaredLabel: declaredProfile,
+        actualProfile,
+        mismatch,
+        severity,
+        pctSafe: pctSafe * 100,
+        pctModerate: pctModerate * 100,
+        pctDynamic: pctDynamic * 100,
+        totalFinancier
+    };
+}
+
+function renderRiskProfileCheck() {
+    const analysis = analyzeRealRiskProfile();
+
+    const profilCard = document.getElementById('risk-profile-check');
+    const profilContent = document.getElementById('risk-profile-check-content');
+    const alloCard = document.getElementById('allocation-risk-check');
+    const alloContent = document.getElementById('allocation-risk-check-content');
+
+    if (!analysis) {
+        if (profilCard) profilCard.style.display = 'none';
+        if (alloCard) alloCard.style.display = 'none';
+        return;
+    }
+
+    const profileLabels = { prudent: 'Prudent', equilibre: 'Equilibre', dynamique: 'Dynamique', offensif: 'Offensif' };
+    const declared = profileLabels[analysis.declaredProfile] || analysis.declaredProfile;
+    const actual = profileLabels[analysis.actualProfile] || analysis.actualProfile;
+
+    const fmtPct = v => v.toFixed(1) + '%';
+    const fmtMoney = v => v.toLocaleString('fr-FR', {maximumFractionDigits:0}) + ' \u20ac';
+
+    let statusColor, statusIcon, statusText, recommendation;
+    if (analysis.severity === 'coherent') {
+        statusColor = '#27ae60';
+        statusIcon = '\u2713';
+        statusText = 'Votre allocation est coherente avec votre profil declare.';
+        recommendation = '';
+    } else if (analysis.severity === 'warning') {
+        statusColor = '#f39c12';
+        statusIcon = '\u26A0';
+        statusText = 'Legere incoherence detectee entre votre profil declare et votre allocation reelle.';
+        recommendation = 'Vous vous declarez <strong>' + declared + '</strong> mais votre allocation correspond davantage a un profil <strong>' + actual + '</strong>. Nous vous recommandons d\'ajuster votre profil ou de reequilibrer vos investissements.';
+    } else {
+        statusColor = '#e74c3c';
+        statusIcon = '\u26D4';
+        statusText = 'Incoherence majeure detectee !';
+        recommendation = 'Vous vous declarez <strong>' + declared + '</strong> mais votre allocation reelle correspond a un profil <strong>' + actual + '</strong>. Cette incoherence peut vous exposer a un niveau de risque inadequat. Un reequilibrage est fortement recommande.';
+    }
+
+    var html = '<div style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:10px;background:' + statusColor + '15;border:1px solid ' + statusColor + '30;margin-bottom:16px;">' +
+        '<div style="font-size:24px;color:' + statusColor + ';">' + statusIcon + '</div>' +
+        '<div>' +
+            '<div style="font-weight:600;color:' + statusColor + ';margin-bottom:4px;">' + statusText + '</div>' +
+            (recommendation ? '<div style="font-size:13px;color:rgba(255,255,255,0.7);">' + recommendation + '</div>' : '') +
+        '</div>' +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">' +
+        '<div style="text-align:center;padding:16px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">' +
+            '<div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Profil declare</div>' +
+            '<div style="font-size:22px;font-weight:700;margin-top:8px;">' + declared + '</div>' +
+        '</div>' +
+        '<div style="text-align:center;padding:16px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">' +
+            '<div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Profil reel</div>' +
+            '<div style="font-size:22px;font-weight:700;margin-top:8px;color:' + statusColor + ';">' + actual + '</div>' +
+        '</div>' +
+    '</div>' +
+    '<div style="margin-bottom:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.6);">Repartition reelle de votre patrimoine financier (' + fmtMoney(analysis.totalFinancier) + ')</div>' +
+    '<div style="display:flex;flex-direction:column;gap:8px;">' +
+        '<div>' +
+            '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;">' +
+                '<span style="color:rgba(255,255,255,0.6);">Securitaire (fonds euros + bancaire)</span>' +
+                '<span style="font-weight:600;">' + fmtPct(analysis.pctSafe) + '</span>' +
+            '</div>' +
+            '<div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">' +
+                '<div style="height:100%;width:' + analysis.pctSafe + '%;background:#27ae60;border-radius:4px;"></div>' +
+            '</div>' +
+        '</div>' +
+        '<div>' +
+            '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;">' +
+                '<span style="color:rgba(255,255,255,0.6);">Modere (UC / mandat / PER)</span>' +
+                '<span style="font-weight:600;">' + fmtPct(analysis.pctModerate) + '</span>' +
+            '</div>' +
+            '<div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">' +
+                '<div style="height:100%;width:' + analysis.pctModerate + '%;background:#f39c12;border-radius:4px;"></div>' +
+            '</div>' +
+        '</div>' +
+        '<div>' +
+            '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;">' +
+                '<span style="color:rgba(255,255,255,0.6);">Dynamique (structures + PEA + CTO)</span>' +
+                '<span style="font-weight:600;">' + fmtPct(analysis.pctDynamic) + '</span>' +
+            '</div>' +
+            '<div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">' +
+                '<div style="height:100%;width:' + analysis.pctDynamic + '%;background:#e74c3c;border-radius:4px;"></div>' +
+            '</div>' +
+        '</div>' +
+    '</div>';
+
+    if (profilCard && profilContent) {
+        profilCard.style.display = '';
+        profilContent.innerHTML = html;
+    }
+    if (alloCard && alloContent) {
+        alloCard.style.display = '';
+        alloContent.innerHTML = html;
+    }
+}
+
 // ===== PATRIMOINE PAGE =====
 function updatePatrimoinePage(d, totalImmo, totalFin, dettes, brut, net) {
     const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
@@ -879,6 +1076,7 @@ function calculateAV() {
 
     saveSimResult('av', { capitalNet, tri: rdtNet, capitalInvesti: apport });
     updateComparatif();
+    compareAV();
 }
 
 // ===== PEA =====
@@ -930,6 +1128,372 @@ function calculatePEA() {
     saveSimResult('peaLibre', { capitalNet: netETF, tri: triETF, capitalInvesti: capital });
     saveSimResult('peaMandat', { capitalNet: netMandat, tri: triMandat, capitalInvesti: capital });
     updateComparatif();
+    comparePEA();
+}
+
+// ===== ADMIN PARAMS LOADER =====
+function getAdminEnveloppes() {
+    try {
+        return JSON.parse(localStorage.getItem('patria_admin_enveloppes') || '{}');
+    } catch(e) { return {}; }
+}
+
+function prefillPatriaParams() {
+    const env = getAdminEnveloppes();
+
+    // Pre-fill AV Patria fields from admin params
+    if (env.av) {
+        const setVal = (field, val) => {
+            const el = document.querySelector('[data-field="' + field + '"]');
+            if (el && (!el.dataset.userSet)) el.value = val;
+        };
+        if (env.av.rendementFondsEuros) setVal('av_rdt_fe', env.av.rendementFondsEuros);
+        if (env.av.rendementMandat) setVal('av_rdt_mandat', env.av.rendementMandat);
+        if (env.av.rendementStructure) setVal('av_rdt_struct', env.av.rendementStructure);
+    }
+
+    // Pre-fill PEA Patria fields from admin params
+    if (env.pea) {
+        const setVal = (field, val) => {
+            const el = document.querySelector('[data-field="' + field + '"]');
+            if (el && (!el.dataset.userSet)) el.value = val;
+        };
+        if (env.pea.rendementEstime) setVal('pea_rdt_etf', env.pea.rendementEstime);
+        if (env.pea.fraisCourtage !== undefined) setVal('pea_ter', env.pea.fraisCourtage || 0.2);
+    }
+
+    // Pre-fill CTO Patria fields from admin params
+    if (env.cto) {
+        const setVal = (field, val) => {
+            const el = document.querySelector('[data-field="' + field + '"]');
+            if (el && (!el.dataset.userSet)) el.value = val;
+        };
+        if (env.cto.rendementEstime) setVal('cto_rdt', env.cto.rendementEstime);
+        if (env.cto.fraisGarde !== undefined) setVal('cto_frais', env.cto.fraisGarde);
+    }
+
+    // Pre-fill PER Patria fields from admin params
+    if (env.per) {
+        const setVal = (field, val) => {
+            const el = document.querySelector('[data-field="' + field + '"]');
+            if (el && (!el.dataset.userSet)) el.value = val;
+        };
+        // Note: PER rendement is set via profil/config, not directly from admin params
+        // But we can inform the user about frais gestion via admin
+    }
+}
+
+function compareAV() {
+    const env = getAdminEnveloppes();
+    const d = typeof collectFormData === 'function' ? collectFormData() : {};
+
+    // Client's current contract
+    const existEncours = d.av_exist_encours || 0;
+    const existFrais = d.av_exist_frais_gestion || 0.8;
+    const existFraisEntree = d.av_exist_frais_entree || 3;
+    const existPctFE = (d.av_exist_pct_fe || 70) / 100;
+    const existPctUC = (d.av_exist_pct_uc || 20) / 100;
+    const existRdtFE = (d.av_exist_rdt_fe || 1.5) / 100;
+    const existRdtUC = (d.av_exist_rdt_uc || 3) / 100;
+    const horizon = d.av_horizon || 8;
+    const apport = d.av_apport || existEncours || 60000;
+
+    // Patria params
+    const patriaFrais = env.av ? (env.av.fraisGestion || 0.8) : 0.8;
+    const patriaFraisEntree = env.av ? (env.av.fraisEntree || 0) : 0;
+    const patriaRdtFE = (d.av_rdt_fe || 2.5) / 100;
+    const patriaRdtMandat = (d.av_rdt_mandat || 4.4) / 100;
+    const patriaPctFE = (d.av_pct_fe || 60) / 100;
+    const patriaPctMandat = (d.av_pct_mandat || 30) / 100;
+
+    if (existEncours <= 0 && apport <= 0) return;
+
+    const capital = apport > 0 ? apport : existEncours;
+
+    // Project current contract
+    const existRdtMoyen = existPctFE * existRdtFE + existPctUC * existRdtUC;
+    const existRdtNet = existRdtMoyen - (existFrais / 100);
+    const existCapitalAfterEntry = capital * (1 - existFraisEntree / 100);
+    const existFinal = existCapitalAfterEntry * Math.pow(1 + Math.max(existRdtNet, 0), horizon);
+    const existGain = existFinal - capital;
+    const existFraisTotal = capital * (existFrais / 100) * horizon;
+
+    // Project Patria contract
+    const patriaRdtMoyen = patriaPctFE * patriaRdtFE + patriaPctMandat * patriaRdtMandat;
+    const patriaRdtNet = patriaRdtMoyen - (patriaFrais / 100);
+    const patriaCapitalAfterEntry = capital * (1 - patriaFraisEntree / 100);
+    const patriaFinal = patriaCapitalAfterEntry * Math.pow(1 + Math.max(patriaRdtNet, 0), horizon);
+    const patriaGain = patriaFinal - capital;
+    const patriaFraisTotal = capital * (patriaFrais / 100) * horizon;
+
+    const delta = patriaFinal - existFinal;
+    const fraisSaved = existFraisTotal - patriaFraisTotal;
+
+    const fmt2 = v => v.toLocaleString('fr-FR', {maximumFractionDigits:0}) + ' \u20ac';
+    const pct2 = v => (v * 100).toFixed(2) + '%';
+
+    const container = document.getElementById('av-comparatif');
+    const content = document.getElementById('av-comparatif-content');
+    if (!container || !content) return;
+
+    container.classList.remove('hidden');
+    content.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+            <div style="background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.2);border-radius:12px;padding:20px;text-align:center;">
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Votre contrat actuel</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:12px;">${d.av_exist_assureur || 'Non renseigne'}</div>
+                <div style="font-size:28px;font-weight:700;color:#e74c3c;">${fmt2(existFinal)}</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">a ${horizon} ans</div>
+                <div style="margin-top:12px;font-size:13px;">
+                    <div>Gain : <strong>${fmt2(existGain)}</strong></div>
+                    <div>Frais cumules : <strong style="color:#e74c3c;">${fmt2(existFraisTotal)}</strong></div>
+                    <div>Rdt net : <strong>${pct2(existRdtNet)}</strong></div>
+                </div>
+            </div>
+            <div style="background:rgba(193,146,94,0.08);border:1px solid rgba(193,146,94,0.2);border-radius:12px;padding:20px;text-align:center;">
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Contrat Patria Capital</div>
+                <div style="font-size:11px;color:#c1925e;margin-bottom:12px;">&#9733; Recommande</div>
+                <div style="font-size:28px;font-weight:700;color:#c1925e;">${fmt2(patriaFinal)}</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">a ${horizon} ans</div>
+                <div style="margin-top:12px;font-size:13px;">
+                    <div>Gain : <strong>${fmt2(patriaGain)}</strong></div>
+                    <div>Frais cumules : <strong style="color:#27ae60;">${fmt2(patriaFraisTotal)}</strong></div>
+                    <div>Rdt net : <strong>${pct2(patriaRdtNet)}</strong></div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="border:1px solid rgba(193,146,94,0.3);text-align:center;padding:20px;">
+            <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:8px;">Avantage Patria Capital sur ${horizon} ans</div>
+            <div style="font-size:32px;font-weight:700;color:${delta >= 0 ? '#27ae60' : '#e74c3c'};">${delta >= 0 ? '+' : ''}${fmt2(delta)}</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:8px;">Economie de frais : <strong style="color:#27ae60;">${fmt2(fraisSaved)}</strong></div>
+        </div>
+    `;
+}
+
+function comparePEA() {
+    const env = getAdminEnveloppes();
+    const d = typeof collectFormData === 'function' ? collectFormData() : {};
+
+    const capital = d.pea_capital || 60000;
+    const horizon = d.pea_horizon || 8;
+
+    // Client's current PEA
+    const existFraisCourtage = (d.pea_exist_frais_courtage || 0.5) / 100;
+    const existFraisGarde = (d.pea_exist_frais_garde || 0.3) / 100;
+    const existRdt = (d.pea_exist_rdt || 5) / 100;
+    const existRdtNet = existRdt - existFraisGarde;
+    const existFinal = capital * Math.pow(1 + existRdtNet, horizon);
+    const existGain = existFinal - capital;
+    const existFraisTotal = capital * existFraisGarde * horizon;
+
+    // Patria PEA
+    const patriaFraisCourtage = env.pea ? (env.pea.fraisCourtage || 0) / 100 : 0;
+    const patriaFraisGarde = env.pea ? (env.pea.fraisGarde || 0) / 100 : 0;
+    const patriaRdt = (d.pea_rdt_etf || (env.pea ? env.pea.rendementEstime : 7)) / 100;
+    const patriaRdtNet = patriaRdt - patriaFraisGarde;
+    const patriaFinal = capital * Math.pow(1 + patriaRdtNet, horizon);
+    const patriaGain = patriaFinal - capital;
+    const patriaFraisTotal = capital * patriaFraisGarde * horizon;
+
+    const delta = patriaFinal - existFinal;
+    const fraisSaved = existFraisTotal - patriaFraisTotal;
+
+    const fmt2 = v => v.toLocaleString('fr-FR', {maximumFractionDigits:0}) + ' \u20ac';
+    const pct2 = v => (v * 100).toFixed(2) + '%';
+
+    const container = document.getElementById('pea-comparatif');
+    const content = document.getElementById('pea-comparatif-content');
+    if (!container || !content) return;
+
+    container.classList.remove('hidden');
+    content.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+            <div style="background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.2);border-radius:12px;padding:20px;text-align:center;">
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Votre PEA actuel</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:12px;">${d.pea_exist_courtier || 'Non renseigne'}</div>
+                <div style="font-size:28px;font-weight:700;color:#e74c3c;">${fmt2(existFinal)}</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">a ${horizon} ans</div>
+                <div style="margin-top:12px;font-size:13px;">
+                    <div>Gain : <strong>${fmt2(existGain)}</strong></div>
+                    <div>Frais annuels : <strong style="color:#e74c3c;">${pct2(existFraisGarde)}</strong></div>
+                    <div>Rdt net : <strong>${pct2(existRdtNet)}</strong></div>
+                </div>
+            </div>
+            <div style="background:rgba(193,146,94,0.08);border:1px solid rgba(193,146,94,0.2);border-radius:12px;padding:20px;text-align:center;">
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">PEA Patria Capital</div>
+                <div style="font-size:11px;color:#c1925e;margin-bottom:12px;">&#9733; Recommande</div>
+                <div style="font-size:28px;font-weight:700;color:#c1925e;">${fmt2(patriaFinal)}</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">a ${horizon} ans</div>
+                <div style="margin-top:12px;font-size:13px;">
+                    <div>Gain : <strong>${fmt2(patriaGain)}</strong></div>
+                    <div>Frais annuels : <strong style="color:#27ae60;">${pct2(patriaFraisGarde)}</strong></div>
+                    <div>Rdt net : <strong>${pct2(patriaRdtNet)}</strong></div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="border:1px solid rgba(193,146,94,0.3);text-align:center;padding:20px;">
+            <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:8px;">Avantage Patria Capital sur ${horizon} ans</div>
+            <div style="font-size:32px;font-weight:700;color:${delta >= 0 ? '#27ae60' : '#e74c3c'};">${delta >= 0 ? '+' : ''}${fmt2(delta)}</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:8px;">Economie de frais : <strong style="color:#27ae60;">${fmt2(fraisSaved)}</strong></div>
+        </div>
+    `;
+}
+
+// ===== CTO COMPARATIF =====
+function compareCTO() {
+    const env = getAdminEnveloppes();
+
+    const capital = getField('cto_capital') || 300000;
+    const horizon = getField('cto_horizon') || 8;
+
+    // Client's current CTO
+    const existFraisGarde = (getField('cto_exist_frais_garde') || 0.2) / 100;
+    const existRdt = (getField('cto_exist_rdt') || 5) / 100;
+    const existRdtNet = existRdt - existFraisGarde;
+    const existFinal = capital * Math.pow(1 + existRdtNet, horizon);
+    const existGain = existFinal - capital;
+    const existTax = existGain * 0.30;
+    const existNet = existFinal - existTax;
+
+    // Patria CTO
+    const patriaFraisGarde = env.cto ? (env.cto.fraisGarde || 0) / 100 : 0;
+    const patriaRdt = (getField('cto_rdt') || (env.cto ? env.cto.rendementEstime : 7)) / 100;
+    const patriaFrais = (getField('cto_frais') || 0) / 100;
+    const patriaRdtNet = patriaRdt - patriaFrais;
+    const patriaFinal = capital * Math.pow(1 + patriaRdtNet, horizon);
+    const patriaGain = patriaFinal - capital;
+    const patriaTax = patriaGain * 0.30;
+    const patriaNet = patriaFinal - patriaTax;
+
+    const delta = patriaNet - existNet;
+
+    const fmt2 = v => v.toLocaleString('fr-FR', {maximumFractionDigits:0}) + ' \u20ac';
+    const pct2 = v => (v * 100).toFixed(2) + '%';
+
+    const courtier = document.querySelector('[data-field="cto_exist_courtier"]');
+    const courtierName = courtier ? courtier.value : '';
+
+    const container = document.getElementById('cto-comparatif');
+    const content = document.getElementById('cto-comparatif-content');
+    if (!container || !content) return;
+
+    container.classList.remove('hidden');
+    content.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+            <div style="background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.2);border-radius:12px;padding:20px;text-align:center;">
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Votre CTO actuel</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:12px;">${courtierName || 'Non renseigne'}</div>
+                <div style="font-size:28px;font-weight:700;color:#e74c3c;">${fmt2(existNet)}</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">Net apres PFU a ${horizon} ans</div>
+                <div style="margin-top:12px;font-size:13px;">
+                    <div>Gain brut : <strong>${fmt2(existGain)}</strong></div>
+                    <div>Frais annuels : <strong style="color:#e74c3c;">${pct2(existFraisGarde)}</strong></div>
+                    <div>Rdt net : <strong>${pct2(existRdtNet)}</strong></div>
+                </div>
+            </div>
+            <div style="background:rgba(193,146,94,0.08);border:1px solid rgba(193,146,94,0.2);border-radius:12px;padding:20px;text-align:center;">
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">CTO Patria Capital</div>
+                <div style="font-size:11px;color:#c1925e;margin-bottom:12px;">&#9733; Recommande</div>
+                <div style="font-size:28px;font-weight:700;color:#c1925e;">${fmt2(patriaNet)}</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">Net apres PFU a ${horizon} ans</div>
+                <div style="margin-top:12px;font-size:13px;">
+                    <div>Gain brut : <strong>${fmt2(patriaGain)}</strong></div>
+                    <div>Frais annuels : <strong style="color:#27ae60;">${pct2(patriaFrais)}</strong></div>
+                    <div>Rdt net : <strong>${pct2(patriaRdtNet)}</strong></div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="border:1px solid rgba(193,146,94,0.3);text-align:center;padding:20px;">
+            <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:8px;">Avantage Patria Capital sur ${horizon} ans</div>
+            <div style="font-size:32px;font-weight:700;color:${delta >= 0 ? '#27ae60' : '#e74c3c'};">${delta >= 0 ? '+' : ''}${fmt2(delta)}</div>
+        </div>
+    `;
+}
+
+// ===== PER COMPARATIF =====
+function comparePER() {
+    const env = getAdminEnveloppes();
+    const cfg = typeof getEffectiveConfig === 'function' ? getEffectiveConfig() : CONFIG;
+
+    const versement = getField('per_versement');
+    const horizon = getField('per_horizon') || 15;
+    const tmi = parseFloat(document.querySelector('[data-field="per_tmi"]')?.value) || 0.30;
+    const profil = document.querySelector('[data-field="per_profil"]')?.value || 'equilibre';
+
+    if (versement <= 0) return;
+
+    // Client's current PER
+    const existFraisGestion = (getField('per_exist_frais_gestion') || 1.2) / 100;
+    const existFraisVersement = (getField('per_exist_frais_versement') || 3) / 100;
+    const existRdt = (getField('per_exist_rdt') || 3) / 100;
+    const existRdtNet = existRdt - existFraisGestion;
+    const existEncours = getField('per_exist_encours') || 0;
+
+    let existCapital = existEncours;
+    for (let i = 0; i < horizon; i++) {
+        const versNet = versement * (1 - existFraisVersement);
+        existCapital = (existCapital + versNet) * (1 + existRdtNet);
+    }
+    const existTotalVerse = versement * horizon;
+    const existEcoIR = Math.min(versement, 32419) * tmi * horizon;
+
+    // Patria PER
+    const patriaFraisGestion = env.per ? (env.per.fraisGestion || 0.6) / 100 : 0.006;
+    const patriaFraisSortie = env.per ? (env.per.fraisSortie || 0) / 100 : 0;
+    const patriaRdt = cfg.per.rendements[profil] || 0.045;
+    const patriaRdtNet = patriaRdt - patriaFraisGestion;
+
+    let patriaCapital = existEncours;
+    for (let i = 0; i < horizon; i++) {
+        patriaCapital = (patriaCapital + versement) * (1 + patriaRdtNet);
+    }
+    const patriaEcoIR = Math.min(versement, env.per && env.per.plafondDeduction ? env.per.plafondDeduction : 32419) * tmi * horizon;
+
+    const delta = patriaCapital - existCapital;
+
+    const fmt2 = v => v.toLocaleString('fr-FR', {maximumFractionDigits:0}) + ' \u20ac';
+    const pct2 = v => (v * 100).toFixed(2) + '%';
+
+    const assureur = document.querySelector('[data-field="per_exist_assureur"]');
+    const assureurName = assureur ? assureur.value : '';
+
+    const container = document.getElementById('per-comparatif');
+    const content = document.getElementById('per-comparatif-content');
+    if (!container || !content) return;
+
+    container.classList.remove('hidden');
+    content.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+            <div style="background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.2);border-radius:12px;padding:20px;text-align:center;">
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Votre PER actuel</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:12px;">${assureurName || 'Non renseigne'}</div>
+                <div style="font-size:28px;font-weight:700;color:#e74c3c;">${fmt2(existCapital)}</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">Capital projete a ${horizon} ans</div>
+                <div style="margin-top:12px;font-size:13px;">
+                    <div>Frais gestion : <strong style="color:#e74c3c;">${pct2(existFraisGestion)}</strong></div>
+                    <div>Frais versement : <strong style="color:#e74c3c;">${pct2(existFraisVersement)}</strong></div>
+                    <div>Rdt net : <strong>${pct2(existRdtNet)}</strong></div>
+                    <div>Economie IR totale : <strong>${fmt2(existEcoIR)}</strong></div>
+                </div>
+            </div>
+            <div style="background:rgba(193,146,94,0.08);border:1px solid rgba(193,146,94,0.2);border-radius:12px;padding:20px;text-align:center;">
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">PER Patria Capital</div>
+                <div style="font-size:11px;color:#c1925e;margin-bottom:12px;">&#9733; Recommande</div>
+                <div style="font-size:28px;font-weight:700;color:#c1925e;">${fmt2(patriaCapital)}</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">Capital projete a ${horizon} ans</div>
+                <div style="margin-top:12px;font-size:13px;">
+                    <div>Frais gestion : <strong style="color:#27ae60;">${pct2(patriaFraisGestion)}</strong></div>
+                    <div>Frais versement : <strong style="color:#27ae60;">0.00%</strong></div>
+                    <div>Rdt net : <strong>${pct2(patriaRdtNet)}</strong></div>
+                    <div>Economie IR totale : <strong>${fmt2(patriaEcoIR)}</strong></div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="border:1px solid rgba(193,146,94,0.3);text-align:center;padding:20px;">
+            <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:8px;">Avantage Patria Capital sur ${horizon} ans</div>
+            <div style="font-size:32px;font-weight:700;color:${delta >= 0 ? '#27ae60' : '#e74c3c'};">${delta >= 0 ? '+' : ''}${fmt2(delta)}</div>
+        </div>
+    `;
 }
 
 // ===== CTO =====
@@ -964,6 +1528,7 @@ function calculateCTO() {
 
     saveSimResult('cto', { capitalNet, tri, capitalInvesti: capital });
     updateComparatif();
+    compareCTO();
 }
 
 // ===== SIMULATION RESULTS STORAGE =====
@@ -3230,6 +3795,158 @@ function calculatePERDirigeant() {
             <div class="data-row" style="font-size:11px;color:#6b7280;">Le PER est debloquable a la retraite ou pour l'achat de la residence principale</div>
         </div></div>
     `);
+    comparePER();
+}
+
+// ===== COMPTES BANCAIRES =====
+function addCompteBancaire(prefill) {
+    const list = document.getElementById('comptes-bancaires-list');
+    if (!list) return;
+    const idx = list.querySelectorAll('.compte-row').length;
+    const d = prefill || { banque: '', type: 'livret_a', solde: 0, taux: 3 };
+
+    const row = document.createElement('div');
+    row.className = 'compte-row card';
+    row.style.cssText = 'padding:16px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.08);';
+    row.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <strong style="color:rgba(255,255,255,0.7);font-size:13px;">Compte #${idx + 1}</strong>
+            <button onclick="removeCompteBancaire(this)" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:18px;padding:4px 8px;" title="Supprimer">&times;</button>
+        </div>
+        <div class="form-grid">
+            <div class="form-group"><label>Banque</label><input type="text" class="cb-banque" value="${d.banque}" placeholder="Ex: Credit Agricole"></div>
+            <div class="form-group"><label>Type de compte</label>
+                <select class="cb-type">
+                    <option value="livret_a" ${d.type==='livret_a'?'selected':''}>Livret A</option>
+                    <option value="ldds" ${d.type==='ldds'?'selected':''}>LDDS</option>
+                    <option value="lep" ${d.type==='lep'?'selected':''}>LEP</option>
+                    <option value="pel" ${d.type==='pel'?'selected':''}>PEL</option>
+                    <option value="cel" ${d.type==='cel'?'selected':''}>CEL</option>
+                    <option value="courant" ${d.type==='courant'?'selected':''}>Compte courant</option>
+                    <option value="terme" ${d.type==='terme'?'selected':''}>Compte a terme</option>
+                    <option value="livret_bancaire" ${d.type==='livret_bancaire'?'selected':''}>Livret bancaire</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Solde (&euro;)</label><input type="number" class="cb-solde input-currency" min="0" value="${d.solde}"></div>
+            <div class="form-group"><label>Taux (%)</label><input type="number" class="cb-taux" min="0" step="0.1" value="${d.taux}"></div>
+        </div>
+    `;
+    list.appendChild(row);
+
+    // Add change listeners
+    row.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', recalcComptesBancaires);
+        el.addEventListener('change', recalcComptesBancaires);
+    });
+
+    recalcComptesBancaires();
+}
+
+function removeCompteBancaire(btn) {
+    const row = btn.closest('.compte-row');
+    if (row) {
+        row.remove();
+        // Re-number remaining rows
+        document.querySelectorAll('#comptes-bancaires-list .compte-row').forEach((r, i) => {
+            const label = r.querySelector('strong');
+            if (label) label.textContent = 'Compte #' + (i + 1);
+        });
+        recalcComptesBancaires();
+    }
+}
+
+function collectComptesData() {
+    const rows = document.querySelectorAll('#comptes-bancaires-list .compte-row');
+    const comptes = [];
+    rows.forEach(row => {
+        comptes.push({
+            banque: row.querySelector('.cb-banque')?.value || '',
+            type: row.querySelector('.cb-type')?.value || 'courant',
+            solde: parseFloat(row.querySelector('.cb-solde')?.value) || 0,
+            taux: parseFloat(row.querySelector('.cb-taux')?.value) || 0
+        });
+    });
+    return comptes;
+}
+
+function recalcComptesBancaires() {
+    const comptes = collectComptesData();
+
+    // Save to hidden field
+    const hidden = document.querySelector('[data-field="comptesBancaires"]');
+    if (hidden) hidden.value = JSON.stringify(comptes);
+
+    // Calculate totals by type
+    let total = 0, livrets = 0, courants = 0, terme = 0;
+    const typeLabels = {
+        livret_a: 'Livret A', ldds: 'LDDS', lep: 'LEP', pel: 'PEL', cel: 'CEL',
+        courant: 'Compte courant', terme: 'Compte a terme', livret_bancaire: 'Livret bancaire'
+    };
+    const livretTypes = ['livret_a', 'ldds', 'lep', 'livret_bancaire'];
+    const termeTypes = ['terme', 'pel', 'cel'];
+
+    const byType = {};
+    comptes.forEach(c => {
+        total += c.solde;
+        if (livretTypes.includes(c.type)) livrets += c.solde;
+        else if (c.type === 'courant') courants += c.solde;
+        else if (termeTypes.includes(c.type)) terme += c.solde;
+
+        if (!byType[c.type]) byType[c.type] = 0;
+        byType[c.type] += c.solde;
+    });
+
+    // Update KPIs
+    const fmtCB = v => v.toLocaleString('fr-FR', {maximumFractionDigits:0}) + ' \u20ac';
+    const el = id => document.getElementById(id);
+    if (el('cb-total')) el('cb-total').textContent = fmtCB(total);
+    if (el('cb-livrets')) el('cb-livrets').textContent = fmtCB(livrets);
+    if (el('cb-courants')) el('cb-courants').textContent = fmtCB(courants);
+    if (el('cb-terme')) el('cb-terme').textContent = fmtCB(terme);
+
+    // Repartition card
+    const repaCard = el('cb-repartition-card');
+    const repaDiv = el('cb-repartition');
+    if (repaCard && repaDiv && comptes.length > 0) {
+        repaCard.style.display = '';
+        let html = '<div style="display:flex;flex-direction:column;gap:12px;">';
+        const colors = { livret_a:'#27ae60', ldds:'#2ecc71', lep:'#1abc9c', pel:'#3498db', cel:'#2980b9', courant:'#95a5a6', terme:'#e67e22', livret_bancaire:'#16a085' };
+        for (const [type, amount] of Object.entries(byType)) {
+            const pctVal = total > 0 ? (amount / total * 100) : 0;
+            html += `<div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                    <span style="font-size:13px;color:rgba(255,255,255,0.7);">${typeLabels[type] || type}</span>
+                    <span style="font-size:13px;font-weight:600;">${fmtCB(amount)} (${pctVal.toFixed(1)}%)</span>
+                </div>
+                <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">
+                    <div style="height:100%;width:${pctVal}%;background:${colors[type] || '#c1925e'};border-radius:4px;transition:width 0.3s;"></div>
+                </div>
+            </div>`;
+        }
+        html += '</div>';
+        repaDiv.innerHTML = html;
+    } else if (repaCard) {
+        repaCard.style.display = 'none';
+    }
+
+    // Save user data
+    if (typeof saveUserData === 'function' && typeof getUserData === 'function') {
+        const data = getUserData();
+        data.comptesBancaires = comptes;
+        data.totalEpargneBancaire = total;
+        saveUserData(data);
+    }
+}
+
+function loadComptesFromData() {
+    const data = typeof getUserData === 'function' ? getUserData() : {};
+    const comptes = data.comptesBancaires || [];
+    const list = document.getElementById('comptes-bancaires-list');
+    if (!list) return;
+    list.innerHTML = '';
+    if (comptes.length > 0) {
+        comptes.forEach(c => addCompteBancaire(c));
+    }
 }
 
 // ===== LIVE FORM UPDATES =====

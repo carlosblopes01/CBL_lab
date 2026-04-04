@@ -189,6 +189,12 @@ function enterApp() {
     // Load saved data into forms
     loadFormData();
 
+    // Pre-fill Patria Capital params from admin enveloppes
+    if (typeof prefillPatriaParams === 'function') prefillPatriaParams();
+
+    // Load comptes bancaires from saved data
+    if (typeof loadComptesFromData === 'function') loadComptesFromData();
+
     // Recalculate
     recalcAll();
 

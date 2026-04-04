@@ -33,22 +33,22 @@ const ACCESS = {
         },
         simulation: {
             level: 1,
-            sections: ['accueil', 'profil', 'patrimoine', 'immobilier', 'assurance-vie', 'pea', 'cto'],
+            sections: ['accueil', 'profil', 'patrimoine', 'comptes-bancaires', 'immobilier', 'assurance-vie', 'pea', 'cto'],
             features: ['saisie', 'vue-globale', 'indicateurs', 'simulations-base', 'dashboard']
         },
         strategie: {
             level: 2,
-            sections: ['accueil', 'profil', 'patrimoine', 'immobilier', 'assurance-vie', 'pea', 'cto', 'comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef', 'dirigeant', 'obo', 'plan-action', 'allocation', 'alertes'],
+            sections: ['accueil', 'profil', 'patrimoine', 'comptes-bancaires', 'immobilier', 'assurance-vie', 'pea', 'cto', 'comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef', 'dirigeant', 'obo', 'plan-action', 'allocation', 'alertes'],
             features: ['saisie', 'vue-globale', 'indicateurs', 'simulations-base', 'dashboard', 'optimisation-fiscale', 'allocation', 'arbitrages', 'comparatifs', 'projections', 'rapport']
         },
         accompagnement: {
             level: 3,
-            sections: ['accueil', 'profil', 'patrimoine', 'immobilier', 'assurance-vie', 'pea', 'cto', 'comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef', 'dirigeant', 'obo', 'plan-action', 'allocation', 'alertes'],
+            sections: ['accueil', 'profil', 'patrimoine', 'comptes-bancaires', 'immobilier', 'assurance-vie', 'pea', 'cto', 'comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef', 'dirigeant', 'obo', 'plan-action', 'allocation', 'alertes'],
             features: ['saisie', 'vue-globale', 'indicateurs', 'simulations-base', 'dashboard', 'optimisation-fiscale', 'allocation', 'arbitrages', 'comparatifs', 'projections', 'rapport', 'suivi', 'reporting', 'coordination']
         },
         admin: {
             level: 99,
-            sections: ['accueil', 'profil', 'patrimoine', 'immobilier', 'assurance-vie', 'pea', 'cto', 'comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef', 'dirigeant', 'obo', 'plan-action', 'allocation', 'alertes'],
+            sections: ['accueil', 'profil', 'patrimoine', 'comptes-bancaires', 'immobilier', 'assurance-vie', 'pea', 'cto', 'comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef', 'dirigeant', 'obo', 'plan-action', 'allocation', 'alertes'],
             features: ['saisie', 'vue-globale', 'indicateurs', 'simulations-base', 'dashboard', 'optimisation-fiscale', 'allocation', 'arbitrages', 'comparatifs', 'projections', 'rapport', 'suivi', 'reporting', 'coordination', 'admin']
         }
     },

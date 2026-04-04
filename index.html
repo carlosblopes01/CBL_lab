@@ -399,6 +399,7 @@
             <li><a href="#" class="nav-link active" data-section="accueil"><span class="nav-icon">&#9737;</span> Tableau de bord</a></li>
             <li><a href="#" class="nav-link" data-section="profil"><span class="nav-icon">&#9823;</span> Mon profil</a></li>
             <li><a href="#" class="nav-link" data-section="patrimoine"><span class="nav-icon">&#9961;</span> Patrimoine</a></li>
+            <li><a href="#" class="nav-link" data-section="comptes-bancaires"><span class="nav-icon">&#127974;</span> Comptes bancaires</a></li>
             <li class="nav-separator">Simulations</li>
             <li><a href="#" class="nav-link" data-section="immobilier"><span class="nav-icon">&#8962;</span> Immobilier</a></li>
             <li><a href="#" class="nav-link" data-section="assurance-vie"><span class="nav-icon">&#9878;</span> Assurance Vie</a></li>
@@ -922,6 +923,12 @@
                     </div>
                 </div>
 
+                <div id="risk-profile-check" class="card" style="display:none;">
+                    <h3>Verification du profil de risque</h3>
+                    <div class="desc" style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:12px;">Analyse de la coherence entre votre profil declare et votre allocation reelle</div>
+                    <div id="risk-profile-check-content"></div>
+                </div>
+
                 <div class="computed-row computed-row-big">
                     <div>
                         <div class="computed-label">PATRIMOINE BRUT</div>
@@ -978,6 +985,36 @@
             </div>
         </section>
 
+        <!-- ===== COMPTES BANCAIRES ===== -->
+        <section id="comptes-bancaires" class="section">
+            <div class="section-header"><h1>Comptes Bancaires</h1><p class="section-subtitle">Inventaire detaille de votre epargne bancaire</p></div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card kpi-primary"><div class="kpi-label">Total epargne bancaire</div><div class="kpi-value" id="cb-total">0 &euro;</div></div>
+                <div class="kpi-card kpi-green"><div class="kpi-label">Livrets reglementes</div><div class="kpi-value" id="cb-livrets">0 &euro;</div></div>
+                <div class="kpi-card kpi-blue"><div class="kpi-label">Comptes courants</div><div class="kpi-value" id="cb-courants">0 &euro;</div></div>
+                <div class="kpi-card kpi-gold"><div class="kpi-label">Epargne a terme</div><div class="kpi-value" id="cb-terme">0 &euro;</div></div>
+            </div>
+
+            <div class="card">
+                <h3>Mes comptes bancaires</h3>
+                <div class="desc" style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:16px;">Ajoutez l'ensemble de vos comptes pour une vision complete de votre tresorerie</div>
+
+                <div id="comptes-bancaires-list"></div>
+
+                <button class="btn btn-primary" onclick="addCompteBancaire()" style="margin-top:16px;">
+                    <span style="margin-right:6px;">+</span> Ajouter un compte
+                </button>
+            </div>
+
+            <div class="card" id="cb-repartition-card" style="display:none;">
+                <h3>Repartition par type</h3>
+                <div id="cb-repartition"></div>
+            </div>
+
+            <input type="hidden" data-field="comptesBancaires" value="[]">
+        </section>
+
         <!-- ===== SIMULATIONS ===== -->
         <section id="immobilier" class="section">
             <div class="section-header"><h1>Simulation Immobilier Locatif</h1><p class="section-subtitle">Simulez un investissement locatif avec crédit</p></div>
@@ -1011,9 +1048,10 @@
             <div class="sim-disclaimer">Simulation indicative. Les rendements passés ne préjugent pas des rendements futurs. Consultez votre conseiller pour une recommandation adaptée.</div>
 
             <div class="card">
-                <h3>Mon contrat existant</h3>
-                <div class="desc" style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:12px;">Renseignez votre contrat actuel pour simuler la fiscalité en cas de rachat</div>
+                <h3>Mon contrat actuel</h3>
+                <div class="desc" style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:12px;">Renseignez votre contrat actuel pour simuler la fiscalité en cas de rachat et comparer avec Patria Capital</div>
                 <div class="form-grid">
+                    <div class="form-group"><label>Assureur actuel</label><input type="text" data-field="av_exist_assureur" placeholder="Ex: Generali, Cardif..." class="sim-input"></div>
                     <div class="form-group"><label>Encours total (&euro;)</label><input type="number" data-field="av_exist_encours" min="0" value="0" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Total versements (&euro;)</label><input type="number" data-field="av_exist_versements" min="0" value="0" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Ancienneté du contrat (ans)</label><input type="number" data-field="av_exist_anciennete" min="0" max="50" value="0" class="sim-input"></div>
@@ -1025,13 +1063,21 @@
                             <option value="couple">Couple</option>
                         </select>
                     </div>
+                    <div class="form-group"><label>Frais de gestion annuels (%)</label><input type="number" data-field="av_exist_frais_gestion" min="0" step="0.1" value="0.8" class="sim-input"></div>
+                    <div class="form-group"><label>Frais d'entree (%)</label><input type="number" data-field="av_exist_frais_entree" min="0" step="0.1" value="3" class="sim-input"></div>
+                    <div class="form-group"><label>% Fonds Euros</label><input type="number" data-field="av_exist_pct_fe" min="0" max="100" value="70" class="sim-input"></div>
+                    <div class="form-group"><label>% UC / Mandat</label><input type="number" data-field="av_exist_pct_uc" min="0" max="100" value="20" class="sim-input"></div>
+                    <div class="form-group"><label>% Produits structures</label><input type="number" data-field="av_exist_pct_struct" min="0" max="100" value="10" class="sim-input"></div>
+                    <div class="form-group"><label>Rendement fonds euros (%)</label><input type="number" data-field="av_exist_rdt_fe" min="0" step="0.1" value="1.5" class="sim-input"></div>
+                    <div class="form-group"><label>Rendement UC (%)</label><input type="number" data-field="av_exist_rdt_uc" min="0" step="0.1" value="3" class="sim-input"></div>
                 </div>
                 <button class="btn btn-primary" onclick="calculateAVRachat()" style="margin-top:16px;">Simuler le rachat</button>
             </div>
             <div id="av-rachat-results" class="hidden"></div>
 
             <div class="card" style="margin-top:20px;">
-                <h3>Simulation nouveau contrat</h3>
+                <h3>Simulation Patria Capital</h3>
+                <div class="desc" style="font-size:12px;color:#c1925e;margin-bottom:12px;">&#9733; Parametres pre-remplis selon la configuration Patria Capital</div>
                 <div class="form-grid">
                     <div class="form-group"><label>Apport initial (&euro;)</label><input type="number" data-field="av_apport" min="0" value="60000" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Versements mensuels (&euro;)</label><input type="number" data-field="av_mensuel" min="0" value="0" class="input-currency sim-input"></div>
@@ -1046,6 +1092,10 @@
                 <button class="btn btn-primary" onclick="calculateAV()" style="margin-top:16px;">Calculer</button>
             </div>
             <div id="av-results" class="hidden"></div>
+            <div id="av-comparatif" class="card hidden" style="margin-top:20px;">
+                <h3>Comparatif : Votre contrat vs Patria Capital</h3>
+                <div id="av-comparatif-content"></div>
+            </div>
         </section>
 
         <section id="pea" class="section">
@@ -1053,20 +1103,25 @@
             <div class="sim-disclaimer">Simulation indicative. Les performances passées ne garantissent pas les performances futures. Investir comporte un risque de perte en capital.</div>
 
             <div class="card">
-                <h3>Mon PEA existant</h3>
-                <div class="desc" style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:12px;">Renseignez votre PEA actuel pour simuler la fiscalité en cas de retrait</div>
+                <h3>Mon PEA actuel</h3>
+                <div class="desc" style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:12px;">Renseignez votre PEA actuel pour simuler la fiscalité en cas de retrait et comparer avec Patria Capital</div>
                 <div class="form-grid">
+                    <div class="form-group"><label>Courtier actuel</label><input type="text" data-field="pea_exist_courtier" placeholder="Ex: Boursorama, Fortuneo..." class="sim-input"></div>
                     <div class="form-group"><label>Valorisation actuelle (&euro;)</label><input type="number" data-field="pea_exist_valeur" min="0" value="0" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Total versements (&euro;)</label><input type="number" data-field="pea_exist_versements" min="0" value="0" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Ancienneté du PEA (ans)</label><input type="number" data-field="pea_exist_anciennete" min="0" max="40" value="0" class="sim-input"></div>
                     <div class="form-group"><label>Montant du retrait (&euro;)</label><input type="number" data-field="pea_exist_retrait" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Frais de courtage (%)</label><input type="number" data-field="pea_exist_frais_courtage" min="0" step="0.01" value="0.5" class="sim-input"></div>
+                    <div class="form-group"><label>Frais de garde annuels (%)</label><input type="number" data-field="pea_exist_frais_garde" min="0" step="0.01" value="0.3" class="sim-input"></div>
+                    <div class="form-group"><label>Rendement annuel estime (%)</label><input type="number" data-field="pea_exist_rdt" min="0" step="0.1" value="5" class="sim-input"></div>
                 </div>
                 <button class="btn btn-primary" onclick="calculatePEARetrait()" style="margin-top:16px;">Simuler le retrait</button>
             </div>
             <div id="pea-retrait-results" class="hidden"></div>
 
             <div class="card" style="margin-top:20px;">
-                <h3>Simulation nouveau PEA</h3>
+                <h3>Simulation Patria Capital PEA</h3>
+                <div class="desc" style="font-size:12px;color:#c1925e;margin-bottom:12px;">&#9733; Parametres pre-remplis selon la configuration Patria Capital</div>
                 <div class="form-grid">
                     <div class="form-group"><label>Capital investi (&euro;)</label><input type="number" data-field="pea_capital" min="0" max="150000" value="60000" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Horizon (ans)</label><input type="number" data-field="pea_horizon" min="1" max="40" value="8" class="sim-input"></div>
@@ -1078,6 +1133,10 @@
                 <button class="btn btn-primary" onclick="calculatePEA()" style="margin-top:16px;">Calculer</button>
             </div>
             <div id="pea-results" class="hidden"></div>
+            <div id="pea-comparatif" class="card hidden" style="margin-top:20px;">
+                <h3>Comparatif : Votre PEA vs Patria Capital</h3>
+                <div id="pea-comparatif-content"></div>
+            </div>
         </section>
 
         <section id="cto" class="section">
@@ -1105,7 +1164,20 @@
             <div id="cto-cession-results" class="hidden"></div>
 
             <div class="card" style="margin-top:20px;">
-                <h3>Simulation nouveau CTO</h3>
+                <h3>Mon contrat actuel</h3>
+                <div class="desc" style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:12px;">Renseignez votre compte-titres actuel pour comparer</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Courtier actuel</label><input type="text" data-field="cto_exist_courtier" placeholder="Ex: Degiro, Saxo..." class="sim-input"></div>
+                    <div class="form-group"><label>Frais de courtage (%)</label><input type="number" data-field="cto_exist_frais_courtage" min="0" step="0.01" value="0.1" class="sim-input"></div>
+                    <div class="form-group"><label>Frais de garde annuels (%)</label><input type="number" data-field="cto_exist_frais_garde" min="0" step="0.01" value="0.2" class="sim-input"></div>
+                    <div class="form-group"><label>Frais de change (%)</label><input type="number" data-field="cto_exist_frais_change" min="0" step="0.01" value="0.25" class="sim-input"></div>
+                    <div class="form-group"><label>Rendement annuel estime (%)</label><input type="number" data-field="cto_exist_rdt" min="0" step="0.1" value="5" class="sim-input"></div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:20px;">
+                <h3>Contrat Patria Capital</h3>
+                <div class="desc" style="font-size:12px;color:#c1925e;margin-bottom:12px;">&#9733; Parametres pre-remplis selon la configuration Patria Capital</div>
                 <div class="form-grid">
                     <div class="form-group"><label>Capital investi (&euro;)</label><input type="number" data-field="cto_capital" min="0" value="300000" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Horizon (ans)</label><input type="number" data-field="cto_horizon" min="1" max="40" value="8" class="sim-input"></div>
@@ -1115,6 +1187,10 @@
                 <button class="btn btn-primary" onclick="calculateCTO()" style="margin-top:16px;">Calculer</button>
             </div>
             <div id="cto-results" class="hidden"></div>
+            <div id="cto-comparatif" class="card hidden" style="margin-top:20px;">
+                <h3>Comparatif : Votre CTO vs Patria Capital</h3>
+                <div id="cto-comparatif-content"></div>
+            </div>
         </section>
 
         <!-- ===== ANALYSE ===== -->
@@ -1318,7 +1394,20 @@
 
             <!-- PER Dirigeant -->
             <div class="card">
+                <h3>Mon PER actuel</h3>
+                <div class="desc" style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:12px;">Renseignez votre PER actuel pour comparer</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Assureur actuel</label><input type="text" data-field="per_exist_assureur" placeholder="Ex: Swisslife, Generali..." class="sim-input"></div>
+                    <div class="form-group"><label>Encours actuel (&euro;)</label><input type="number" data-field="per_exist_encours" min="0" value="0" class="input-currency sim-input"></div>
+                    <div class="form-group"><label>Frais de gestion annuels (%)</label><input type="number" data-field="per_exist_frais_gestion" min="0" step="0.1" value="1.2" class="sim-input"></div>
+                    <div class="form-group"><label>Frais sur versements (%)</label><input type="number" data-field="per_exist_frais_versement" min="0" step="0.1" value="3" class="sim-input"></div>
+                    <div class="form-group"><label>Rendement annuel estime (%)</label><input type="number" data-field="per_exist_rdt" min="0" step="0.1" value="3" class="sim-input"></div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:20px;">
                 <h3>PER Individuel — Dirigeant</h3>
+                <div class="desc" style="font-size:12px;color:#c1925e;margin-bottom:12px;">&#9733; Parametres pre-remplis selon la configuration Patria Capital</div>
                 <div class="desc" style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:12px;">Optimisation de la déductibilité fiscale des versements</div>
                 <div class="form-grid">
                     <div class="form-group"><label>Revenu net imposable (&euro;)</label><input type="number" data-field="per_revenu" min="0" value="0" class="input-currency sim-input"></div>
@@ -1347,6 +1436,10 @@
                 <button class="btn btn-primary" onclick="calculatePERDirigeant()" style="margin-top:16px;">Simuler le PER</button>
             </div>
             <div id="per-results" class="hidden"></div>
+            <div id="per-comparatif" class="card hidden" style="margin-top:20px;">
+                <h3>Comparatif : Votre PER vs Patria Capital</h3>
+                <div id="per-comparatif-content"></div>
+            </div>
 
         </section>
 
@@ -1461,6 +1554,10 @@
             <div class="card" style="margin-top:24px;">
                 <h3>Recommandations d'ajustement</h3>
                 <div id="allocation-recommendations"></div>
+            </div>
+            <div id="allocation-risk-check" class="card" style="display:none;margin-top:24px;">
+                <h3>Coherence profil / allocation reelle</h3>
+                <div id="allocation-risk-check-content"></div>
             </div>
         </section>
 

@@ -490,6 +490,39 @@ function generateAlerts(data, scores, m) {
         });
     }
 
+    // Risk profile mismatch alert
+    if (typeof analyzeRealRiskProfile === 'function') {
+        var riskAnalysis = analyzeRealRiskProfile();
+        if (riskAnalysis && riskAnalysis.severity === 'critical') {
+            alerts.push({
+                type: 'critical',
+                category: 'risque',
+                title: 'Incoherence majeure profil / allocation',
+                message: 'Votre profil declare (' + (riskAnalysis.declaredProfile || '') + ') est en forte incoherence avec votre allocation reelle qui correspond a un profil ' + (riskAnalysis.actualProfile || '') + '. Cette situation peut vous exposer a un risque inadequat.',
+                action: 'Revoir votre profil de risque ou reequilibrer vos investissements pour retrouver une coherence.',
+                impact: 'Alignement du risque reel avec votre tolerance declaree.'
+            });
+        } else if (riskAnalysis && riskAnalysis.severity === 'warning') {
+            alerts.push({
+                type: 'warning',
+                category: 'risque',
+                title: 'Legere incoherence profil / allocation',
+                message: 'Votre allocation reelle correspond davantage a un profil ' + (riskAnalysis.actualProfile || '') + ' alors que vous vous declarez ' + (riskAnalysis.declaredProfile || '') + '.',
+                action: 'Envisager un ajustement de votre allocation ou de votre profil de risque.',
+                impact: 'Meilleure coherence entre risque pris et risque souhaite.'
+            });
+        } else if (riskAnalysis && riskAnalysis.severity === 'coherent') {
+            alerts.push({
+                type: 'success',
+                category: 'risque',
+                title: 'Profil de risque coherent',
+                message: 'Votre allocation reelle est en adequation avec votre profil de risque declare.',
+                action: null,
+                impact: null
+            });
+        }
+    }
+
     // Sort by priority
     alerts.sort(function(a, b) {
         var pA = SCORING.alertTypes[a.type] ? SCORING.alertTypes[a.type].priority : 99;
