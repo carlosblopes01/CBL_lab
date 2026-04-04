@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservez votre échange stratégique | Patria Capital</title>
+    <meta name="description" content="Réservez un échange de 15 minutes avec un conseiller Patria Capital pour définir votre stratégie patrimoniale personnalisée.">
+    <meta property="og:title" content="Stratégie patrimoniale | Patria Capital">
+    <meta property="og:description" content="15 minutes pour comprendre votre situation et définir ensemble le périmètre de votre stratégie.">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="icone.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icone.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: block;
+            background: #fff;
+        }
+
+        .landing-nav-links a.nav-active { color: #fff; position: relative; }
+        .landing-nav-links a.nav-active::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+            height: 2px; background: var(--accent-gradient); border-radius: 1px;
+        }
+        .landing-nav.scrolled .landing-nav-links a.nav-active { color: var(--primary); }
+
+        /* ===== HERO ===== */
+        .tunnel-hero {
+            position: relative;
+            padding: 140px 48px 72px;
+            background: #0c0f1a;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .tunnel-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(90, 126, 194, 0.10) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .tunnel-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 60%;
+            height: 160%;
+            background: radial-gradient(ellipse at 70% 50%, rgba(193, 146, 94, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .hero-badge-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3.5px;
+            text-transform: uppercase;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tunnel-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(30px, 4vw, 48px);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.15;
+            max-width: 700px;
+            margin: 0 auto 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tunnel-hero p {
+            font-size: clamp(15px, 1.6vw, 18px);
+            color: rgba(255,255,255,0.50);
+            max-width: 560px;
+            margin: 0 auto;
+            line-height: 1.75;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== BOOKING SECTION ===== */
+        .booking-section {
+            background: var(--bg);
+            padding: 72px 48px 80px;
+        }
+
+        .booking-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 48px;
+            max-width: 1060px;
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        /* Booking form */
+        .booking-card {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .booking-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 24px;
+        }
+
+        .calendly-container {
+            min-height: 320px;
+            border: 2px dashed var(--border-light);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        /* Demo form */
+        .demo-form { padding: 8px 0; }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(193, 146, 94, 0.1);
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .time-slot {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        .time-slot:hover {
+            border-color: var(--gold);
+            background: rgba(193, 146, 94, 0.05);
+        }
+
+        .time-slot.selected {
+            border-color: var(--gold);
+            background: rgba(193, 146, 94, 0.1);
+            color: var(--gold-dark);
+            font-weight: 600;
+        }
+
+        .btn-book {
+            width: 100%;
+            margin-top: 24px;
+            padding: 16px;
+            font-size: 15px;
+        }
+
+        /* Confirmation */
+        .booking-confirmation {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .booking-confirmation .confirm-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--green-light);
+            color: var(--green);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .booking-confirmation h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .booking-confirmation p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Right column cards */
+        .info-card {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 28px 28px 28px 32px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border-left: 3px solid var(--gold);
+        }
+
+        .info-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 14px;
+        }
+
+        .info-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-card ul li {
+            padding: 6px 0;
+            font-size: 14px;
+            color: var(--text-light);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.5;
+        }
+
+        .info-card ul li::before {
+            content: '\2713';
+            color: var(--gold);
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .info-card p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 8px;
+        }
+
+        .info-card .price-reminder {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 12px;
+        }
+
+        .info-card-plain {
+            border-left-color: var(--border-light);
+        }
+
+        /* ===== TIMELINE SECTION ===== */
+        .timeline-section {
+            background: #fff;
+            padding: 72px 48px 80px;
+        }
+
+        .timeline-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(24px, 3vw, 32px);
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .timeline-step {
+            text-align: center;
+            position: relative;
+            padding: 24px 16px;
+        }
+
+        .timeline-step::after {
+            content: '';
+            position: absolute;
+            top: 40px;
+            right: -12px;
+            width: 24px;
+            height: 2px;
+            background: var(--border-light);
+        }
+
+        .timeline-step:last-child::after { display: none; }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: var(--bg);
+            color: var(--text-muted);
+            border: 2px solid var(--border-light);
+            transition: all 0.3s;
+        }
+
+        .timeline-step.active .step-number {
+            background: var(--gold);
+            color: #fff;
+            border-color: var(--gold);
+            box-shadow: 0 4px 16px rgba(193, 146, 94, 0.3);
+        }
+
+        .timeline-step h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .timeline-step.active h4 { color: var(--gold-dark); }
+
+        .timeline-step p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ===== TRUST SECTION ===== */
+        .trust-section {
+            background: var(--bg);
+            padding: 72px 48px 80px;
+        }
+
+        .trust-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(24px, 3vw, 32px);
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .trust-card {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 32px 28px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .trust-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .trust-card p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .trust-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(193, 146, 94, 0.1);
+            color: var(--gold);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .tunnel-hero { padding: 120px 24px 56px; }
+            .booking-section { padding: 48px 24px 56px; }
+            .booking-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+            .timeline {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .timeline-step::after { display: none; }
+            .trust-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .timeline-section,
+            .trust-section {
+                padding: 56px 24px 64px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .tunnel-hero { padding: 110px 16px 48px; }
+            .booking-section { padding: 40px 16px 48px; }
+            .booking-card { padding: 28px 20px; }
+            .time-slots { grid-template-columns: repeat(2, 1fr); }
+            .timeline {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .timeline-section,
+            .trust-section {
+                padding: 48px 16px 56px;
+            }
+        }
+
+        /* ===== REVEAL ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="landing">
+
+        <!-- NAV -->
+        <nav class="landing-nav">
+            <div class="landing-nav-inner">
+                <a href="index.html" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:44px;"></a>
+                <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+                <div class="landing-nav-links" id="nav-links">
+                    <a href="index.html">Accueil</a>
+                    <a href="index.html#expertises">Expertises</a>
+                    <a href="outil.html">Notre outil</a>
+                    <a href="cas-concrets.html">Cas concrets</a>
+                    <a href="equipe.html">Le cabinet</a>
+                    <a href="contact.html">Contact</a>
+                    <button class="btn btn-gold btn-sm" onclick="window.location.href='offres.html'">Nos offres</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- HERO -->
+        <section class="tunnel-hero">
+            <div class="hero-badge-tag reveal">Stratégie patrimoniale</div>
+            <h1 class="reveal">Réservez votre échange stratégique</h1>
+            <p class="reveal">15 minutes pour comprendre votre situation et définir ensemble le périmètre de votre stratégie.</p>
+        </section>
+
+        <!-- BOOKING -->
+        <section class="booking-section">
+            <div class="booking-grid">
+                <!-- LEFT: Booking -->
+                <div class="booking-card reveal">
+                    <h2>Choisissez votre créneau</h2>
+
+                    <div id="calendly-embed" class="calendly-container">
+                        <!-- En production, intégrer Calendly ici -->
+                        <span>Chargement du calendrier...</span>
+                    </div>
+
+                    <!-- Demo form -->
+                    <div id="booking-form" class="demo-form">
+                        <div class="form-group">
+                            <label for="rdv-date">Date souhaitée</label>
+                            <input type="date" id="rdv-date" min="">
+                        </div>
+                        <div class="form-group">
+                            <label>Créneau horaire</label>
+                            <input type="hidden" id="rdv-time" value="">
+                            <div class="time-slots">
+                                <div class="time-slot" onclick="selectTime(this, '09:00')">9h00</div>
+                                <div class="time-slot" onclick="selectTime(this, '10:00')">10h00</div>
+                                <div class="time-slot" onclick="selectTime(this, '11:00')">11h00</div>
+                                <div class="time-slot" onclick="selectTime(this, '14:00')">14h00</div>
+                                <div class="time-slot" onclick="selectTime(this, '15:00')">15h00</div>
+                                <div class="time-slot" onclick="selectTime(this, '16:00')">16h00</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-gold btn-lg btn-book" onclick="bookStrategie()">Confirmer mon créneau &rarr;</button>
+                        <p style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:12px;">Gratuit et sans engagement. Échange de 15 minutes.</p>
+                    </div>
+
+                    <!-- Confirmation -->
+                    <div id="booking-confirmation" class="booking-confirmation hidden">
+                        <div class="confirm-icon">&#10003;</div>
+                        <h3>Créneau réservé !</h3>
+                        <p>Nous avons bien enregistré votre demande. Vous recevrez un email de confirmation avec le lien de visioconférence.</p>
+                        <p style="margin-top:16px;"><strong>Date :</strong> <span id="confirm-date"></span><br><strong>Heure :</strong> <span id="confirm-time"></span></p>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Info -->
+                <div>
+                    <div class="info-card reveal">
+                        <h3>Ce que nous aborderons</h3>
+                        <ul>
+                            <li>Votre situation patrimoniale actuelle</li>
+                            <li>Vos objectifs à court et long terme</li>
+                            <li>Les leviers d'optimisation identifiés</li>
+                            <li>Le périmètre de la mission</li>
+                        </ul>
+                    </div>
+                    <div class="info-card info-card-plain reveal">
+                        <h3>Après l'échange</h3>
+                        <p>Vous recevrez un récapitulatif et pourrez valider la mission.</p>
+                        <p>Le paiement intervient uniquement après validation du périmètre.</p>
+                        <div class="price-reminder">Mission : 1 900 € TTC</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TIMELINE -->
+        <section class="timeline-section">
+            <h2 class="reveal">Comment se déroule la suite ?</h2>
+            <div class="timeline">
+                <div class="timeline-step active reveal">
+                    <div class="step-number">1</div>
+                    <h4>Échange de 15 min</h4>
+                    <p>Compréhension de votre situation et de vos objectifs.</p>
+                </div>
+                <div class="timeline-step reveal">
+                    <div class="step-number">2</div>
+                    <h4>Validation du périmètre</h4>
+                    <p>Nous définissons ensemble le contenu de la mission.</p>
+                </div>
+                <div class="timeline-step reveal">
+                    <div class="step-number">3</div>
+                    <h4>Paiement de la mission</h4>
+                    <p>Règlement sécurisé après validation du périmètre.</p>
+                </div>
+                <div class="timeline-step reveal">
+                    <div class="step-number">4</div>
+                    <h4>Accès complet + stratégie</h4>
+                    <p>Outil débloqué et livraison de votre stratégie personnalisée.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRUST -->
+        <section class="trust-section">
+            <h2 class="reveal">Pourquoi un échange préalable ?</h2>
+            <div class="trust-grid">
+                <div class="trust-card reveal">
+                    <div class="trust-card-icon">&#9883;</div>
+                    <h4>Comprendre votre situation</h4>
+                    <p>Chaque patrimoine est unique. Nous prenons le temps de comprendre avant de recommander.</p>
+                </div>
+                <div class="trust-card reveal">
+                    <div class="trust-card-icon">&#10003;</div>
+                    <h4>Valider l'adéquation</h4>
+                    <p>Nous n'acceptons que les missions où nous pouvons apporter une réelle valeur ajoutée.</p>
+                </div>
+                <div class="trust-card reveal">
+                    <div class="trust-card-icon">&#9881;</div>
+                    <h4>Définir le périmètre</h4>
+                    <p>Pour vous garantir un livrable adapté et des recommandations pertinentes.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer style="background:#0c0f1a;padding:40px 24px;text-align:center;">
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.35);line-height:1.7;max-width:700px;margin:0 auto;">
+                CIF &middot; ORIAS n&deg; [NUM&Eacute;RO] &middot; RCP assurée<br>
+                <a href="mentions-legales.html" style="color:rgba(255,255,255,0.4);text-decoration:none;">Mentions légales</a> &middot;
+                <a href="confidentialite.html" style="color:rgba(255,255,255,0.4);text-decoration:none;">Confidentialité</a><br>
+                &copy; 2026 Patria Capital
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // ===== NAV SCROLL =====
+        const nav = document.querySelector('.landing-nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 30);
+        });
+
+        // ===== MOBILE TOGGLE =====
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const navLinks = document.getElementById('nav-links');
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('open');
+                mobileToggle.textContent = navLinks.classList.contains('open') ? '\u2715' : '\u2630';
+            });
+        }
+
+        // ===== REVEAL ON SCROLL =====
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // ===== SET MIN DATE =====
+        const dateInput = document.getElementById('rdv-date');
+        if (dateInput) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            dateInput.min = tomorrow.toISOString().split('T')[0];
+        }
+
+        // ===== TIME SLOT SELECTION =====
+        function selectTime(el, time) {
+            document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('rdv-time').value = time;
+        }
+
+        // ===== BOOKING =====
+        function bookStrategie() {
+            const date = document.getElementById('rdv-date').value;
+            const time = document.getElementById('rdv-time').value;
+            if (!date || !time) {
+                alert('Veuillez sélectionner une date et un créneau.');
+                return;
+            }
+
+            localStorage.setItem('rdvStrategie', JSON.stringify({ date, time, status: 'pending' }));
+
+            // Show confirmation
+            document.getElementById('booking-form').classList.add('hidden');
+            document.querySelector('.calendly-container').classList.add('hidden');
+            document.getElementById('booking-confirmation').classList.remove('hidden');
+
+            // Fill confirmation details
+            const dateObj = new Date(date + 'T' + time);
+            document.getElementById('confirm-date').textContent = dateObj.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('confirm-time').textContent = time.replace(':', 'h');
+        }
+    </script>
+
+</body>
+</html>

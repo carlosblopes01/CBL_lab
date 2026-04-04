@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planifiez votre rendez-vous | Patria Capital</title>
+    <meta name="description" content="Planifiez un entretien approfondi d'une heure avec un conseiller Patria Capital pour un accompagnement patrimonial sur-mesure.">
+    <meta property="og:title" content="Accompagnement patrimonial | Patria Capital">
+    <meta property="og:description" content="Un entretien approfondi d'une heure pour explorer votre patrimoine et définir un accompagnement sur-mesure.">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="icone.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icone.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: block;
+            background: #fff;
+        }
+
+        .landing-nav-links a.nav-active { color: #fff; position: relative; }
+        .landing-nav-links a.nav-active::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+            height: 2px; background: var(--accent-gradient); border-radius: 1px;
+        }
+        .landing-nav.scrolled .landing-nav-links a.nav-active { color: var(--primary); }
+
+        /* ===== HERO ===== */
+        .tunnel-hero {
+            position: relative;
+            padding: 140px 48px 72px;
+            background: #0c0f1a;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .tunnel-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(90, 126, 194, 0.10) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .tunnel-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 60%;
+            height: 160%;
+            background: radial-gradient(ellipse at 70% 50%, rgba(193, 146, 94, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .hero-badge-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3.5px;
+            text-transform: uppercase;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tunnel-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(30px, 4vw, 48px);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.15;
+            max-width: 700px;
+            margin: 0 auto 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tunnel-hero p {
+            font-size: clamp(15px, 1.6vw, 18px);
+            color: rgba(255,255,255,0.50);
+            max-width: 620px;
+            margin: 0 auto;
+            line-height: 1.75;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== BOOKING SECTION ===== */
+        .booking-section {
+            background: var(--bg);
+            padding: 72px 48px 80px;
+        }
+
+        .booking-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 48px;
+            max-width: 1060px;
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        .booking-card {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .booking-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 24px;
+        }
+
+        .calendly-container {
+            min-height: 320px;
+            border: 2px dashed var(--border-light);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .demo-form { padding: 8px 0; }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(193, 146, 94, 0.1);
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .time-slot {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        .time-slot:hover {
+            border-color: var(--gold);
+            background: rgba(193, 146, 94, 0.05);
+        }
+
+        .time-slot.selected {
+            border-color: var(--gold);
+            background: rgba(193, 146, 94, 0.1);
+            color: var(--gold-dark);
+            font-weight: 600;
+        }
+
+        .btn-book {
+            width: 100%;
+            margin-top: 24px;
+            padding: 16px;
+            font-size: 15px;
+        }
+
+        .booking-confirmation {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .booking-confirmation .confirm-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--green-light);
+            color: var(--green);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .booking-confirmation h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .booking-confirmation p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Info cards */
+        .info-card {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 28px 28px 28px 32px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border-left: 3px solid var(--gold);
+        }
+
+        .info-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 14px;
+        }
+
+        .info-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-card ul li {
+            padding: 6px 0;
+            font-size: 14px;
+            color: var(--text-light);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.5;
+        }
+
+        .info-card ul li::before {
+            content: '\2713';
+            color: var(--gold);
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .info-card p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 8px;
+        }
+
+        .info-card-plain {
+            border-left-color: var(--border-light);
+        }
+
+        .deliverables-list {
+            list-style: none;
+            padding: 0;
+            margin: 12px 0 0;
+        }
+
+        .deliverables-list li {
+            padding: 5px 0;
+            font-size: 13px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .deliverables-list li::before {
+            content: '\2022';
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        /* ===== TIMELINE ===== */
+        .timeline-section {
+            background: #fff;
+            padding: 72px 48px 80px;
+        }
+
+        .timeline-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(24px, 3vw, 32px);
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .timeline-step {
+            text-align: center;
+            position: relative;
+            padding: 24px 16px;
+        }
+
+        .timeline-step::after {
+            content: '';
+            position: absolute;
+            top: 40px;
+            right: -12px;
+            width: 24px;
+            height: 2px;
+            background: var(--border-light);
+        }
+
+        .timeline-step:last-child::after { display: none; }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: var(--bg);
+            color: var(--text-muted);
+            border: 2px solid var(--border-light);
+            transition: all 0.3s;
+        }
+
+        .timeline-step.active .step-number {
+            background: var(--gold);
+            color: #fff;
+            border-color: var(--gold);
+            box-shadow: 0 4px 16px rgba(193, 146, 94, 0.3);
+        }
+
+        .timeline-step h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .timeline-step.active h4 { color: var(--gold-dark); }
+
+        .timeline-step p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ===== FEATURES SECTION (dark) ===== */
+        .features-dark {
+            background: #0c0f1a;
+            padding: 72px 48px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .features-dark::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -20%;
+            width: 60%;
+            height: 160%;
+            background: radial-gradient(ellipse at 50% 50%, rgba(90, 126, 194, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .features-dark h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(24px, 3vw, 32px);
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 48px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            max-width: 1060px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card-glass {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius);
+            padding: 32px 24px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            text-align: center;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .feature-card-glass:hover {
+            transform: translateY(-4px);
+            border-color: rgba(193, 146, 94, 0.2);
+        }
+
+        .feature-card-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: rgba(193, 146, 94, 0.1);
+            color: var(--gold);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card-glass h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .feature-card-glass p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.6;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .tunnel-hero { padding: 120px 24px 56px; }
+            .booking-section { padding: 48px 24px 56px; }
+            .booking-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+            .timeline {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .timeline-step::after { display: none; }
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .timeline-section,
+            .features-dark {
+                padding: 56px 24px 64px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .tunnel-hero { padding: 110px 16px 48px; }
+            .booking-section { padding: 40px 16px 48px; }
+            .booking-card { padding: 28px 20px; }
+            .time-slots { grid-template-columns: 1fr; }
+            .timeline {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .timeline-section,
+            .features-dark {
+                padding: 48px 16px 56px;
+            }
+        }
+
+        /* ===== REVEAL ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="landing">
+
+        <!-- NAV -->
+        <nav class="landing-nav">
+            <div class="landing-nav-inner">
+                <a href="index.html" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:44px;"></a>
+                <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+                <div class="landing-nav-links" id="nav-links">
+                    <a href="index.html">Accueil</a>
+                    <a href="index.html#expertises">Expertises</a>
+                    <a href="outil.html">Notre outil</a>
+                    <a href="cas-concrets.html">Cas concrets</a>
+                    <a href="equipe.html">Le cabinet</a>
+                    <a href="contact.html">Contact</a>
+                    <button class="btn btn-gold btn-sm" onclick="window.location.href='offres.html'">Nos offres</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- HERO -->
+        <section class="tunnel-hero">
+            <div class="hero-badge-tag reveal">Accompagnement patrimonial</div>
+            <h1 class="reveal">Planifiez votre rendez-vous</h1>
+            <p class="reveal">Un entretien approfondi d'une heure pour explorer ensemble votre patrimoine et définir un accompagnement sur-mesure.</p>
+        </section>
+
+        <!-- BOOKING -->
+        <section class="booking-section">
+            <div class="booking-grid">
+                <!-- LEFT: Booking -->
+                <div class="booking-card reveal">
+                    <h2>Choisissez votre créneau</h2>
+
+                    <div id="calendly-embed" class="calendly-container">
+                        <!-- En production, intégrer Calendly ici -->
+                        <span>Chargement du calendrier...</span>
+                    </div>
+
+                    <!-- Demo form -->
+                    <div id="booking-form" class="demo-form">
+                        <div class="form-group">
+                            <label for="rdv-date">Date souhaitée</label>
+                            <input type="date" id="rdv-date" min="">
+                        </div>
+                        <div class="form-group">
+                            <label>Créneau horaire (1 heure)</label>
+                            <input type="hidden" id="rdv-time" value="">
+                            <div class="time-slots">
+                                <div class="time-slot" onclick="selectTime(this, '10:00')">10h00</div>
+                                <div class="time-slot" onclick="selectTime(this, '14:00')">14h00</div>
+                                <div class="time-slot" onclick="selectTime(this, '16:00')">16h00</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-gold btn-lg btn-book" onclick="bookAccompagnement()">Confirmer mon rendez-vous &rarr;</button>
+                        <p style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:12px;">Gratuit et sans engagement. Entretien d'une heure.</p>
+                    </div>
+
+                    <!-- Confirmation -->
+                    <div id="booking-confirmation" class="booking-confirmation hidden">
+                        <div class="confirm-icon">&#10003;</div>
+                        <h3>Rendez-vous confirmé !</h3>
+                        <p>Nous avons bien enregistré votre demande. Vous recevrez un email de confirmation avec les détails du rendez-vous.</p>
+                        <p style="margin-top:16px;"><strong>Date :</strong> <span id="confirm-date"></span><br><strong>Heure :</strong> <span id="confirm-time"></span><br><strong>Durée :</strong> 1 heure</p>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Info -->
+                <div>
+                    <div class="info-card reveal">
+                        <h3>Ce que nous aborderons en 1 heure</h3>
+                        <ul>
+                            <li>Analyse complète de votre situation</li>
+                            <li>Vos enjeux patrimoniaux prioritaires</li>
+                            <li>Les axes stratégiques envisagés</li>
+                            <li>La structure d'accompagnement proposée</li>
+                            <li>Les modalités de suivi</li>
+                        </ul>
+                    </div>
+                    <div class="info-card info-card-plain reveal">
+                        <h3>Après le rendez-vous</h3>
+                        <p>Vous recevrez sous 48h une proposition d'accompagnement personnalisée avec :</p>
+                        <ul class="deliverables-list">
+                            <li>Un diagnostic de votre situation</li>
+                            <li>Les axes de travail prioritaires</li>
+                            <li>Un devis détaillé</li>
+                            <li>Les modalités de collaboration</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TIMELINE -->
+        <section class="timeline-section">
+            <h2 class="reveal">Comment se déroule la suite ?</h2>
+            <div class="timeline">
+                <div class="timeline-step active reveal">
+                    <div class="step-number">1</div>
+                    <h4>Rendez-vous approfondi (1h)</h4>
+                    <p>Échange complet sur votre patrimoine et vos objectifs.</p>
+                </div>
+                <div class="timeline-step reveal">
+                    <div class="step-number">2</div>
+                    <h4>Proposition personnalisée (48h)</h4>
+                    <p>Diagnostic, axes de travail et devis détaillé.</p>
+                </div>
+                <div class="timeline-step reveal">
+                    <div class="step-number">3</div>
+                    <h4>Validation du mandat</h4>
+                    <p>Signature du mandat et démarrage de la collaboration.</p>
+                </div>
+                <div class="timeline-step reveal">
+                    <div class="step-number">4</div>
+                    <h4>Démarrage de l'accompagnement</h4>
+                    <p>Accès complet à l'outil et suivi continu par votre conseiller.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURES DARK -->
+        <section class="features-dark">
+            <h2 class="reveal">L'accompagnement Patria Capital, c'est :</h2>
+            <div class="features-grid">
+                <div class="feature-card-glass reveal">
+                    <div class="feature-card-icon">&#9872;</div>
+                    <h4>Un conseiller dédié</h4>
+                    <p>Votre interlocuteur unique pour toutes vos questions patrimoniales.</p>
+                </div>
+                <div class="feature-card-glass reveal">
+                    <div class="feature-card-icon">&#8635;</div>
+                    <h4>Un suivi continu</h4>
+                    <p>Revues régulières, arbitrages et ajustements au fil de votre vie.</p>
+                </div>
+                <div class="feature-card-glass reveal">
+                    <div class="feature-card-icon">&#9741;</div>
+                    <h4>Une coordination complète</h4>
+                    <p>Nous travaillons avec vos notaires, avocats et experts-comptables.</p>
+                </div>
+                <div class="feature-card-glass reveal">
+                    <div class="feature-card-icon">&#9881;</div>
+                    <h4>Un outil propriétaire</h4>
+                    <p>Accès complet à notre plateforme de simulation et reporting.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer style="background:#0c0f1a;padding:40px 24px;text-align:center;">
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.35);line-height:1.7;max-width:700px;margin:0 auto;">
+                CIF &middot; ORIAS n&deg; [NUM&Eacute;RO] &middot; RCP assurée<br>
+                <a href="mentions-legales.html" style="color:rgba(255,255,255,0.4);text-decoration:none;">Mentions légales</a> &middot;
+                <a href="confidentialite.html" style="color:rgba(255,255,255,0.4);text-decoration:none;">Confidentialité</a><br>
+                &copy; 2026 Patria Capital
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // ===== NAV SCROLL =====
+        const nav = document.querySelector('.landing-nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 30);
+        });
+
+        // ===== MOBILE TOGGLE =====
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const navLinks = document.getElementById('nav-links');
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('open');
+                mobileToggle.textContent = navLinks.classList.contains('open') ? '\u2715' : '\u2630';
+            });
+        }
+
+        // ===== REVEAL ON SCROLL =====
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // ===== SET MIN DATE =====
+        const dateInput = document.getElementById('rdv-date');
+        if (dateInput) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            dateInput.min = tomorrow.toISOString().split('T')[0];
+        }
+
+        // ===== TIME SLOT SELECTION =====
+        function selectTime(el, time) {
+            document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('rdv-time').value = time;
+        }
+
+        // ===== BOOKING =====
+        function bookAccompagnement() {
+            const date = document.getElementById('rdv-date').value;
+            const time = document.getElementById('rdv-time').value;
+            if (!date || !time) {
+                alert('Veuillez sélectionner une date et un créneau.');
+                return;
+            }
+
+            localStorage.setItem('rdvAccompagnement', JSON.stringify({ date, time, status: 'pending' }));
+
+            // Show confirmation
+            document.getElementById('booking-form').classList.add('hidden');
+            document.querySelector('.calendly-container').classList.add('hidden');
+            document.getElementById('booking-confirmation').classList.remove('hidden');
+
+            // Fill confirmation details
+            const dateObj = new Date(date + 'T' + time);
+            document.getElementById('confirm-date').textContent = dateObj.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('confirm-time').textContent = time.replace(':', 'h');
+        }
+    </script>
+
+</body>
+</html>

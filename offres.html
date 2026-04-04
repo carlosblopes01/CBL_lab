@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Patria Capital — Nos offres de conseil patrimonial. Simulation, stratégie sur-mesure ou accompagnement complet. Choisissez le niveau adapté à vos ambitions.">
+    <meta property="og:title" content="Patria Capital | Nos Offres">
+    <meta property="og:description" content="Découvrez nos offres de conseil patrimonial : simulation, stratégie personnalisée et accompagnement global.">
+    <meta property="og:type" content="website">
+    <title>Patria Capital | Nos Offres</title>
+    <link rel="icon" type="image/png" href="icone.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icone.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== CSS Variables (page-level) ===== */
+        :root {
+            --primary: #254a65;
+            --primary-dark: #0c0f1a;
+            --gold: #c1925e;
+            --gold-light: #dcc4a0;
+            --bg: #f2efec;
+            --border-light: #ede9e5;
+            --text-light: #495057;
+            --accent-gradient: linear-gradient(135deg, #c1925e 0%, #d4aa76 50%, #c1925e 100%);
+            --radius-lg: 16px;
+            --ease: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== HERO ===== */
+        .offres-hero {
+            background: linear-gradient(135deg, #0c0f1a 0%, #1a2332 50%, #0c0f1a 100%);
+            color: #fff;
+            text-align: center;
+            padding: 140px 24px 80px;
+        }
+        .offres-hero .hero-badge {
+            display: inline-block;
+            background: rgba(193,146,94,0.12);
+            color: var(--gold);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            padding: 8px 22px;
+            border-radius: 40px;
+            border: 1px solid rgba(193,146,94,0.25);
+            margin-bottom: 28px;
+        }
+        .offres-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4.5vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.25;
+            max-width: 700px;
+            margin: 0 auto 20px;
+        }
+        .offres-hero .hero-sub {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.6);
+            max-width: 560px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* ===== PRICING CARDS ===== */
+        .pricing-section {
+            background: var(--bg);
+            padding: 80px 24px 100px;
+        }
+        .pricing-grid {
+            display: flex;
+            gap: 28px;
+            max-width: 1120px;
+            margin: 0 auto;
+            align-items: stretch;
+        }
+        .pricing-card {
+            flex: 1;
+            background: #fff;
+            border-radius: var(--radius-lg);
+            padding: 40px 32px 36px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(37,74,101,0.06);
+            transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+        }
+        .pricing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 36px rgba(37,74,101,0.1);
+        }
+        .pricing-card.featured {
+            border-top: 3px solid var(--gold);
+            transform: scale(1.03);
+            box-shadow: 0 12px 40px rgba(193,146,94,0.15), 0 4px 12px rgba(37,74,101,0.06);
+            z-index: 2;
+        }
+        .pricing-card.featured:hover {
+            transform: scale(1.03) translateY(-4px);
+            box-shadow: 0 16px 48px rgba(193,146,94,0.2), 0 6px 16px rgba(37,74,101,0.08);
+        }
+        .pricing-badge {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-gradient);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 40px;
+            white-space: nowrap;
+        }
+        .pricing-card .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .pricing-card .card-subtitle {
+            font-size: 0.88rem;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+        .pricing-card .card-price {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .pricing-card .card-price .currency {
+            font-size: 1.4rem;
+            font-weight: 600;
+            vertical-align: super;
+            margin-left: 4px;
+        }
+        .pricing-card .card-price-note {
+            font-size: 0.82rem;
+            color: var(--text-light);
+            margin-bottom: 24px;
+        }
+        .pricing-card .card-desc {
+            font-size: 0.92rem;
+            color: var(--text-light);
+            line-height: 1.65;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 28px;
+            flex: 1;
+        }
+        .feature-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            padding: 6px 0;
+            color: #333;
+        }
+        .feature-list li .icon-check {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+        }
+        .feature-list li.locked {
+            opacity: 0.4;
+            text-decoration: line-through;
+            color: #888;
+        }
+        .feature-list li.locked .icon-lock {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+            margin-top: 2px;
+        }
+        .btn-full {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s var(--ease);
+        }
+        .btn-gold {
+            background: var(--accent-gradient);
+            color: #fff;
+            border: none;
+        }
+        .btn-gold:hover {
+            filter: brightness(1.08);
+            box-shadow: 0 4px 16px rgba(193,146,94,0.3);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-outline:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+        .micro-copy {
+            text-align: center;
+            font-size: 0.78rem;
+            color: #999;
+            margin-top: 14px;
+        }
+
+        /* ===== COMPARISON TABLE ===== */
+        .comparison-section {
+            background: #fff;
+            padding: 80px 24px 100px;
+        }
+        .comparison-section .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .comparison-wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .comparison-table thead th {
+            padding: 18px 16px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border-light);
+            vertical-align: bottom;
+        }
+        .comparison-table thead th:first-child {
+            text-align: left;
+            min-width: 220px;
+        }
+        .comparison-table thead .th-price {
+            font-size: 1.3rem;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .comparison-table thead .th-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            display: block;
+            margin-bottom: 8px;
+        }
+        .comparison-table thead .th-cta {
+            display: inline-block;
+            padding: 7px 16px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 8px;
+            transition: all 0.3s var(--ease);
+        }
+        .th-cta-gold {
+            background: var(--accent-gradient);
+            color: #fff;
+        }
+        .th-cta-gold:hover { filter: brightness(1.08); }
+        .th-cta-outline {
+            border: 1.5px solid var(--primary);
+            color: var(--primary);
+        }
+        .th-cta-outline:hover { background: var(--primary); color: #fff; }
+        .comparison-table .category-row td {
+            padding: 14px 16px 8px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gold);
+            border-bottom: 1px solid var(--border-light);
+            background: #faf9f7;
+        }
+        .comparison-table tbody td {
+            padding: 12px 16px;
+            text-align: center;
+            border-bottom: 1px solid #f0eeeb;
+            vertical-align: middle;
+        }
+        .comparison-table tbody td:first-child {
+            text-align: left;
+            color: #444;
+            font-weight: 500;
+        }
+        .comparison-table tbody tr:nth-child(even):not(.category-row) {
+            background: #fdfcfb;
+        }
+        .table-check {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+        }
+        .table-dash {
+            color: #ccc;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+        .table-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        /* Featured column highlight */
+        .comparison-table .col-featured {
+            background: rgba(193,146,94,0.04);
+        }
+        .comparison-table .category-row .col-featured {
+            background: rgba(193,146,94,0.08);
+        }
+
+        /* ===== PARCOURS SECTION ===== */
+        .parcours-section {
+            background: var(--bg);
+            padding: 80px 24px 100px;
+        }
+        .parcours-section .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 56px;
+        }
+        .parcours-grid {
+            display: flex;
+            gap: 32px;
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+        .parcours-col {
+            flex: 1;
+            background: #fff;
+            border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            box-shadow: 0 2px 12px rgba(37,74,101,0.05);
+        }
+        .parcours-col h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 28px;
+            text-align: center;
+        }
+        .parcours-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 12px 0;
+        }
+        .parcours-step + .parcours-step {
+            border-top: 1px solid var(--border-light);
+        }
+        .step-num {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(193,146,94,0.12);
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .step-text {
+            font-size: 0.9rem;
+            color: #444;
+            line-height: 1.5;
+            padding-top: 4px;
+        }
+
+        /* ===== REASSURANCE ===== */
+        .reassurance-section {
+            background: linear-gradient(135deg, #0c0f1a 0%, #1a2332 50%, #0c0f1a 100%);
+            color: #fff;
+            padding: 72px 24px;
+        }
+        .reassurance-grid {
+            display: flex;
+            gap: 28px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .reassurance-card {
+            flex: 1;
+            text-align: center;
+            padding: 28px 20px;
+        }
+        .reassurance-card .r-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+        }
+        .reassurance-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .reassurance-card p {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.6;
+        }
+
+        /* ===== FAQ ===== */
+        .faq-section {
+            background: #fff;
+            padding: 80px 24px 100px;
+        }
+        .faq-section .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .faq-list {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .faq-item {
+            border-bottom: 1px solid var(--border-light);
+        }
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+            transition: color 0.2s;
+        }
+        .faq-question:hover { color: var(--gold); }
+        .faq-question .faq-chevron {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            margin-left: 16px;
+            transition: transform 0.3s var(--ease);
+        }
+        .faq-item.open .faq-chevron {
+            transform: rotate(180deg);
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s var(--ease), padding 0.35s var(--ease);
+        }
+        .faq-item.open .faq-answer {
+            max-height: 200px;
+        }
+        .faq-answer p {
+            padding: 0 0 20px;
+            font-size: 0.92rem;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* ===== CTA FINAL ===== */
+        .cta-final-section {
+            background: linear-gradient(135deg, #0c0f1a 0%, #1a2332 50%, #0c0f1a 100%);
+            color: #fff;
+            text-align: center;
+            padding: 80px 24px;
+        }
+        .cta-final-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .cta-final-section .cta-sub {
+            font-size: 1.05rem;
+            color: rgba(255,255,255,0.6);
+            max-width: 500px;
+            margin: 0 auto 32px;
+            line-height: 1.7;
+        }
+        .cta-final-section .btn-gold {
+            display: inline-block;
+            padding: 16px 40px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* ===== REVEAL ANIMATION ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .pricing-grid {
+                flex-direction: column;
+                max-width: 480px;
+                margin: 0 auto;
+            }
+            .pricing-card.featured {
+                transform: none;
+                order: -1;
+            }
+            .pricing-card.featured:hover {
+                transform: translateY(-4px);
+            }
+            .parcours-grid {
+                flex-direction: column;
+                max-width: 480px;
+                margin: 0 auto;
+            }
+            .reassurance-grid {
+                flex-wrap: wrap;
+            }
+            .reassurance-card {
+                flex: 1 1 calc(50% - 14px);
+            }
+            .comparison-table thead th:first-child {
+                position: sticky;
+                left: 0;
+                background: #fff;
+                z-index: 2;
+            }
+            .comparison-table tbody td:first-child {
+                position: sticky;
+                left: 0;
+                background: inherit;
+                z-index: 1;
+            }
+            .comparison-table .category-row td:first-child {
+                position: sticky;
+                left: 0;
+                z-index: 2;
+            }
+        }
+        @media (max-width: 600px) {
+            .offres-hero { padding: 120px 20px 60px; }
+            .offres-hero .hero-sub { font-size: 0.98rem; }
+            .pricing-section { padding: 60px 16px 80px; }
+            .pricing-card { padding: 32px 24px 28px; }
+            .pricing-card .card-price { font-size: 2.2rem; }
+            .comparison-section { padding: 60px 16px 80px; }
+            .parcours-section { padding: 60px 16px 80px; }
+            .reassurance-grid { flex-direction: column; }
+            .reassurance-card { flex: 1 1 100%; }
+            .faq-section { padding: 60px 16px 80px; }
+            .cta-final-section { padding: 60px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="landing">
+
+        <!-- NAV -->
+        <nav class="landing-nav">
+            <div class="landing-nav-inner">
+                <a href="index.html" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img"></a>
+                <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+                <div class="landing-nav-links" id="nav-links">
+                    <a href="index.html">Accueil</a>
+                    <a href="index.html#expertises">Expertises</a>
+                    <a href="outil.html">Notre outil</a>
+                    <a href="cas-concrets.html">Cas concrets</a>
+                    <a href="equipe.html">Le cabinet</a>
+                    <a href="contact.html">Contact</a>
+                    <button class="btn btn-gold btn-sm" onclick="window.location.href='offres.html'">Nos offres</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ===== 1. HERO ===== -->
+        <section class="offres-hero">
+            <div class="hero-badge">NOS OFFRES</div>
+            <h1>Un accompagnement adapté à chaque ambition patrimoniale</h1>
+            <p class="hero-sub">Choisissez le niveau d'accompagnement qui correspond à vos objectifs. De l'analyse à la stratégie complète.</p>
+        </section>
+
+        <!-- ===== 2. PRICING CARDS ===== -->
+        <section class="pricing-section">
+            <div class="pricing-grid">
+
+                <!-- OFFRE 1 -->
+                <div class="pricing-card reveal">
+                    <div class="card-title">Simulation patrimoniale</div>
+                    <div class="card-subtitle">Accès immédiat à l'outil</div>
+                    <div class="card-price"><span id="price-simulation">49</span> <span class="currency">&euro;</span></div>
+                    <div class="card-price-note">Paiement unique</div>
+                    <p class="card-desc">Prenez le contrôle de votre patrimoine avec notre outil de diagnostic et simulation.</p>
+                    <ul class="feature-list">
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Saisie complète de vos données patrimoniales</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Vue globale de votre patrimoine</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Indicateurs clés (patrimoine net, endettement, capacité d'épargne)</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Simulations de base (immobilier, AV, PEA, CTO)</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Tableau de bord personnel</li>
+                        <li class="locked"><svg class="icon-lock" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" stroke="#999" stroke-width="1.3"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="#999" stroke-width="1.3" stroke-linecap="round"/></svg>Optimisation fiscale détaillée</li>
+                        <li class="locked"><svg class="icon-lock" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" stroke="#999" stroke-width="1.3"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="#999" stroke-width="1.3" stroke-linecap="round"/></svg>Allocation recommandée personnalisée</li>
+                        <li class="locked"><svg class="icon-lock" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" stroke="#999" stroke-width="1.3"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="#999" stroke-width="1.3" stroke-linecap="round"/></svg>Arbitrages et stratégies avancées</li>
+                        <li class="locked"><svg class="icon-lock" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" stroke="#999" stroke-width="1.3"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="#999" stroke-width="1.3" stroke-linecap="round"/></svg>Comparatifs d'enveloppes complets</li>
+                        <li class="locked"><svg class="icon-lock" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" stroke="#999" stroke-width="1.3"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="#999" stroke-width="1.3" stroke-linecap="round"/></svg>Projections long terme</li>
+                        <li class="locked"><svg class="icon-lock" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" stroke="#999" stroke-width="1.3"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="#999" stroke-width="1.3" stroke-linecap="round"/></svg>Rapport structuré</li>
+                    </ul>
+                    <a href="paiement.html" class="btn btn-gold btn-full">Accéder à ma simulation</a>
+                    <div class="micro-copy">Paiement sécurisé &middot; Accès immédiat &middot; Sans engagement</div>
+                </div>
+
+                <!-- OFFRE 2 (FEATURED) -->
+                <div class="pricing-card featured reveal">
+                    <div class="pricing-badge">RECOMMANDÉ</div>
+                    <div class="card-title">Stratégie patrimoniale</div>
+                    <div class="card-subtitle">Stratégie complète sur-mesure</div>
+                    <div class="card-price"><span id="price-strategie">1 900</span> <span class="currency">&euro;</span></div>
+                    <div class="card-price-note">Mission complète</div>
+                    <p class="card-desc">Bénéficiez d'une analyse approfondie et d'une stratégie patrimoniale personnalisée.</p>
+                    <ul class="feature-list">
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Tout de l'offre Simulation</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Accès complet à l'outil (simulations avancées)</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Optimisation fiscale personnalisée</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Comparatifs d'enveloppes détaillés</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Stratégie d'allocation recommandée</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Projections long terme (10-30 ans)</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Rapport structuré avec plan d'action</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Échange stratégique préalable (15 min)</li>
+                    </ul>
+                    <a href="rdv-strategie.html" class="btn btn-gold btn-full">Réserver un échange</a>
+                    <div class="micro-copy">Échange préalable de 15 min &middot; Paiement après validation</div>
+                </div>
+
+                <!-- OFFRE 3 -->
+                <div class="pricing-card reveal">
+                    <div class="card-title">Accompagnement patrimonial</div>
+                    <div class="card-subtitle">Family office nouvelle génération</div>
+                    <div class="card-price" style="font-size:2rem;">Sur devis</div>
+                    <div class="card-price-note">Tarif personnalisé</div>
+                    <p class="card-desc">Un accompagnement global et continu pour les patrimoines qui exigent l'excellence.</p>
+                    <ul class="feature-list">
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Tout de l'offre Stratégie</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Suivi patrimonial régulier</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Mise à jour de la stratégie</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Arbitrages continus</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Reporting périodique</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Coordination intervenants (notaire, expert-comptable, banquier)</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Conseiller dédié</li>
+                        <li><svg class="icon-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Accès prioritaire</li>
+                    </ul>
+                    <a href="rdv-accompagnement.html" class="btn btn-outline btn-full">Planifier un rendez-vous</a>
+                    <div class="micro-copy">Entretien approfondi d'1h &middot; Proposition personnalisée</div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ===== 3. COMPARISON TABLE ===== -->
+        <section class="comparison-section">
+            <h2 class="section-title reveal">Comparez nos offres en détail</h2>
+            <div class="comparison-wrapper reveal">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>
+                                <span class="th-name">Simulation</span>
+                                <span class="th-price">49 &euro;</span>
+                                <a href="paiement.html" class="th-cta th-cta-gold">Choisir</a>
+                            </th>
+                            <th class="col-featured">
+                                <span class="th-name">Stratégie</span>
+                                <span class="th-price">1 900 &euro;</span>
+                                <a href="rdv-strategie.html" class="th-cta th-cta-gold">Choisir</a>
+                            </th>
+                            <th>
+                                <span class="th-name">Accompagnement</span>
+                                <span class="th-price">Sur devis</span>
+                                <a href="rdv-accompagnement.html" class="th-cta th-cta-outline">Contacter</a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Accès outil -->
+                        <tr class="category-row"><td colspan="4">Accès outil</td></tr>
+                        <tr>
+                            <td>Saisie données patrimoniales</td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td class="col-featured"><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <tr>
+                            <td>Vue globale patrimoine</td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td class="col-featured"><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <tr>
+                            <td>Indicateurs clés</td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td class="col-featured"><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <tr>
+                            <td>Simulations de base</td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td class="col-featured"><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <tr>
+                            <td>Simulations avancées</td>
+                            <td><span class="table-dash">&mdash;</span></td>
+                            <td class="col-featured"><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <!-- Analyse -->
+                        <tr class="category-row"><td colspan="4">Analyse</td></tr>
+                        <tr>
+                            <td>Optimisation fiscale détaillée</td>
+                            <td><span class="table-dash">&mdash;</span></td>
+                            <td class="col-featured"><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <tr>
+                            <td>Comparatifs d'enveloppes</td>
+                            <td><span class="table-dash">&mdash;</span></td>
+                            <td class="col-featured"><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <tr>
+                            <td>Allocation recommandée</td>
+                            <td><span class="table-dash">&mdash;</span></td>
+                            <td class="col-featured"><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <tr>
+                            <td>Projections long terme</td>
+                            <td><span class="table-dash">&mdash;</span></td>
+                            <td class="col-featured"><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <!-- Livrables -->
+                        <tr class="category-row"><td colspan="4">Livrables</td></tr>
+                        <tr>
+                            <td>Rapport structuré</td>
+                            <td><span class="table-dash">&mdash;</span></td>
+                            <td class="col-featured"><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <tr>
+                            <td>Plan d'action chiffré</td>
+                            <td><span class="table-dash">&mdash;</span></td>
+                            <td class="col-featured"><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <tr>
+                            <td>Stratégie personnalisée</td>
+                            <td><span class="table-dash">&mdash;</span></td>
+                            <td class="col-featured"><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <!-- Accompagnement -->
+                        <tr class="category-row"><td colspan="4">Accompagnement</td></tr>
+                        <tr>
+                            <td>Échange stratégique</td>
+                            <td><span class="table-dash">&mdash;</span></td>
+                            <td class="col-featured"><span class="table-text">15 min</span></td>
+                            <td><span class="table-text">1h+</span></td>
+                        </tr>
+                        <tr>
+                            <td>Suivi régulier</td>
+                            <td><span class="table-dash">&mdash;</span></td>
+                            <td class="col-featured"><span class="table-dash">&mdash;</span></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <tr>
+                            <td>Arbitrages continus</td>
+                            <td><span class="table-dash">&mdash;</span></td>
+                            <td class="col-featured"><span class="table-dash">&mdash;</span></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <tr>
+                            <td>Reporting périodique</td>
+                            <td><span class="table-dash">&mdash;</span></td>
+                            <td class="col-featured"><span class="table-dash">&mdash;</span></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <tr>
+                            <td>Coordination intervenants</td>
+                            <td><span class="table-dash">&mdash;</span></td>
+                            <td class="col-featured"><span class="table-dash">&mdash;</span></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                        <tr>
+                            <td>Conseiller dédié</td>
+                            <td><span class="table-dash">&mdash;</span></td>
+                            <td class="col-featured"><span class="table-dash">&mdash;</span></td>
+                            <td><svg class="table-check" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="rgba(193,146,94,0.12)"/><path d="M6 10.5l2.5 2.5 5.5-5.5" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ===== 4. PARCOURS ===== -->
+        <section class="parcours-section">
+            <h2 class="section-title reveal">Comment ça fonctionne</h2>
+            <div class="parcours-grid">
+
+                <!-- Simulation -->
+                <div class="parcours-col reveal">
+                    <h3>Simulation</h3>
+                    <div class="parcours-step">
+                        <div class="step-num">1</div>
+                        <div class="step-text">Choisissez votre offre</div>
+                    </div>
+                    <div class="parcours-step">
+                        <div class="step-num">2</div>
+                        <div class="step-text">Réglez en ligne</div>
+                    </div>
+                    <div class="parcours-step">
+                        <div class="step-num">3</div>
+                        <div class="step-text">Accédez à l'outil</div>
+                    </div>
+                </div>
+
+                <!-- Stratégie -->
+                <div class="parcours-col reveal">
+                    <h3>Stratégie</h3>
+                    <div class="parcours-step">
+                        <div class="step-num">1</div>
+                        <div class="step-text">Réservez un échange (15 min)</div>
+                    </div>
+                    <div class="parcours-step">
+                        <div class="step-num">2</div>
+                        <div class="step-text">Validez votre besoin</div>
+                    </div>
+                    <div class="parcours-step">
+                        <div class="step-num">3</div>
+                        <div class="step-text">Réglez la mission</div>
+                    </div>
+                    <div class="parcours-step">
+                        <div class="step-num">4</div>
+                        <div class="step-text">Accédez à l'outil complet</div>
+                    </div>
+                </div>
+
+                <!-- Accompagnement -->
+                <div class="parcours-col reveal">
+                    <h3>Accompagnement</h3>
+                    <div class="parcours-step">
+                        <div class="step-num">1</div>
+                        <div class="step-text">Planifiez un rendez-vous (1h)</div>
+                    </div>
+                    <div class="parcours-step">
+                        <div class="step-num">2</div>
+                        <div class="step-text">Recevez une proposition</div>
+                    </div>
+                    <div class="parcours-step">
+                        <div class="step-num">3</div>
+                        <div class="step-text">Validez le mandat</div>
+                    </div>
+                    <div class="parcours-step">
+                        <div class="step-num">4</div>
+                        <div class="step-text">Démarrez l'accompagnement</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ===== 5. REASSURANCE ===== -->
+        <section class="reassurance-section">
+            <div class="reassurance-grid">
+                <div class="reassurance-card reveal">
+                    <svg class="r-icon" viewBox="0 0 48 48" fill="none"><rect x="8" y="20" width="32" height="22" rx="3" stroke="#c1925e" stroke-width="2"/><path d="M16 20v-6a8 8 0 0116 0v6" stroke="#c1925e" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="31" r="3" fill="#c1925e"/><path d="M24 34v3" stroke="#c1925e" stroke-width="2" stroke-linecap="round"/></svg>
+                    <h4>Paiement sécurisé</h4>
+                    <p>Transactions chiffrées via Stripe. Vos données bancaires ne transitent jamais par nos serveurs.</p>
+                </div>
+                <div class="reassurance-card reveal">
+                    <svg class="r-icon" viewBox="0 0 48 48" fill="none"><path d="M24 4l16 8v12c0 10-7 18-16 20C14 42 8 34 8 24V12l16-8z" stroke="#c1925e" stroke-width="2" stroke-linejoin="round"/><path d="M17 24l5 5 9-9" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <h4>Cabinet enregistré CIF</h4>
+                    <p>Conseil en Investissement Financier enregistré ORIAS, membre d'une association professionnelle agréée.</p>
+                </div>
+                <div class="reassurance-card reveal">
+                    <svg class="r-icon" viewBox="0 0 48 48" fill="none"><rect x="6" y="10" width="36" height="28" rx="3" stroke="#c1925e" stroke-width="2"/><path d="M6 18h36" stroke="#c1925e" stroke-width="2"/><circle cx="16" cy="28" r="4" stroke="#c1925e" stroke-width="2"/><path d="M28 26h10M28 32h7" stroke="#c1925e" stroke-width="2" stroke-linecap="round"/></svg>
+                    <h4>RCP assurée</h4>
+                    <p>Responsabilité Civile Professionnelle couvrant l'ensemble de nos activités de conseil.</p>
+                </div>
+                <div class="reassurance-card reveal">
+                    <svg class="r-icon" viewBox="0 0 48 48" fill="none"><rect x="10" y="6" width="28" height="36" rx="3" stroke="#c1925e" stroke-width="2"/><path d="M18 16h12M18 22h12M18 28h8" stroke="#c1925e" stroke-width="2" stroke-linecap="round"/><path d="M24 34l-4 4 4-2 4 2-4-4z" stroke="#c1925e" stroke-width="2" stroke-linejoin="round"/></svg>
+                    <h4>Données confidentielles</h4>
+                    <p>Hébergement en France, chiffrement AES-256, conformité RGPD. Vos données restent les vôtres.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 6. FAQ ===== -->
+        <section class="faq-section">
+            <h2 class="section-title reveal">Questions fréquentes</h2>
+            <div class="faq-list reveal">
+
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        Puis-je passer d'une offre à l'autre ?
+                        <svg class="faq-chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="#254a65" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="faq-answer"><p>Oui, vous pouvez upgrader à tout moment. Le montant de votre offre actuelle est déduit.</p></div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        Comment se passe l'échange préalable ?
+                        <svg class="faq-chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="#254a65" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="faq-answer"><p>C'est un appel de 15 minutes en visio pour comprendre votre situation et valider que notre accompagnement est adapté.</p></div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        Quels moyens de paiement acceptez-vous ?
+                        <svg class="faq-chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="#254a65" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="faq-answer"><p>Carte bancaire (Visa, Mastercard) via notre plateforme sécurisée Stripe.</p></div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        Mes données sont-elles protégées ?
+                        <svg class="faq-chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="#254a65" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="faq-answer"><p>Oui, vos données sont chiffrées et hébergées en France. Nous respectons le RGPD.</p></div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        Que comprend le rapport structuré ?
+                        <svg class="faq-chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="#254a65" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="faq-answer"><p>Un document complet avec analyse de votre situation, recommandations chiffrées, plan d'action et calendrier de mise en œuvre.</p></div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ===== 7. CTA FINAL ===== -->
+        <section class="cta-final-section">
+            <h2 class="reveal">Pas encore sûr ? Parlons-en.</h2>
+            <p class="cta-sub reveal">Un échange de 15 minutes suffit pour identifier si nous pouvons vous aider.</p>
+            <a href="contact.html" class="btn btn-gold reveal">Réserver un échange gratuit</a>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="landing-footer">
+            <div class="footer-inner">
+                <div class="footer-brand"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:36px;"></div>
+                <div style="font-size:0.85rem;opacity:0.6;margin-top:4px;">Cabinet de conseil en gestion de patrimoine</div>
+                <div class="footer-links">
+                    <a href="mentions-legales.html">Mentions légales</a>
+                    <a href="confidentialite.html">Confidentialité</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+                <div style="font-size:0.75rem;opacity:0.45;margin-top:12px;line-height:1.7;max-width:700px;margin-left:auto;margin-right:auto;">
+                    CIF &middot; ORIAS n&deg; [NUMÉRO] &middot; Membre de [ASSOCIATION] &middot; RCP assurée par [ASSUREUR]<br>
+                    Les informations présentées ne constituent pas un conseil en investissement au sens de la directive MIF 2 (2014/65/UE).
+                </div>
+                <div class="footer-copy">&copy; 2026 Patria Capital. Tous droits réservés.</div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // --- Nav scroll ---
+        function updateNav() {
+            var nav = document.querySelector('.landing-nav');
+            if (window.scrollY > 30) { nav.classList.add('scrolled'); }
+            else { nav.classList.remove('scrolled'); }
+        }
+        window.addEventListener('scroll', updateNav);
+        updateNav();
+
+        // --- Mobile toggle ---
+        var mobileToggle = document.getElementById('mobile-toggle');
+        var navLinks = document.getElementById('nav-links');
+        mobileToggle.addEventListener('click', function() {
+            navLinks.classList.toggle('open');
+            mobileToggle.innerHTML = navLinks.classList.contains('open') ? '&times;' : '&#9776;';
+        });
+
+        // --- Scroll reveal ---
+        var revealElements = document.querySelectorAll('.reveal');
+        var revealObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        revealElements.forEach(function(el) { revealObserver.observe(el); });
+
+        // --- FAQ accordion ---
+        document.querySelectorAll('.faq-question').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var item = this.closest('.faq-item');
+                var isOpen = item.classList.contains('open');
+                // Close all
+                document.querySelectorAll('.faq-item').forEach(function(el) { el.classList.remove('open'); });
+                // Open clicked (if it was closed)
+                if (!isOpen) { item.classList.add('open'); }
+                // Update aria
+                document.querySelectorAll('.faq-question').forEach(function(q) {
+                    q.setAttribute('aria-expanded', q.closest('.faq-item').classList.contains('open'));
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

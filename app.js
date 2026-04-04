@@ -31,7 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (link) {
             e.preventDefault();
             const sectionId = link.dataset.section;
-            if (sectionId) switchSection(sectionId);
+            if (sectionId) {
+                // Check access control before navigation
+                if (typeof checkAccessAndNavigate === 'function' && !checkAccessAndNavigate(sectionId)) {
+                    return; // Blocked — upgrade modal shown
+                }
+                switchSection(sectionId);
+            }
         }
     });
 

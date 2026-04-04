@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement — Simulation patrimoniale | Patria Capital</title>
+    <meta name="description" content="Accédez à votre simulation patrimoniale Patria Capital. Paiement sécurisé par Stripe, accès immédiat à l'outil.">
+    <meta property="og:title" content="Simulation patrimoniale | Patria Capital">
+    <meta property="og:description" content="Débloquez votre simulation patrimoniale complète pour 49 €. Accès immédiat après paiement.">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="icone.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icone.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: block;
+            background: #fff;
+        }
+
+        /* Nav active state */
+        .landing-nav-links a.nav-active { color: #fff; position: relative; }
+        .landing-nav-links a.nav-active::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+            height: 2px; background: var(--accent-gradient); border-radius: 1px;
+        }
+        .landing-nav.scrolled .landing-nav-links a.nav-active { color: var(--primary); }
+
+        /* ===== CHECKOUT LAYOUT ===== */
+        .checkout-wrapper {
+            display: flex;
+            min-height: calc(100vh - 80px);
+            margin-top: 80px;
+        }
+
+        .checkout-main {
+            flex: 0 0 60%;
+            max-width: 60%;
+            padding: 56px 64px 80px;
+            background: #fff;
+        }
+
+        .checkout-sidebar {
+            flex: 0 0 40%;
+            max-width: 40%;
+            background: #0c0f1a;
+            padding: 56px 48px 80px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .checkout-sidebar::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -30%;
+            width: 80%;
+            height: 160%;
+            background: radial-gradient(ellipse at 50% 50%, rgba(90, 126, 194, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .checkout-sidebar::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -20%;
+            width: 60%;
+            height: 120%;
+            background: radial-gradient(ellipse at 50% 50%, rgba(193, 146, 94, 0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+        .breadcrumb a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .breadcrumb a:hover { color: var(--gold); }
+        .breadcrumb span { color: var(--text); font-weight: 500; }
+
+        /* Checkout title */
+        .checkout-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(24px, 3vw, 32px);
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 32px;
+            line-height: 1.2;
+        }
+
+        /* Order summary card */
+        .order-card {
+            background: var(--bg);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 40px;
+        }
+
+        .order-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 20px;
+        }
+
+        .order-card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .order-card-price {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .order-card-price span { font-size: 16px; font-weight: 400; }
+
+        .order-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px;
+        }
+
+        .order-features li {
+            padding: 8px 0;
+            font-size: 14px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .order-features li::before {
+            content: '\2713';
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .order-separator {
+            border: none;
+            border-top: 1px solid var(--border-light);
+            margin: 16px 0;
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--primary);
+        }
+
+        .order-total-price {
+            font-size: 22px;
+            color: var(--gold);
+        }
+
+        /* Payment section */
+        .payment-section {
+            margin-top: 40px;
+        }
+
+        .payment-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .payment-info {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 28px;
+        }
+
+        /* Big CTA */
+        .btn-full {
+            width: 100%;
+            text-align: center;
+            padding: 18px 32px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-full:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Reassurance */
+        .reassurance-row {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .reassurance-row span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .payment-legal {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 16px;
+            line-height: 1.6;
+        }
+
+        /* ===== SIDEBAR CONTENT ===== */
+        .sidebar-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sidebar-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 32px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sidebar-features li {
+            padding: 10px 0;
+            font-size: 14px;
+            color: rgba(255,255,255,0.75);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            line-height: 1.5;
+        }
+
+        .sidebar-features li::before {
+            content: '\2713';
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .sidebar-separator {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin: 28px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Upgrade teaser */
+        .upgrade-teaser {
+            border: 1px solid rgba(193, 146, 94, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 24px;
+            background: rgba(193, 146, 94, 0.05);
+            position: relative;
+            z-index: 1;
+            margin-bottom: 32px;
+        }
+
+        .upgrade-teaser h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+
+        .upgrade-teaser p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .upgrade-teaser a {
+            font-size: 13px;
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .upgrade-teaser a:hover { color: var(--gold-light); }
+
+        /* Trust elements */
+        .sidebar-trust {
+            position: relative;
+            z-index: 1;
+        }
+
+        .sidebar-trust-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .sidebar-trust-item .trust-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(193, 146, 94, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .checkout-wrapper {
+                flex-direction: column;
+            }
+            .checkout-main,
+            .checkout-sidebar {
+                flex: none;
+                max-width: 100%;
+                width: 100%;
+            }
+            .checkout-main {
+                padding: 40px 24px 48px;
+            }
+            .checkout-sidebar {
+                padding: 40px 24px 56px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .checkout-main {
+                padding: 32px 16px 40px;
+            }
+            .checkout-sidebar {
+                padding: 32px 16px 48px;
+            }
+            .order-card {
+                padding: 24px 20px;
+            }
+            .order-card-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .reassurance-row {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+        }
+
+        /* ===== REVEAL ANIMATIONS ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="landing">
+
+        <!-- NAV -->
+        <nav class="landing-nav">
+            <div class="landing-nav-inner">
+                <a href="index.html" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:44px;"></a>
+                <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+                <div class="landing-nav-links" id="nav-links">
+                    <a href="index.html">Accueil</a>
+                    <a href="index.html#expertises">Expertises</a>
+                    <a href="outil.html">Notre outil</a>
+                    <a href="cas-concrets.html">Cas concrets</a>
+                    <a href="equipe.html">Le cabinet</a>
+                    <a href="contact.html">Contact</a>
+                    <button class="btn btn-gold btn-sm" onclick="window.location.href='offres.html'">Nos offres</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- CHECKOUT -->
+        <div class="checkout-wrapper">
+
+            <!-- LEFT: Order + Payment -->
+            <div class="checkout-main">
+                <div class="breadcrumb reveal">
+                    <a href="index.html">Accueil</a> &rsaquo; <a href="index.html#expertises">Offres</a> &rsaquo; <span>Simulation patrimoniale</span>
+                </div>
+
+                <h1 class="checkout-title reveal">Accédez à votre simulation patrimoniale</h1>
+
+                <div class="order-card reveal">
+                    <div class="order-card-header">
+                        <div class="order-card-title">Simulation patrimoniale</div>
+                        <div class="order-card-price"><span id="checkout-price">49</span> <span>€</span></div>
+                    </div>
+                    <ul class="order-features">
+                        <li>Saisie complète de vos données patrimoniales</li>
+                        <li>Vue globale et indicateurs clés</li>
+                        <li>Simulations de base (immobilier, AV, PEA, CTO)</li>
+                        <li>Tableau de bord personnel</li>
+                        <li>Accès illimité pendant 12 mois</li>
+                    </ul>
+                    <hr class="order-separator">
+                    <div class="order-total">
+                        <span>Total</span>
+                        <span class="order-total-price">49 € TTC</span>
+                    </div>
+                </div>
+
+                <div class="payment-section reveal">
+                    <h2 class="payment-title">Paiement sécurisé</h2>
+                    <p class="payment-info">Vous serez redirigé vers notre plateforme de paiement sécurisée Stripe. Aucune donnée bancaire n'est collectée ni stockée par Patria Capital.</p>
+
+                    <button class="btn btn-gold btn-lg btn-full" id="btn-payer" onclick="processPayment()">Payer 49 € et accéder à l'outil &rarr;</button>
+
+                    <div class="reassurance-row">
+                        <span>&#128274; SSL</span>
+                        <span>&#128179; Stripe</span>
+                        <span>&#128737; RGPD</span>
+                    </div>
+
+                    <p class="payment-legal">Paiement sécurisé par Stripe. Vos données bancaires ne transitent jamais par nos serveurs.</p>
+                </div>
+            </div>
+
+            <!-- RIGHT: Sidebar -->
+            <div class="checkout-sidebar">
+                <h2 class="sidebar-title reveal">Ce que vous allez débloquer</h2>
+
+                <ul class="sidebar-features reveal">
+                    <li>Saisie complète de vos données patrimoniales</li>
+                    <li>Vue globale et indicateurs clés</li>
+                    <li>Simulations de base (immobilier, AV, PEA, CTO)</li>
+                    <li>Tableau de bord personnel</li>
+                </ul>
+
+                <hr class="sidebar-separator">
+
+                <div class="upgrade-teaser reveal">
+                    <h4>Besoin d'aller plus loin ?</h4>
+                    <p>Vous pourrez upgrader vers la Stratégie patrimoniale à tout moment.</p>
+                    <a href="index.html#expertises">Voir les offres &rarr;</a>
+                </div>
+
+                <hr class="sidebar-separator">
+
+                <div class="sidebar-trust reveal">
+                    <div class="sidebar-trust-item">
+                        <div class="trust-icon">&#9878;</div>
+                        Cabinet indépendant enregistré CIF
+                    </div>
+                    <div class="sidebar-trust-item">
+                        <div class="trust-icon">&#9733;</div>
+                        4,9/5 satisfaction clients
+                    </div>
+                    <div class="sidebar-trust-item">
+                        <div class="trust-icon">&#9889;</div>
+                        Accès immédiat après paiement
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <footer style="background:#0c0f1a;padding:40px 24px;text-align:center;">
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.35);line-height:1.7;max-width:700px;margin:0 auto;">
+                CIF &middot; ORIAS n&deg; [NUM&Eacute;RO] &middot; RCP assurée<br>
+                <a href="mentions-legales.html" style="color:rgba(255,255,255,0.4);text-decoration:none;">Mentions légales</a> &middot;
+                <a href="confidentialite.html" style="color:rgba(255,255,255,0.4);text-decoration:none;">Confidentialité</a><br>
+                &copy; 2026 Patria Capital
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // ===== NAV SCROLL =====
+        const nav = document.querySelector('.landing-nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 30);
+        });
+
+        // ===== MOBILE TOGGLE =====
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const navLinks = document.getElementById('nav-links');
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('open');
+                mobileToggle.textContent = navLinks.classList.contains('open') ? '\u2715' : '\u2630';
+            });
+        }
+
+        // ===== REVEAL ON SCROLL =====
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // ===== PAYMENT =====
+        function processPayment() {
+            const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/VOTRE_LIEN_ICI';
+
+            if (STRIPE_PAYMENT_LINK && !STRIPE_PAYMENT_LINK.includes('VOTRE_LIEN')) {
+                window.location.href = STRIPE_PAYMENT_LINK;
+            } else {
+                // Demo mode
+                localStorage.setItem('userRole', 'simulation');
+                localStorage.setItem('accessLevel', '1');
+                localStorage.setItem('paymentDate', new Date().toISOString());
+                window.location.href = 'index.html?access=simulation&welcome=true';
+            }
+        }
+    </script>
+
+</body>
+</html>
