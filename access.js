@@ -14,7 +14,14 @@
 //   3 = accompagnement (full + support)
 
 // ===== ADMIN CONFIGURATION =====
-const ADMIN_EMAILS = ['carlos@patriacapital.fr', 'carlos.lopes@patriacapital.fr'];
+const ADMIN_EMAILS = [
+    'carlos@patriacapital.fr',
+    'carlos.lopes@patriacapital.fr',
+    'carlosblopes01@gmail.com',
+    'carlosblopes@gmail.com',
+    'carlos.lopes@gmail.com'
+];
+const ADMIN_NAMES = ['carlos lopes', 'lopes carlos'];
 
 const ACCESS = {
     // Feature permissions by role
@@ -144,6 +151,19 @@ function isAdmin() {
 function isAdminEmail(email) {
     if (!email) return false;
     return ADMIN_EMAILS.includes(email.toLowerCase().trim());
+}
+
+function isAdminUser(user) {
+    if (!user) return false;
+    // Check by email
+    if (user.email && isAdminEmail(user.email)) return true;
+    // Check by name
+    if (user.nom && user.prenom) {
+        var fullName = (user.prenom + ' ' + user.nom).toLowerCase().trim();
+        var reverseName = (user.nom + ' ' + user.prenom).toLowerCase().trim();
+        if (ADMIN_NAMES.includes(fullName) || ADMIN_NAMES.includes(reverseName)) return true;
+    }
+    return false;
 }
 
 // ===== UI INTEGRATION =====

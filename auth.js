@@ -146,11 +146,17 @@ function enterApp() {
         localStorage.setItem('cgp_offer_type', urlParams.get('offer'));
     }
 
-    // Auto-detect admin by email — must run before access control
-    if (typeof isAdminEmail === 'function' && isAdminEmail(user.email)) {
+    // Auto-detect admin by email or name — must run before access control
+    var _isAdmin = false;
+    if (typeof isAdminUser === 'function') {
+        _isAdmin = isAdminUser(user);
+    } else if (typeof isAdminEmail === 'function') {
+        _isAdmin = isAdminEmail(user.email);
+    }
+    if (_isAdmin) {
         if (typeof setUserRole === 'function') setUserRole('admin');
     } else if (typeof getUserRole === 'function' && getUserRole() === 'admin') {
-        // User was admin but email no longer matches — downgrade
+        // User was admin but no longer matches — downgrade
         if (typeof setUserRole === 'function') setUserRole('free');
     }
 
