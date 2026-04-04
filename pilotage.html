@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pilotage patrimonial délégué — Family Office par Patria Capital. Structuration, coordination et suivi continu de votre patrimoine. Accès sur sélection.">
+    <meta property="og:title" content="Pilotage Patrimonial Délégué | Patria Capital">
+    <meta property="og:description" content="Votre patrimoine mérite un pilotage d'exception. Family Office — accès sur sélection.">
+    <meta property="og:type" content="website">
+    <title>Pilotage Patrimonial Délégué — Family Office | Patria Capital</title>
+    <link rel="icon" type="image/png" href="icone.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icone.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ====================================================
+           PILOTAGE PATRIMONIAL — Ultra-Premium Family Office
+           ==================================================== */
+
+        body {
+            display: block;
+            background: #0c0f1a;
+        }
+
+        /* --- Nav active state --- */
+        .landing-nav-links a.nav-active {
+            color: #fff;
+            position: relative;
+        }
+        .landing-nav-links a.nav-active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-gradient);
+            border-radius: 1px;
+        }
+        .landing-nav.scrolled .landing-nav-links a.nav-active {
+            color: var(--primary);
+        }
+
+        /* --- Reveal animations --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(32px);
+            transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+        .reveal-delay-5 { transition-delay: 0.5s; }
+        .reveal-delay-6 { transition-delay: 0.6s; }
+
+        /* --- Shared section styling --- */
+        .pil-section {
+            padding: 120px 48px;
+            position: relative;
+        }
+        .pil-section-dark {
+            background: #0c0f1a;
+            color: #fff;
+        }
+        .pil-section-cream {
+            background: var(--bg);
+            color: var(--text);
+        }
+        .pil-section-white {
+            background: #fff;
+            color: var(--text);
+        }
+        .pil-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .pil-section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 3.5vw, 44px);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+        .pil-section-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            line-height: 1.7;
+            max-width: 660px;
+            margin-bottom: 56px;
+        }
+        .pil-section-dark .pil-section-subtitle {
+            color: rgba(255,255,255,0.5);
+        }
+        .pil-section-cream .pil-section-subtitle,
+        .pil-section-white .pil-section-subtitle {
+            color: var(--text-light);
+        }
+        .pil-gold-text {
+            background: linear-gradient(135deg, #c1925e 0%, #d4aa76 50%, #c1925e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .pil-centered {
+            text-align: center;
+        }
+        .pil-centered .pil-section-subtitle {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ====================================================
+           SECTION 1: HERO
+           ==================================================== */
+        .pil-hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 160px 48px 100px;
+            background: #0c0f1a;
+            overflow: hidden;
+        }
+        .pil-hero::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: -20%;
+            width: 80%;
+            height: 80%;
+            background: radial-gradient(ellipse, rgba(193,146,94,0.04) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .pil-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            right: -20%;
+            width: 70%;
+            height: 70%;
+            background: radial-gradient(ellipse, rgba(90,126,194,0.03) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .pil-hero-badge {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #c1925e, #d4aa76);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 1;
+        }
+        .pil-hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(40px, 5vw, 64px);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.15;
+            margin-bottom: 24px;
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
+        }
+        .pil-hero-sub {
+            font-family: 'Inter', sans-serif;
+            font-size: 18px;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.7;
+            max-width: 620px;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+        .pil-hero .btn-gold {
+            position: relative;
+            z-index: 1;
+        }
+        .pil-hero-sep {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, #c1925e, #d4aa76);
+            margin: 40px auto 32px;
+            border-radius: 1px;
+            position: relative;
+            z-index: 1;
+        }
+        .pil-hero-stats {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+        .pil-hero-stat {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            color: #c1925e;
+            letter-spacing: 0.5px;
+        }
+        .pil-hero-stat-dot {
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: rgba(193,146,94,0.4);
+        }
+
+        /* ====================================================
+           SECTION 2: PROBLEMATIQUE
+           ==================================================== */
+        .pil-prob-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: start;
+        }
+        .pil-prob-text p {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text-light);
+            margin-bottom: 40px;
+        }
+        .pil-pain-point {
+            padding: 16px 0 16px 24px;
+            border-left: 3px solid var(--gold);
+            margin-bottom: 20px;
+        }
+        .pil-pain-point h4 {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .pil-pain-point p {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 0;
+        }
+
+        /* Fragmented patrimoine visual */
+        .pil-frag-visual {
+            position: relative;
+            min-height: 420px;
+        }
+        .pil-frag-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+        .pil-frag-card {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 20px 16px;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary);
+            transition: all 0.4s var(--ease);
+        }
+        .pil-frag-card:nth-child(1) { opacity: 0.6; transform: rotate(-2deg); }
+        .pil-frag-card:nth-child(2) { opacity: 0.8; transform: rotate(1deg) translateY(8px); }
+        .pil-frag-card:nth-child(3) { opacity: 0.5; transform: rotate(-1deg); }
+        .pil-frag-card:nth-child(4) { opacity: 0.7; transform: rotate(2deg) translateY(-4px); }
+        .pil-frag-card:nth-child(5) { opacity: 0.55; transform: rotate(-3deg) translateY(6px); }
+        .pil-frag-card:nth-child(6) { opacity: 0.75; transform: rotate(1.5deg); }
+        .pil-frag-arrow {
+            text-align: center;
+            margin: 16px 0;
+            color: var(--gold);
+            font-size: 28px;
+            opacity: 0.5;
+        }
+        .pil-frag-unified {
+            background: linear-gradient(135deg, #c1925e, #d4aa76);
+            color: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* ====================================================
+           SECTION 3: NOTRE REPONSE — Hub & Spoke
+           ==================================================== */
+        .pil-hub-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 500px;
+            margin: 0 auto 48px;
+        }
+        .pil-hub-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            padding: 24px;
+            line-height: 1.5;
+            background: rgba(193,146,94,0.08);
+            z-index: 2;
+            animation: hubPulse 3s ease-in-out infinite;
+        }
+        @keyframes hubPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(193,146,94,0.15); }
+            50% { box-shadow: 0 0 40px 8px rgba(193,146,94,0.1); }
+        }
+        .pil-spoke {
+            position: absolute;
+            z-index: 1;
+        }
+        .pil-spoke-line {
+            position: absolute;
+            background: rgba(255,255,255,0.08);
+            z-index: 0;
+        }
+        .pil-spoke-node {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.7);
+            background: rgba(255,255,255,0.03);
+            transition: all 0.4s var(--ease);
+        }
+        .pil-spoke-node:hover {
+            border-color: rgba(193,146,94,0.4);
+            background: rgba(193,146,94,0.06);
+            color: #fff;
+        }
+        .pil-spoke-node.pil-spoke-you {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(193,146,94,0.08);
+            font-weight: 600;
+        }
+
+        /* Spoke positions */
+        .pil-spoke-1 { top: 20px; left: 80px; }
+        .pil-spoke-2 { top: 20px; right: 80px; }
+        .pil-spoke-3 { top: 50%; right: 0; transform: translateY(-50%); }
+        .pil-spoke-4 { bottom: 20px; right: 80px; }
+        .pil-spoke-5 { bottom: 20px; left: 80px; }
+        .pil-spoke-6 { top: 50%; left: 0; transform: translateY(-50%); }
+
+        .pil-hub-quote {
+            font-family: 'Inter', sans-serif;
+            font-style: italic;
+            font-size: 15px;
+            color: rgba(255,255,255,0.45);
+            text-align: center;
+            max-width: 620px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* SVG lines for hub */
+        .pil-hub-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .pil-hub-svg line {
+            stroke: rgba(255,255,255,0.08);
+            stroke-width: 1;
+        }
+
+        /* ====================================================
+           SECTION 4: LES 3 PILIERS
+           ==================================================== */
+        .pil-pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+        .pil-pillar-card {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 40px;
+            transition: all 0.4s var(--ease);
+        }
+        .pil-pillar-card:hover {
+            box-shadow: 0 20px 48px rgba(37,74,101,0.1);
+            transform: translateY(-4px);
+        }
+        .pil-pillar-icon {
+            width: 52px;
+            height: 52px;
+            margin-bottom: 24px;
+        }
+        .pil-pillar-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+        .pil-pillar-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+        .pil-pillar-card > p {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text-light);
+            margin-bottom: 28px;
+        }
+        .pil-pillar-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+        .pil-pillar-list {
+            list-style: none;
+            padding: 0;
+        }
+        .pil-pillar-list li {
+            font-size: 13px;
+            color: var(--text-light);
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pil-pillar-list li:last-child {
+            border-bottom: none;
+        }
+        .pil-pillar-list li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--gold);
+            flex-shrink: 0;
+        }
+
+        /* ====================================================
+           SECTION 5: BEFORE / AFTER FLOW
+           ==================================================== */
+        .pil-flow-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+        .pil-flow-col-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+        .pil-flow-avant .pil-flow-col-title { color: #b0746e; }
+        .pil-flow-patria .pil-flow-col-title { color: var(--gold); }
+        .pil-flow-apres .pil-flow-col-title { color: #5a9e7a; }
+
+        .pil-flow-item {
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text);
+            background: #fff;
+        }
+        .pil-flow-avant .pil-flow-item {
+            border-left: 3px solid #d4918a;
+        }
+        .pil-flow-apres .pil-flow-item {
+            border-left: 3px solid #5a9e7a;
+        }
+        .pil-flow-patria-steps {
+            background: linear-gradient(135deg, rgba(193,146,94,0.06), rgba(193,146,94,0.02));
+            border: 1px solid rgba(193,146,94,0.15);
+            border-radius: 16px;
+            padding: 32px 28px;
+        }
+        .pil-flow-step {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--primary);
+        }
+        .pil-flow-step-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c1925e, #d4aa76);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .pil-flow-arrow {
+            text-align: center;
+            color: var(--gold);
+            font-size: 14px;
+            opacity: 0.4;
+            padding: 4px 0;
+        }
+
+        /* ====================================================
+           SECTION 6: PROCESS TIMELINE
+           ==================================================== */
+        .pil-timeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            position: relative;
+            margin-top: 16px;
+        }
+        .pil-timeline::before {
+            content: '';
+            position: absolute;
+            top: 44px;
+            left: 12.5%;
+            right: 12.5%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), rgba(193,146,94,0.3));
+            z-index: 0;
+        }
+        .pil-timeline-step {
+            position: relative;
+            text-align: center;
+            padding: 0 16px;
+        }
+        .pil-timeline-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c1925e, #d4aa76);
+            margin: 36px auto 28px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 0 4px rgba(193,146,94,0.15);
+        }
+        .pil-timeline-icon {
+            width: 44px;
+            height: 44px;
+            margin: 0 auto 8px;
+            opacity: 0.7;
+        }
+        .pil-timeline-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+        .pil-timeline-phase {
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 4px;
+        }
+        .pil-timeline-label {
+            font-family: 'Playfair Display', serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .pil-timeline-when {
+            font-size: 12px;
+            color: rgba(255,255,255,0.35);
+            margin-bottom: 16px;
+        }
+        .pil-timeline-desc {
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        .pil-timeline-livrable {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gold);
+            padding: 6px 14px;
+            border: 1px solid rgba(193,146,94,0.25);
+            border-radius: 20px;
+            background: rgba(193,146,94,0.05);
+        }
+
+        /* ====================================================
+           SECTION 7: DASHBOARD MOCKUP
+           ==================================================== */
+        .pil-dashboard {
+            background: #0f1219;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.3);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .pil-dash-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 28px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            font-weight: 500;
+        }
+        .pil-dash-user {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
+        }
+        .pil-dash-body {
+            padding: 28px;
+        }
+        .pil-dash-kpis {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .pil-dash-kpi {
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .pil-dash-kpi-navy {
+            background: rgba(37,74,101,0.3);
+            border: 1px solid rgba(37,74,101,0.4);
+        }
+        .pil-dash-kpi-gold {
+            background: rgba(193,146,94,0.12);
+            border: 1px solid rgba(193,146,94,0.2);
+        }
+        .pil-dash-kpi-green {
+            background: rgba(5,150,105,0.1);
+            border: 1px solid rgba(5,150,105,0.2);
+        }
+        .pil-dash-kpi-blue {
+            background: rgba(90,126,194,0.1);
+            border: 1px solid rgba(90,126,194,0.2);
+        }
+        .pil-dash-kpi-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .pil-dash-kpi-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .pil-dash-kpi-gold .pil-dash-kpi-value { color: var(--gold); }
+        .pil-dash-kpi-green .pil-dash-kpi-value { color: #34d399; }
+        .pil-dash-kpi-blue .pil-dash-kpi-value { color: #93b5f5; }
+
+        .pil-dash-charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .pil-dash-chart-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 24px;
+        }
+        .pil-dash-chart-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 20px;
+        }
+
+        /* Donut chart */
+        .pil-donut-wrap {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        .pil-donut {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #c1925e 0deg 162deg,
+                #5a7ec2 162deg 252deg,
+                #34d399 252deg 306deg,
+                #e8b778 306deg 342deg,
+                rgba(255,255,255,0.15) 342deg 360deg
+            );
+            position: relative;
+            flex-shrink: 0;
+        }
+        .pil-donut::after {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            right: 30px;
+            bottom: 30px;
+            border-radius: 50%;
+            background: #0f1219;
+        }
+        .pil-donut-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .pil-donut-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+        }
+        .pil-donut-legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Bar chart */
+        .pil-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            height: 140px;
+            padding-top: 8px;
+        }
+        .pil-bar-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: flex-end;
+        }
+        .pil-bar {
+            width: 100%;
+            border-radius: 6px 6px 0 0;
+            background: linear-gradient(180deg, #c1925e, #a07a4a);
+            min-height: 0;
+            transition: height 1.2s var(--ease);
+        }
+        .pil-bar-label {
+            font-size: 10px;
+            color: rgba(255,255,255,0.35);
+            margin-top: 8px;
+            text-align: center;
+        }
+        .pil-bar-value {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 6px;
+        }
+        .pil-dash-footer {
+            text-align: center;
+            font-size: 11px;
+            color: rgba(255,255,255,0.25);
+            padding: 16px 0 4px;
+            border-top: 1px solid rgba(255,255,255,0.04);
+        }
+
+        /* ====================================================
+           SECTION 8: CAS CLIENT PREMIUM
+           ==================================================== */
+        .pil-case-profile {
+            background: var(--bg);
+            border-left: 4px solid var(--gold);
+            border-radius: 12px;
+            padding: 28px 36px;
+            margin-bottom: 48px;
+        }
+        .pil-case-profile h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .pil-case-profile p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        .pil-case-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+        .pil-case-block {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: 14px;
+            padding: 32px;
+        }
+        .pil-case-block-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .pil-case-block-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .pil-case-block-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+        .pil-case-block-icon-warn { background: #fef3c7; }
+        .pil-case-block-icon-compass { background: rgba(193,146,94,0.12); }
+        .pil-case-block-icon-chart { background: #d1fae5; }
+        .pil-case-block-icon-quote { background: rgba(90,126,194,0.1); }
+
+        .pil-case-block h4 {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .pil-case-block p,
+        .pil-case-block li {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        .pil-case-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .pil-case-metric {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+        .pil-case-metric strong {
+            display: block;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .pil-case-metric span {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        .pil-case-quote {
+            border-left: 3px solid var(--gold);
+            padding-left: 24px;
+            margin-top: 8px;
+        }
+        .pil-case-quote p {
+            font-style: italic;
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text);
+        }
+        .pil-case-quote cite {
+            display: block;
+            font-style: normal;
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 12px;
+        }
+
+        /* ====================================================
+           SECTION 9: SELECTION CLIENT
+           ==================================================== */
+        .pil-sel-content {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .pil-sel-content > p {
+            font-size: 16px;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.8;
+            margin-bottom: 48px;
+        }
+        .pil-sel-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .pil-sel-card {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 28px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            transition: all 0.4s var(--ease);
+        }
+        .pil-sel-card:hover {
+            border-color: rgba(193,146,94,0.3);
+            background: rgba(193,146,94,0.06);
+        }
+        .pil-sel-small {
+            font-size: 13px;
+            color: rgba(255,255,255,0.3);
+            font-style: italic;
+            line-height: 1.7;
+        }
+
+        /* ====================================================
+           SECTION 10: CTA FINAL
+           ==================================================== */
+        .pil-cta-final {
+            position: relative;
+            padding: 120px 48px;
+            background: #0c0f1a;
+            text-align: center;
+            overflow: hidden;
+        }
+        .pil-cta-final::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(193,146,94,0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .pil-cta-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 4vw, 52px);
+            font-weight: 700;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        .pil-cta-sub {
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+        .pil-cta-final .btn-gold {
+            position: relative;
+            z-index: 1;
+        }
+        .pil-cta-pills {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-top: 32px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+        .pil-cta-pill {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 1px;
+        }
+        .pil-cta-note {
+            font-size: 12px;
+            color: rgba(255,255,255,0.2);
+            margin-top: 32px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ====================================================
+           BUTTON OVERRIDES
+           ==================================================== */
+        .btn-gold {
+            display: inline-block;
+            padding: 16px 36px;
+            background: linear-gradient(135deg, #c1925e, #d4aa76);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.4s var(--ease);
+            border: none;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(193,146,94,0.3);
+        }
+        .btn-gold.btn-lg {
+            padding: 20px 48px;
+            font-size: 15px;
+        }
+
+        /* ====================================================
+           RESPONSIVE
+           ==================================================== */
+        @media (max-width: 900px) {
+            .pil-section { padding: 80px 28px; }
+            .pil-hero { padding: 140px 28px 80px; }
+            .pil-prob-grid { grid-template-columns: 1fr; gap: 48px; }
+            .pil-pillars-grid { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
+            .pil-flow-grid { grid-template-columns: 1fr; gap: 24px; }
+            .pil-timeline { grid-template-columns: 1fr 1fr; gap: 40px 16px; }
+            .pil-timeline::before { display: none; }
+            .pil-dash-kpis { grid-template-columns: 1fr 1fr; }
+            .pil-dash-charts { grid-template-columns: 1fr; }
+            .pil-case-grid { grid-template-columns: 1fr; }
+            .pil-sel-cards { grid-template-columns: 1fr; max-width: 320px; margin: 0 auto 40px; }
+            .pil-hub-container { height: 380px; max-width: 360px; }
+            .pil-hub-center { width: 130px; height: 130px; font-size: 10px; padding: 16px; }
+            .pil-spoke-node { width: 72px; height: 72px; font-size: 9px; }
+            .pil-spoke-1 { top: 10px; left: 30px; }
+            .pil-spoke-2 { top: 10px; right: 30px; }
+            .pil-spoke-3 { top: 50%; right: -8px; }
+            .pil-spoke-4 { bottom: 10px; right: 30px; }
+            .pil-spoke-5 { bottom: 10px; left: 30px; }
+            .pil-spoke-6 { top: 50%; left: -8px; }
+        }
+        @media (max-width: 600px) {
+            .pil-section { padding: 64px 20px; }
+            .pil-hero { padding: 120px 20px 64px; min-height: auto; }
+            .pil-hero-title { font-size: 32px; }
+            .pil-hero-sub { font-size: 15px; }
+            .pil-hero-stats { gap: 16px; }
+            .pil-hero-stat { font-size: 11px; }
+            .pil-section-title { font-size: 24px; }
+            .pil-timeline { grid-template-columns: 1fr; gap: 32px; }
+            .pil-dash-kpis { grid-template-columns: 1fr; }
+            .pil-case-profile { padding: 20px 24px; }
+            .pil-case-metrics { grid-template-columns: 1fr; }
+            .pil-pillar-card { padding: 28px; }
+            .pil-hub-container { height: 320px; max-width: 300px; }
+            .pil-hub-center { width: 110px; height: 110px; font-size: 9px; padding: 12px; }
+            .pil-spoke-node { width: 60px; height: 60px; font-size: 8px; }
+            .pil-spoke-1 { top: 5px; left: 12px; }
+            .pil-spoke-2 { top: 5px; right: 12px; }
+            .pil-spoke-3 { right: -12px; }
+            .pil-spoke-4 { bottom: 5px; right: 12px; }
+            .pil-spoke-5 { bottom: 5px; left: 12px; }
+            .pil-spoke-6 { left: -12px; }
+            .pil-donut-wrap { flex-direction: column; }
+            .pil-bars { height: 100px; }
+            .pil-cta-final { padding: 80px 20px; }
+            .pil-flow-patria-steps { padding: 24px 20px; }
+        }
+    </style>
+</head>
+<body>
+<div class="landing">
+
+    <!-- ========== NAV ========== -->
+    <nav class="landing-nav">
+        <div class="landing-nav-inner">
+            <a href="index.html" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img"></a>
+            <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+            <div class="landing-nav-links" id="nav-links">
+                <a href="index.html">Accueil</a>
+                <a href="index.html#expertises">Expertises</a>
+                <a href="outil.html">Notre outil</a>
+                <a href="cas-concrets.html">Cas concrets</a>
+                <a href="equipe.html">Le cabinet</a>
+                <a href="contact.html">Contact</a>
+                <button class="btn btn-gold btn-sm" onclick="window.location.href='offres.html'">Nos offres</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== SECTION 1: HERO ========== -->
+    <section class="pil-hero">
+        <div class="pil-hero-badge reveal">FAMILY OFFICE &middot; ACC&Egrave;S SUR S&Eacute;LECTION</div>
+        <h1 class="pil-hero-title reveal reveal-delay-1">Votre patrimoine m&eacute;rite<br>un pilotage d'exception.</h1>
+        <p class="pil-hero-sub reveal reveal-delay-2">Nous prenons en charge la structuration, la coordination et le suivi continu de votre patrimoine. Vous vous concentrez sur l'essentiel.</p>
+        <a href="rdv-accompagnement.html" class="btn btn-gold reveal reveal-delay-3">Planifier un &eacute;change confidentiel</a>
+        <div class="pil-hero-sep reveal reveal-delay-3"></div>
+        <div class="pil-hero-stats reveal reveal-delay-4">
+            <span class="pil-hero-stat">12 familles accompagn&eacute;es</span>
+            <span class="pil-hero-stat-dot"></span>
+            <span class="pil-hero-stat">Patrimoine m&eacute;dian : 3,2 M&euro;</span>
+            <span class="pil-hero-stat-dot"></span>
+            <span class="pil-hero-stat">Depuis 2024</span>
+        </div>
+    </section>
+
+    <!-- ========== SECTION 2: PROBLEMATIQUE ========== -->
+    <section class="pil-section pil-section-cream">
+        <div class="pil-inner">
+            <h2 class="pil-section-title reveal">La complexit&eacute; patrimoniale est un risque silencieux.</h2>
+            <div class="pil-prob-grid">
+                <div class="pil-prob-text reveal reveal-delay-1">
+                    <p>Plus votre patrimoine cro&icirc;t, plus les interactions entre fiscalit&eacute;, immobilier, transmission, &eacute;pargne et r&eacute;glementation deviennent complexes. Sans vision globale, les d&eacute;cisions isol&eacute;es se contredisent. Les opportunit&eacute;s passent. Les co&ucirc;ts s'accumulent.</p>
+                    <div class="pil-pain-point">
+                        <h4>Des intervenants qui ne se parlent pas</h4>
+                        <p>Notaire, banquier, comptable : chacun agit dans son p&eacute;rim&egrave;tre sans vision d'ensemble.</p>
+                    </div>
+                    <div class="pil-pain-point">
+                        <h4>Des arbitrages pris sans vision d'ensemble</h4>
+                        <p>Chaque d&eacute;cision isol&eacute;e peut contredire une strat&eacute;gie globale non formalis&eacute;e.</p>
+                    </div>
+                    <div class="pil-pain-point">
+                        <h4>Une fiscalit&eacute; subie plut&ocirc;t qu'optimis&eacute;e</h4>
+                        <p>Sans anticipation, l'imp&ocirc;t devient une variable non ma&icirc;tris&eacute;e.</p>
+                    </div>
+                    <div class="pil-pain-point">
+                        <h4>Une transmission non pr&eacute;par&eacute;e</h4>
+                        <p>Chaque ann&eacute;e sans structuration r&eacute;duit les options et augmente les co&ucirc;ts.</p>
+                    </div>
+                </div>
+                <div class="pil-frag-visual reveal reveal-delay-2">
+                    <div class="pil-frag-grid">
+                        <div class="pil-frag-card">Immobilier</div>
+                        <div class="pil-frag-card">AV</div>
+                        <div class="pil-frag-card">PEA</div>
+                        <div class="pil-frag-card">SCI</div>
+                        <div class="pil-frag-card">PER</div>
+                        <div class="pil-frag-card">Holdings</div>
+                    </div>
+                    <div class="pil-frag-arrow">&darr;</div>
+                    <div class="pil-frag-unified">Vision globale structur&eacute;e</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SECTION 3: NOTRE REPONSE ========== -->
+    <section class="pil-section pil-section-dark pil-centered">
+        <div class="pil-inner">
+            <h2 class="pil-section-title pil-gold-text reveal">Un pilotage patrimonial global et continu.</h2>
+            <p class="pil-section-subtitle reveal reveal-delay-1" style="margin-left:auto;margin-right:auto;">Nous ne vendons pas de produits. Nous structurons, coordonnons et pilotons votre patrimoine dans la dur&eacute;e.</p>
+
+            <div class="pil-hub-container reveal reveal-delay-2">
+                <!-- SVG connecting lines -->
+                <svg class="pil-hub-svg" viewBox="0 0 600 500" preserveAspectRatio="xMidYMid meet">
+                    <!-- Lines from center (300,250) to each spoke -->
+                    <line x1="300" y1="250" x2="130" y2="70" />
+                    <line x1="300" y1="250" x2="470" y2="70" />
+                    <line x1="300" y1="250" x2="550" y2="250" />
+                    <line x1="300" y1="250" x2="470" y2="430" />
+                    <line x1="300" y1="250" x2="130" y2="430" />
+                    <line x1="300" y1="250" x2="50" y2="250" />
+                </svg>
+
+                <!-- Center hub -->
+                <div class="pil-hub-center">
+                    <span>Patria Capital<br><small style="opacity:0.7;font-weight:400;font-size:10px;">Votre pilote patrimonial</small></span>
+                </div>
+
+                <!-- Spoke nodes -->
+                <div class="pil-spoke pil-spoke-1">
+                    <div class="pil-spoke-node">Notaire</div>
+                </div>
+                <div class="pil-spoke pil-spoke-2">
+                    <div class="pil-spoke-node">Expert-<br>comptable</div>
+                </div>
+                <div class="pil-spoke pil-spoke-3">
+                    <div class="pil-spoke-node">Avocat<br>fiscaliste</div>
+                </div>
+                <div class="pil-spoke pil-spoke-4">
+                    <div class="pil-spoke-node">Banquier<br>priv&eacute;</div>
+                </div>
+                <div class="pil-spoke pil-spoke-5">
+                    <div class="pil-spoke-node">Assureur</div>
+                </div>
+                <div class="pil-spoke pil-spoke-6">
+                    <div class="pil-spoke-node pil-spoke-you">Vous</div>
+                </div>
+            </div>
+
+            <p class="pil-hub-quote reveal reveal-delay-3">&laquo; Nous assurons que chaque d&eacute;cision patrimoniale s'inscrit dans une strat&eacute;gie coh&eacute;rente et document&eacute;e. &raquo;</p>
+        </div>
+    </section>
+
+    <!-- ========== SECTION 4: LES 3 PILIERS ========== -->
+    <section class="pil-section pil-section-cream">
+        <div class="pil-inner">
+            <h2 class="pil-section-title reveal" style="text-align:center;">Trois piliers. Une seule ambition : prot&eacute;ger et<br>faire cro&icirc;tre votre patrimoine.</h2>
+            <p class="pil-section-subtitle reveal reveal-delay-1" style="text-align:center;margin-left:auto;margin-right:auto;">&nbsp;</p>
+
+            <div class="pil-pillars-grid">
+                <!-- Pilier 1 -->
+                <div class="pil-pillar-card reveal reveal-delay-1">
+                    <div class="pil-pillar-icon">
+                        <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M26 4L46 16V36L26 48L6 36V16L26 4Z" stroke="#c1925e" stroke-width="1.5" fill="none"/>
+                            <path d="M26 4L26 48" stroke="#c1925e" stroke-width="1" opacity="0.3"/>
+                            <path d="M6 16L46 36" stroke="#c1925e" stroke-width="1" opacity="0.3"/>
+                            <path d="M46 16L6 36" stroke="#c1925e" stroke-width="1" opacity="0.3"/>
+                        </svg>
+                    </div>
+                    <h3>Structuration patrimoniale</h3>
+                    <p>Nous auditons, mod&eacute;lisons et structurons votre patrimoine global. Chaque enveloppe, chaque bien, chaque flux est cartographi&eacute; et optimis&eacute;.</p>
+                    <div class="pil-pillar-label">Ce que vous obtenez :</div>
+                    <ul class="pil-pillar-list">
+                        <li>Audit patrimonial complet</li>
+                        <li>Strat&eacute;gie fiscale document&eacute;e</li>
+                        <li>Allocation d'actifs optimis&eacute;e</li>
+                        <li>Plan de transmission structur&eacute;</li>
+                    </ul>
+                </div>
+
+                <!-- Pilier 2 -->
+                <div class="pil-pillar-card reveal reveal-delay-2">
+                    <div class="pil-pillar-icon">
+                        <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="14" cy="14" r="6" stroke="#c1925e" stroke-width="1.5" fill="none"/>
+                            <circle cx="38" cy="14" r="6" stroke="#c1925e" stroke-width="1.5" fill="none"/>
+                            <circle cx="26" cy="38" r="6" stroke="#c1925e" stroke-width="1.5" fill="none"/>
+                            <line x1="19" y1="17" x2="33" y2="17" stroke="#c1925e" stroke-width="1" opacity="0.4"/>
+                            <line x1="17" y1="19" x2="23" y2="33" stroke="#c1925e" stroke-width="1" opacity="0.4"/>
+                            <line x1="35" y1="19" x2="29" y2="33" stroke="#c1925e" stroke-width="1" opacity="0.4"/>
+                        </svg>
+                    </div>
+                    <h3>Coordination des intervenants</h3>
+                    <p>Nous centralisons les &eacute;changes avec vos conseils (notaire, avocat, expert-comptable, banquier) pour garantir la coh&eacute;rence de chaque d&eacute;cision.</p>
+                    <div class="pil-pillar-label">Ce que vous obtenez :</div>
+                    <ul class="pil-pillar-list">
+                        <li>Point de contact unique</li>
+                        <li>R&eacute;unions de coordination</li>
+                        <li>Suivi des recommandations</li>
+                        <li>Arbitrages document&eacute;s</li>
+                    </ul>
+                </div>
+
+                <!-- Pilier 3 -->
+                <div class="pil-pillar-card reveal reveal-delay-3">
+                    <div class="pil-pillar-icon">
+                        <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="26" cy="28" r="18" stroke="#c1925e" stroke-width="1.5" fill="none"/>
+                            <path d="M26 28L26 16" stroke="#c1925e" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M26 28L36 22" stroke="#c1925e" stroke-width="1.5" stroke-linecap="round"/>
+                            <circle cx="26" cy="28" r="2.5" fill="#c1925e"/>
+                            <line x1="26" y1="10" x2="26" y2="12" stroke="#c1925e" stroke-width="1.5" opacity="0.5"/>
+                            <line x1="44" y1="28" x2="42" y2="28" stroke="#c1925e" stroke-width="1.5" opacity="0.5"/>
+                            <line x1="8" y1="28" x2="10" y2="28" stroke="#c1925e" stroke-width="1.5" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <h3>Pilotage continu</h3>
+                    <p>Votre strat&eacute;gie vit et s'adapte. Nous assurons le suivi, les ajustements et le reporting en continu.</p>
+                    <div class="pil-pillar-label">Ce que vous obtenez :</div>
+                    <ul class="pil-pillar-list">
+                        <li>Revue trimestrielle</li>
+                        <li>Reporting patrimonial</li>
+                        <li>Alertes et opportunit&eacute;s</li>
+                        <li>Acc&egrave;s permanent &agrave; l'outil</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SECTION 5: BEFORE / AFTER ========== -->
+    <section class="pil-section pil-section-white">
+        <div class="pil-inner">
+            <h2 class="pil-section-title reveal" style="text-align:center;margin-bottom:48px;">Ce que &laquo; pilotage d&eacute;l&eacute;gu&eacute; &raquo; signifie concr&egrave;tement.</h2>
+
+            <div class="pil-flow-grid">
+                <!-- AVANT -->
+                <div class="pil-flow-avant reveal reveal-delay-1">
+                    <div class="pil-flow-col-title">AVANT</div>
+                    <div class="pil-flow-item">Appel du notaire &rarr; pas de suite</div>
+                    <div class="pil-flow-item">Banquier propose un produit &rarr; d&eacute;cision isol&eacute;e</div>
+                    <div class="pil-flow-item">D&eacute;claration fiscale &rarr; subie</div>
+                    <div class="pil-flow-item">Transmission &rarr; non pr&eacute;par&eacute;e</div>
+                </div>
+
+                <!-- PATRIA CAPITAL -->
+                <div class="pil-flow-patria reveal reveal-delay-2">
+                    <div class="pil-flow-col-title" style="text-align:center;">PATRIA CAPITAL</div>
+                    <div class="pil-flow-patria-steps">
+                        <div class="pil-flow-step">
+                            <div class="pil-flow-step-num">1</div>
+                            <span>Analyse</span>
+                        </div>
+                        <div class="pil-flow-arrow">&darr;</div>
+                        <div class="pil-flow-step">
+                            <div class="pil-flow-step-num">2</div>
+                            <span>Structuration</span>
+                        </div>
+                        <div class="pil-flow-arrow">&darr;</div>
+                        <div class="pil-flow-step">
+                            <div class="pil-flow-step-num">3</div>
+                            <span>Coordination</span>
+                        </div>
+                        <div class="pil-flow-arrow">&darr;</div>
+                        <div class="pil-flow-step">
+                            <div class="pil-flow-step-num">4</div>
+                            <span>Suivi</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APRES -->
+                <div class="pil-flow-apres reveal reveal-delay-3">
+                    <div class="pil-flow-col-title">APR&Egrave;S</div>
+                    <div class="pil-flow-item">Notaire : recommandation suivie</div>
+                    <div class="pil-flow-item">Banquier : arbitrage coh&eacute;rent</div>
+                    <div class="pil-flow-item">Fiscalit&eacute; : optimis&eacute;e</div>
+                    <div class="pil-flow-item">Transmission : structur&eacute;e</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SECTION 6: PROCESS TIMELINE ========== -->
+    <section class="pil-section pil-section-dark">
+        <div class="pil-inner pil-centered">
+            <h2 class="pil-section-title pil-gold-text reveal">Notre process en 4 phases.</h2>
+            <p class="pil-section-subtitle reveal reveal-delay-1" style="margin-left:auto;margin-right:auto;">Un engagement structur&eacute;, des livrables &agrave; chaque &eacute;tape.</p>
+
+            <div class="pil-timeline">
+                <!-- Phase 1 -->
+                <div class="pil-timeline-step reveal reveal-delay-1">
+                    <div class="pil-timeline-icon">
+                        <svg viewBox="0 0 44 44" fill="none">
+                            <circle cx="20" cy="20" r="12" stroke="#c1925e" stroke-width="1.5" fill="none"/>
+                            <line x1="28" y1="28" x2="38" y2="38" stroke="#c1925e" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="pil-timeline-dot"></div>
+                    <div class="pil-timeline-phase">Phase 1</div>
+                    <div class="pil-timeline-label">Diagnostic</div>
+                    <div class="pil-timeline-when">Semaine 1-2</div>
+                    <div class="pil-timeline-desc">Entretien approfondi &middot; Collecte documentaire &middot; Cartographie patrimoniale compl&egrave;te</div>
+                    <div class="pil-timeline-livrable">Rapport de diagnostic</div>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="pil-timeline-step reveal reveal-delay-2">
+                    <div class="pil-timeline-icon">
+                        <svg viewBox="0 0 44 44" fill="none">
+                            <rect x="6" y="10" width="32" height="24" rx="2" stroke="#c1925e" stroke-width="1.5" fill="none"/>
+                            <line x1="6" y1="18" x2="38" y2="18" stroke="#c1925e" stroke-width="1" opacity="0.4"/>
+                            <line x1="6" y1="26" x2="38" y2="26" stroke="#c1925e" stroke-width="1" opacity="0.4"/>
+                            <line x1="22" y1="10" x2="22" y2="34" stroke="#c1925e" stroke-width="1" opacity="0.4"/>
+                        </svg>
+                    </div>
+                    <div class="pil-timeline-dot"></div>
+                    <div class="pil-timeline-phase">Phase 2</div>
+                    <div class="pil-timeline-label">Structuration</div>
+                    <div class="pil-timeline-when">Semaine 3-6</div>
+                    <div class="pil-timeline-desc">Mod&eacute;lisation &middot; Simulations compar&eacute;es &middot; Strat&eacute;gie formalis&eacute;e</div>
+                    <div class="pil-timeline-livrable">Plan strat&eacute;gique document&eacute;</div>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="pil-timeline-step reveal reveal-delay-3">
+                    <div class="pil-timeline-icon">
+                        <svg viewBox="0 0 44 44" fill="none">
+                            <circle cx="16" cy="22" r="8" stroke="#c1925e" stroke-width="1.5" fill="none"/>
+                            <circle cx="28" cy="22" r="8" stroke="#c1925e" stroke-width="1.5" fill="none"/>
+                            <path d="M20 17.5C21.5 19.5 21.5 24.5 20 26.5" stroke="#c1925e" stroke-width="1" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="pil-timeline-dot"></div>
+                    <div class="pil-timeline-phase">Phase 3</div>
+                    <div class="pil-timeline-label">Mise en &oelig;uvre</div>
+                    <div class="pil-timeline-when">Mois 2-4</div>
+                    <div class="pil-timeline-desc">Coordination intervenants &middot; Ouverture enveloppes &middot; R&eacute;allocations</div>
+                    <div class="pil-timeline-livrable">Suivi de mise en &oelig;uvre</div>
+                </div>
+
+                <!-- Phase 4 -->
+                <div class="pil-timeline-step reveal reveal-delay-4">
+                    <div class="pil-timeline-icon">
+                        <svg viewBox="0 0 44 44" fill="none">
+                            <circle cx="22" cy="22" r="14" stroke="#c1925e" stroke-width="1.5" fill="none"/>
+                            <path d="M22 8L22 12" stroke="#c1925e" stroke-width="1.5"/>
+                            <path d="M22 32L22 36" stroke="#c1925e" stroke-width="1.5"/>
+                            <path d="M36 22L32 22" stroke="#c1925e" stroke-width="1.5"/>
+                            <path d="M12 22L8 22" stroke="#c1925e" stroke-width="1.5"/>
+                            <circle cx="22" cy="22" r="3" fill="#c1925e"/>
+                            <path d="M22 22L28 16" stroke="#c1925e" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="pil-timeline-dot"></div>
+                    <div class="pil-timeline-phase">Phase 4</div>
+                    <div class="pil-timeline-label">Pilotage</div>
+                    <div class="pil-timeline-when">Continu</div>
+                    <div class="pil-timeline-desc">Revues trimestrielles &middot; Arbitrages &middot; Reporting &middot; Veille</div>
+                    <div class="pil-timeline-livrable">Reporting trimestriel</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SECTION 7: DASHBOARD MOCKUP ========== -->
+    <section class="pil-section pil-section-cream">
+        <div class="pil-inner pil-centered">
+            <h2 class="pil-section-title reveal">Un outil propri&eacute;taire au service de votre pilotage.</h2>
+            <p class="pil-section-subtitle reveal reveal-delay-1" style="margin-left:auto;margin-right:auto;">Chaque d&eacute;cision est appuy&eacute;e par des donn&eacute;es, des simulations et des projections.</p>
+
+            <div class="pil-dashboard reveal reveal-delay-2">
+                <!-- Top bar -->
+                <div class="pil-dash-topbar">
+                    <span>Patria Capital &middot; Espace client</span>
+                    <div class="pil-dash-user">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 13c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" stroke-width="1.2"/></svg>
+                    </div>
+                </div>
+
+                <!-- Body -->
+                <div class="pil-dash-body">
+                    <!-- KPIs -->
+                    <div class="pil-dash-kpis">
+                        <div class="pil-dash-kpi pil-dash-kpi-navy">
+                            <div class="pil-dash-kpi-label">Patrimoine net</div>
+                            <div class="pil-dash-kpi-value">3,2 M&euro;</div>
+                        </div>
+                        <div class="pil-dash-kpi pil-dash-kpi-gold">
+                            <div class="pil-dash-kpi-label">Rendement global</div>
+                            <div class="pil-dash-kpi-value">4,8 %</div>
+                        </div>
+                        <div class="pil-dash-kpi pil-dash-kpi-green">
+                            <div class="pil-dash-kpi-label">Fiscalit&eacute; optimis&eacute;e</div>
+                            <div class="pil-dash-kpi-value">-42 k&euro;/an</div>
+                        </div>
+                        <div class="pil-dash-kpi pil-dash-kpi-blue">
+                            <div class="pil-dash-kpi-label">Endettement</div>
+                            <div class="pil-dash-kpi-value">18 %</div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="pil-dash-charts">
+                        <!-- Donut -->
+                        <div class="pil-dash-chart-card">
+                            <div class="pil-dash-chart-title">Allocation actuelle</div>
+                            <div class="pil-donut-wrap">
+                                <div class="pil-donut"></div>
+                                <div class="pil-donut-legend">
+                                    <div class="pil-donut-legend-item"><span class="pil-donut-legend-dot" style="background:#c1925e;"></span> Immobilier 45%</div>
+                                    <div class="pil-donut-legend-item"><span class="pil-donut-legend-dot" style="background:#5a7ec2;"></span> AV 25%</div>
+                                    <div class="pil-donut-legend-item"><span class="pil-donut-legend-dot" style="background:#34d399;"></span> PEA 15%</div>
+                                    <div class="pil-donut-legend-item"><span class="pil-donut-legend-dot" style="background:#e8b778;"></span> SCPI 10%</div>
+                                    <div class="pil-donut-legend-item"><span class="pil-donut-legend-dot" style="background:rgba(255,255,255,0.15);"></span> Liquidit&eacute;s 5%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bar chart -->
+                        <div class="pil-dash-chart-card">
+                            <div class="pil-dash-chart-title">Projection patrimoine net</div>
+                            <div class="pil-bars" id="pil-bars">
+                                <div class="pil-bar-col">
+                                    <div class="pil-bar-value">3,2M</div>
+                                    <div class="pil-bar" data-height="44%"></div>
+                                    <div class="pil-bar-label">Aujour&shy;d'hui</div>
+                                </div>
+                                <div class="pil-bar-col">
+                                    <div class="pil-bar-value">4,1M</div>
+                                    <div class="pil-bar" data-height="57%"></div>
+                                    <div class="pil-bar-label">5 ans</div>
+                                </div>
+                                <div class="pil-bar-col">
+                                    <div class="pil-bar-value">5,8M</div>
+                                    <div class="pil-bar" data-height="80%"></div>
+                                    <div class="pil-bar-label">10 ans</div>
+                                </div>
+                                <div class="pil-bar-col">
+                                    <div class="pil-bar-value">7,2M</div>
+                                    <div class="pil-bar" data-height="100%"></div>
+                                    <div class="pil-bar-label">15 ans</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pil-dash-footer">
+                        Prochaine revue : 15 juin 2026 &middot; Derni&egrave;re mise &agrave; jour : 2 avril 2026
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SECTION 8: CAS CLIENT PREMIUM ========== -->
+    <section class="pil-section pil-section-white">
+        <div class="pil-inner">
+            <h2 class="pil-section-title reveal" style="text-align:center;margin-bottom:48px;">&Eacute;tude de cas : un dirigeant, un patrimoine complexe,<br>une r&eacute;ponse globale.</h2>
+
+            <div class="pil-case-profile reveal reveal-delay-1">
+                <h3>Dirigeant &middot; 52 ans &middot; Patrimoine : 4,8 M&euro;</h3>
+                <p>Mari&eacute;, 3 enfants &middot; TMI 45 % &middot; SCI + Holding + AV + PEA + Immobilier locatif</p>
+            </div>
+
+            <div class="pil-case-grid">
+                <!-- Problematique -->
+                <div class="pil-case-block reveal reveal-delay-1">
+                    <div class="pil-case-block-header">
+                        <div class="pil-case-block-icon pil-case-block-icon-warn">
+                            <svg viewBox="0 0 18 18" fill="none"><path d="M9 2L16.5 15H1.5L9 2Z" stroke="#d97706" stroke-width="1.3" fill="none"/><line x1="9" y1="7" x2="9" y2="11" stroke="#d97706" stroke-width="1.3"/><circle cx="9" cy="13" r="0.7" fill="#d97706"/></svg>
+                        </div>
+                        <h4>Probl&eacute;matique</h4>
+                    </div>
+                    <p>Patrimoine concentr&eacute; (70 % immobilier), fiscalit&eacute; non optimis&eacute;e, 4 intervenants non coordonn&eacute;s, succession non pr&eacute;par&eacute;e, cession &agrave; 5 ans non structur&eacute;e.</p>
+                </div>
+
+                <!-- Notre intervention -->
+                <div class="pil-case-block reveal reveal-delay-2">
+                    <div class="pil-case-block-header">
+                        <div class="pil-case-block-icon pil-case-block-icon-compass">
+                            <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="#c1925e" stroke-width="1.3" fill="none"/><path d="M9 4L11 8L9 9L7 8Z" fill="#c1925e" opacity="0.6"/><path d="M9 14L7 10L9 9L11 10Z" fill="#c1925e" opacity="0.3"/></svg>
+                        </div>
+                        <h4>Notre intervention</h4>
+                    </div>
+                    <p>Audit complet &middot; Restructuration holding &middot; Optimisation 150-0 B ter &middot; Coordination notaire + avocat + expert-comptable &middot; Mise en place PER + AV luxembourgeoise &middot; Plan de transmission</p>
+                </div>
+
+                <!-- Resultats -->
+                <div class="pil-case-block reveal reveal-delay-3">
+                    <div class="pil-case-block-header">
+                        <div class="pil-case-block-icon pil-case-block-icon-chart">
+                            <svg viewBox="0 0 18 18" fill="none"><polyline points="2,14 6,8 10,10 16,3" stroke="#059669" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><polyline points="12,3 16,3 16,7" stroke="#059669" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h4>R&eacute;sultats &agrave; 12 mois</h4>
+                    </div>
+                    <div class="pil-case-metrics">
+                        <div class="pil-case-metric">
+                            <strong>-58 k&euro;/an</strong>
+                            <span>d'imp&ocirc;t</span>
+                        </div>
+                        <div class="pil-case-metric">
+                            <strong>50/50</strong>
+                            <span>immo / financier</span>
+                        </div>
+                        <div class="pil-case-metric">
+                            <strong>1,2 M&euro;</strong>
+                            <span>transmis sans droits</span>
+                        </div>
+                        <div class="pil-case-metric">
+                            <strong>5 ans</strong>
+                            <span>cession structur&eacute;e</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Temoignage -->
+                <div class="pil-case-block reveal reveal-delay-4">
+                    <div class="pil-case-block-header">
+                        <div class="pil-case-block-icon pil-case-block-icon-quote">
+                            <svg viewBox="0 0 18 18" fill="none"><path d="M3 11V8c0-3 2-5 5-5v2c-2 0-3 1.5-3 3h2v5H3zm7 0V8c0-3 2-5 5-5v2c-2 0-3 1.5-3 3h2v5h-4z" fill="#5a7ec2" opacity="0.5"/></svg>
+                        </div>
+                        <h4>T&eacute;moignage</h4>
+                    </div>
+                    <div class="pil-case-quote">
+                        <p>&laquo; Pour la premi&egrave;re fois, j'ai le sentiment que quelqu'un pilote r&eacute;ellement mon patrimoine. Je n'ai plus besoin de tout coordonner moi-m&ecirc;me. &raquo;</p>
+                        <cite>&mdash; Dirigeant, client depuis 2024</cite>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SECTION 9: SELECTION CLIENT ========== -->
+    <section class="pil-section pil-section-dark pil-centered">
+        <div class="pil-inner">
+            <h2 class="pil-section-title pil-gold-text reveal">Une offre r&eacute;serv&eacute;e. Un engagement r&eacute;ciproque.</h2>
+            <div class="pil-sel-content">
+                <p class="reveal reveal-delay-1">Le pilotage patrimonial d&eacute;l&eacute;gu&eacute; est une offre &agrave; acc&egrave;s limit&eacute;. Nous n'accompagnons qu'un nombre restreint de familles pour garantir la qualit&eacute;, la disponibilit&eacute; et l'engagement que cette mission exige.</p>
+
+                <div class="pil-sel-cards">
+                    <div class="pil-sel-card reveal reveal-delay-2">Patrimoine sup&eacute;rieur &agrave; 1 M&euro;</div>
+                    <div class="pil-sel-card reveal reveal-delay-3">Volont&eacute; de structuration &agrave; long terme</div>
+                    <div class="pil-sel-card reveal reveal-delay-4">Disponibilit&eacute; pour un premier &eacute;change</div>
+                </div>
+
+                <p class="pil-sel-small reveal reveal-delay-5">Nous d&eacute;clinons les mandats o&ugrave; nous ne pouvons pas apporter de valeur. C'est notre engagement de transparence.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SECTION 10: CTA FINAL ========== -->
+    <section class="pil-cta-final">
+        <h2 class="pil-cta-title pil-gold-text reveal">Parlons de votre patrimoine.</h2>
+        <p class="pil-cta-sub reveal reveal-delay-1">Un &eacute;change confidentiel de 45 minutes pour explorer vos enjeux patrimoniaux.</p>
+        <a href="rdv-accompagnement.html" class="btn btn-gold btn-lg reveal reveal-delay-2">Planifier un &eacute;change confidentiel</a>
+        <div class="pil-cta-pills reveal reveal-delay-3">
+            <span class="pil-cta-pill">Confidentiel</span>
+            <span class="pil-cta-pill">&middot;</span>
+            <span class="pil-cta-pill">Sans engagement</span>
+            <span class="pil-cta-pill">&middot;</span>
+            <span class="pil-cta-pill">Sur s&eacute;lection</span>
+        </div>
+        <p class="pil-cta-note reveal reveal-delay-4">Entretien r&eacute;serv&eacute; aux patrimoines sup&eacute;rieurs &agrave; 1 M&euro;.</p>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="landing-footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:36px;"></div>
+            <div style="font-size:0.85rem;opacity:0.6;margin-top:4px;">Cabinet de conseil en gestion de patrimoine</div>
+            <div class="footer-links">
+                <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+                <a href="confidentialite.html">Confidentialit&eacute;</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div style="font-size:0.75rem;opacity:0.45;margin-top:12px;line-height:1.7;max-width:700px;margin-left:auto;margin-right:auto;">
+                CIF &middot; ORIAS n&deg; [NUM&Eacute;RO] &middot; Membre de [ASSOCIATION] &middot; RCP assur&eacute;e par [ASSUREUR]<br>
+                Les informations pr&eacute;sent&eacute;es ne constituent pas un conseil en investissement au sens de la directive MIF 2 (2014/65/UE).
+            </div>
+            <div class="footer-copy">&copy; 2026 Patria Capital. Tous droits r&eacute;serv&eacute;s.</div>
+        </div>
+    </footer>
+
+</div>
+
+<!-- ========== JAVASCRIPT ========== -->
+<script>
+    // Nav scroll effect
+    const nav = document.querySelector('.landing-nav');
+    function updateNav() {
+        if (window.scrollY > 40) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    }
+    window.addEventListener('scroll', updateNav, { passive: true });
+    updateNav();
+
+    // Mobile toggle
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const navLinks = document.getElementById('nav-links');
+    if (mobileToggle) {
+        mobileToggle.addEventListener('click', function () {
+            navLinks.classList.toggle('open');
+        });
+    }
+
+    // IntersectionObserver reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(function (el) {
+        revealObserver.observe(el);
+    });
+
+    // Bar chart animation
+    const barsSection = document.getElementById('pil-bars');
+    if (barsSection) {
+        const barObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    const bars = entry.target.querySelectorAll('.pil-bar');
+                    bars.forEach(function (bar) {
+                        const h = bar.getAttribute('data-height');
+                        bar.style.height = h;
+                    });
+                    barObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        barObserver.observe(barsSection);
+
+        // Initialize bars at 0
+        barsSection.querySelectorAll('.pil-bar').forEach(function (bar) {
+            bar.style.height = '0%';
+        });
+    }
+</script>
+</body>
+</html>
