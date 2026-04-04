@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cas concrets et simulations patrimoniales : dirigeants, professions libérales, familles patrimoniales. Découvrez nos stratégies d'optimisation avec Patria Capital.">
+    <meta property="og:title" content="Cas Concrets & Simulations | Patria Capital">
+    <meta property="og:description" content="Cas concrets et simulations patrimoniales : dirigeants, professions libérales, familles patrimoniales.">
+    <meta property="og:type" content="website">
+    <title>Cas Concrets & Simulations | Patria Capital — Gestion de Patrimoine</title>
+    <link rel="icon" type="image/png" href="icone.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icone.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ====================================================
+           CAS CONCRETS PAGE — Page-specific styles
+           ==================================================== */
+
+        body {
+            display: block;
+            background: #0c0f1a;
+        }
+
+        /* --- Nav active state --- */
+        .landing-nav-links a.nav-active {
+            color: #fff;
+            position: relative;
+        }
+        .landing-nav-links a.nav-active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-gradient);
+            border-radius: 1px;
+        }
+        .landing-nav.scrolled .landing-nav-links a.nav-active {
+            color: var(--primary);
+        }
+
+        /* --- Hero --- */
+        .cas-hero {
+            position: relative;
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 160px 48px 100px;
+            background: #0c0f1a;
+            overflow: hidden;
+        }
+
+        .cas-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(90, 126, 194, 0.10) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .cas-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 60%;
+            height: 160%;
+            background: radial-gradient(ellipse at 70% 50%, rgba(193, 146, 94, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .cas-hero .hero-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3.5px;
+            text-transform: uppercase;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cas-hero .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(36px, 4.5vw, 56px);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.15;
+            max-width: 800px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cas-hero .hero-subtitle {
+            font-size: clamp(16px, 1.8vw, 19px);
+            color: rgba(255, 255, 255, 0.50);
+            max-width: 620px;
+            line-height: 1.75;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- Section Styles --- */
+        .cas-section-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .cas-section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 3.5vw, 42px);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .cas-section-title.dark { color: var(--primary); }
+        .cas-section-title.light { color: #fff; }
+
+        .cas-section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--accent-gradient);
+            margin: 20px auto 0;
+            border-radius: 2px;
+        }
+
+        .cas-section-subtitle {
+            font-size: 16px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 64px;
+            line-height: 1.75;
+        }
+
+        .cas-section-subtitle.dark { color: var(--text-light); }
+        .cas-section-subtitle.light { color: rgba(255,255,255,0.55); }
+
+        /* --- Intro Section --- */
+        .cas-intro {
+            background: var(--bg);
+            padding: 120px 48px;
+        }
+
+        .intro-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .intro-card {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 40px 32px;
+            text-align: center;
+            transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+        }
+
+        .intro-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 48px rgba(37, 74, 101, 0.10);
+        }
+
+        .intro-card-icon {
+            font-size: 36px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .intro-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            border: none;
+            padding: 0;
+        }
+
+        .intro-card p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.75;
+        }
+
+        /* --- Segment Section --- */
+        .cas-segment {
+            padding: 100px 48px;
+            position: relative;
+        }
+
+        .cas-segment.bg-white { background: #fff; }
+        .cas-segment.bg-cream { background: var(--bg); }
+        .cas-segment.bg-dark {
+            background: #0c0f1a;
+            overflow: hidden;
+        }
+
+        .cas-segment.bg-dark::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -10%;
+            width: 60%;
+            height: 180%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(90, 126, 194, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .segment-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(24px, 3vw, 36px);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 56px;
+            line-height: 1.2;
+        }
+
+        .segment-title.dark { color: var(--primary); }
+        .segment-title.light { color: #fff; }
+
+        .segment-title::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: var(--accent-gradient);
+            margin: 16px auto 0;
+            border-radius: 2px;
+        }
+
+        /* --- Case Study Cards --- */
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .case-card {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 0;
+            overflow: hidden;
+            transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+        }
+
+        .cas-segment.bg-dark .case-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+        }
+
+        .case-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 48px rgba(37, 74, 101, 0.10);
+        }
+
+        .cas-segment.bg-dark .case-card:hover {
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+            border-color: rgba(193, 146, 94, 0.25);
+        }
+
+        .case-tag {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border-radius: 0 0 8px 0;
+        }
+
+        .case-tag.dirigeant {
+            background: linear-gradient(135deg, #254a65, #3a6d8c);
+            color: #fff;
+        }
+
+        .case-tag.liberal {
+            background: linear-gradient(135deg, #c1925e, #dbb88a);
+            color: #fff;
+        }
+
+        .case-tag.famille {
+            background: linear-gradient(135deg, #4a6741, #6b8f60);
+            color: #fff;
+        }
+
+        .case-header {
+            padding: 28px 32px 20px;
+        }
+
+        .case-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .cas-segment.bg-dark .case-title {
+            color: #fff;
+        }
+
+        .case-profile {
+            font-size: 13px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .cas-segment.bg-dark .case-profile {
+            color: rgba(255,255,255,0.55);
+        }
+
+        .case-body {
+            padding: 0 32px 32px;
+        }
+
+        .case-block {
+            margin-bottom: 20px;
+        }
+
+        .case-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .case-block-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+
+        .case-block-text {
+            font-size: 13.5px;
+            color: var(--text-light);
+            line-height: 1.75;
+        }
+
+        .cas-segment.bg-dark .case-block-text {
+            color: rgba(255,255,255,0.65);
+        }
+
+        .case-block-text ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .case-block-text ul li {
+            padding: 2px 0 2px 18px;
+            position: relative;
+        }
+
+        .case-block-text ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 11px;
+            width: 6px;
+            height: 1px;
+            background: var(--gold);
+        }
+
+        /* Results block — gold left border */
+        .case-results {
+            background: rgba(193, 146, 94, 0.06);
+            border-left: 3px solid var(--gold);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            padding: 18px 22px;
+        }
+
+        .cas-segment.bg-dark .case-results {
+            background: rgba(193, 146, 94, 0.08);
+        }
+
+        .case-results .case-block-label {
+            color: var(--gold-dark);
+        }
+
+        .cas-segment.bg-dark .case-results .case-block-label {
+            color: var(--gold-light);
+        }
+
+        .case-results .case-block-text {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .cas-segment.bg-dark .case-results .case-block-text {
+            color: rgba(255,255,255,0.85);
+        }
+
+        .case-viz {
+            margin-top: 14px;
+            padding: 12px 16px;
+            background: rgba(193, 146, 94, 0.08);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-style: italic;
+            color: var(--text-light);
+        }
+
+        .cas-segment.bg-dark .case-viz {
+            color: rgba(255,255,255,0.5);
+            background: rgba(193, 146, 94, 0.05);
+        }
+
+        /* --- Segment CTA --- */
+        .segment-cta {
+            text-align: center;
+            margin-top: 56px;
+        }
+
+        .segment-cta a {
+            font-size: 14px;
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        .segment-cta a:hover {
+            color: var(--gold-dark);
+        }
+
+        .segment-cta a span {
+            margin-left: 6px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .segment-cta a:hover span {
+            margin-left: 12px;
+        }
+
+        /* --- Tool Section --- */
+        .cas-tool {
+            background: var(--bg);
+            padding: 120px 48px;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .tool-item {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px;
+            text-align: center;
+            transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+        }
+
+        .tool-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(37, 74, 101, 0.08);
+        }
+
+        .tool-item-icon {
+            font-size: 28px;
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .tool-item p {
+            font-size: 13.5px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* --- Final CTA --- */
+        .cas-cta {
+            background: #0c0f1a;
+            padding: 120px 48px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cas-cta::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: 20%;
+            width: 60%;
+            height: 160%;
+            background: radial-gradient(ellipse, rgba(90, 126, 194, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .cas-cta h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 3.5vw, 40px);
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .cas-cta p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.50);
+            max-width: 520px;
+            margin: 0 auto 44px;
+            line-height: 1.75;
+            position: relative;
+        }
+
+        .cas-cta .btn-gold {
+            position: relative;
+            font-size: 16px;
+            padding: 16px 40px;
+            border-radius: 40px;
+        }
+
+        /* --- Scroll Animations --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* --- Mobile Nav Toggle --- */
+        .mobile-nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+        }
+
+        .landing-nav.scrolled .mobile-nav-toggle {
+            color: var(--primary);
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 900px) {
+            .intro-grid {
+                grid-template-columns: 1fr;
+                max-width: 520px;
+            }
+
+            .cases-grid {
+                grid-template-columns: 1fr;
+                max-width: 600px;
+            }
+
+            .cas-hero,
+            .cas-intro,
+            .cas-segment,
+            .cas-tool,
+            .cas-cta {
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+
+            .cas-hero {
+                padding-top: 120px;
+                padding-bottom: 80px;
+                min-height: auto;
+            }
+
+            .cas-intro,
+            .cas-tool,
+            .cas-cta {
+                padding-top: 80px;
+                padding-bottom: 80px;
+            }
+
+            .cas-segment {
+                padding-top: 72px;
+                padding-bottom: 72px;
+            }
+
+            .landing-nav-links {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(12, 15, 26, 0.97);
+                backdrop-filter: blur(12px);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 32px;
+                z-index: 999;
+            }
+
+            .landing-nav-links.open {
+                display: flex;
+            }
+
+            .landing-nav-links.open a {
+                font-size: 18px;
+                color: rgba(255,255,255,0.85);
+            }
+
+            .mobile-nav-toggle {
+                display: block;
+                z-index: 1000;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .case-header {
+                padding: 20px 20px 16px;
+            }
+
+            .case-body {
+                padding: 0 20px 24px;
+            }
+
+            .tool-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== NAV ========== -->
+    <nav class="landing-nav" id="cas-nav">
+        <div class="landing-nav-inner">
+            <a href="index.html" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img"></a>
+            <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+            <div class="landing-nav-links" id="nav-links">
+                <a href="index.html">Accueil</a>
+                <a href="offre.html">Expertises</a>
+                <a href="offre.html#engagement">Notre approche</a>
+                <a href="cas-concrets.html" class="nav-active">Cas concrets</a>
+                <a href="equipe.html">Le cabinet</a>
+                <a href="contact.html">Contact</a>
+                <button class="btn btn-gold btn-sm" onclick="window.location.href='contact.html'">Échanger avec un conseiller</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== HERO ========== -->
+    <section class="cas-hero">
+        <div class="hero-badge reveal">STRATÉGIE PATRIMONIALE</div>
+        <h1 class="hero-title reveal reveal-delay-1">Cas concrets &amp; simulations</h1>
+        <p class="hero-subtitle reveal reveal-delay-2">Découvrez comment nous structurons des stratégies patrimoniales adaptées à chaque situation.</p>
+    </section>
+
+    <!-- ========== INTRO — OUTIL ========== -->
+    <section class="cas-intro">
+        <div class="cas-section-label reveal">Notre méthodologie</div>
+        <h2 class="cas-section-title dark reveal">Comment nous utilisons notre outil pour structurer votre stratégie</h2>
+        <p class="cas-section-subtitle dark reveal">Une approche rigoureuse en trois temps, appuyée par notre outil de diagnostic patrimonial.</p>
+
+        <div class="intro-grid">
+            <div class="intro-card reveal reveal-delay-1">
+                <span class="intro-card-icon">&#9670;</span>
+                <h3>Diagnostic structuré</h3>
+                <p>Nous analysons votre patrimoine dans sa globalité : immobilier, financier, fiscal, transmission. Une vision complète pour identifier les déséquilibres et les leviers.</p>
+            </div>
+            <div class="intro-card reveal reveal-delay-2">
+                <span class="intro-card-icon">&#9673;</span>
+                <h3>Simulations comparées</h3>
+                <p>Nous comparons les enveloppes et les scénarios : AV, PEA, SCPI, PER, holding... Projection des rendements et de la fiscalité sur 10, 20 ou 30 ans.</p>
+            </div>
+            <div class="intro-card reveal reveal-delay-3">
+                <span class="intro-card-icon">&#9678;</span>
+                <h3>Stratégie documentée</h3>
+                <p>Chaque recommandation est formalisée dans un plan d'action chiffré, avec un calendrier de mise en oeuvre et un suivi structuré.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SEGMENT 1 — DIRIGEANTS & ENTREPRENEURS ========== -->
+    <section class="cas-segment bg-white">
+        <div class="cas-section-label reveal">Segment 01</div>
+        <h2 class="segment-title dark reveal">Dirigeants &amp; entrepreneurs</h2>
+
+        <div class="cases-grid">
+
+            <!-- CASE 1 -->
+            <div class="case-card reveal reveal-delay-1">
+                <div class="case-tag dirigeant">Dirigeant</div>
+                <div class="case-header">
+                    <div class="case-title">Dirigeant préparant sa cession</div>
+                    <div class="case-profile">Dirigeant SAS, 48 ans, marié, 2 enfants &middot; Patrimoine : 2,4M&euro; (1,8M&euro; immobilier) &middot; TMI 41%</div>
+                </div>
+                <div class="case-body">
+                    <div class="case-block">
+                        <div class="case-block-label">Situation</div>
+                        <div class="case-block-text">Patrimoine concentré sur l'immobilier, pas de stratégie de cession formalisée, fiscalité non optimisée.</div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Objectifs</div>
+                        <div class="case-block-text">
+                            <ul>
+                                <li>Préparer la cession à 5 ans</li>
+                                <li>Réduire la pression fiscale</li>
+                                <li>Protéger la famille</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Analyse via l'outil</div>
+                        <div class="case-block-text">Simulation comparée holding vs cession directe, projection fiscale 150-0 B ter, arbitrage AV luxembourgeoise vs SCPI en démembrement.</div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Stratégie mise en place</div>
+                        <div class="case-block-text">
+                            <ul>
+                                <li>Holding patrimoniale + apport-cession 150-0 B ter</li>
+                                <li>Pacte Dutreil partiel</li>
+                                <li>AV luxembourgeoise</li>
+                                <li>SCPI en démembrement temporaire</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-results">
+                            <div class="case-block-label">Résultats projetés</div>
+                            <div class="case-block-text">
+                                <ul>
+                                    <li>-42k&euro;/an d'impôt</li>
+                                    <li>Report de la plus-value de cession</li>
+                                    <li>Transmission anticipée de 380k&euro; en nue-propriété</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="case-viz">Projection comparée du patrimoine net à 10 ans : scénario sans restructuration vs scénario optimisé</div>
+                </div>
+            </div>
+
+            <!-- CASE 2 -->
+            <div class="case-card reveal reveal-delay-2">
+                <div class="case-tag dirigeant">Dirigeant</div>
+                <div class="case-header">
+                    <div class="case-title">Entrepreneur post-cession</div>
+                    <div class="case-profile">Ex-dirigeant SARL, 52 ans, divorcé, 1 enfant &middot; Patrimoine : 3,1M&euro; post-cession (2,8M&euro; liquidités + 300k&euro; RP)</div>
+                </div>
+                <div class="case-body">
+                    <div class="case-block">
+                        <div class="case-block-label">Situation</div>
+                        <div class="case-block-text">Vient de céder son entreprise, capital non investi, aucune stratégie de réemploi définie.</div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Objectifs</div>
+                        <div class="case-block-text">
+                            <ul>
+                                <li>Structurer le réemploi du capital</li>
+                                <li>Générer des revenus complémentaires</li>
+                                <li>Préparer la transmission</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Analyse via l'outil</div>
+                        <div class="case-block-text">Simulation multi-enveloppes (AV, PEA, CTO, SCPI, PE), projection revenus complémentaires, optimisation 150-0 B ter réemploi.</div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Stratégie mise en place</div>
+                        <div class="case-block-text">
+                            <ul>
+                                <li>AV luxembourgeoise 1,2M&euro;</li>
+                                <li>PEA actions</li>
+                                <li>SCPI en démembrement 600k&euro;</li>
+                                <li>Private equity via FCPR</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-results">
+                            <div class="case-block-label">Résultats projetés</div>
+                            <div class="case-block-text">
+                                <ul>
+                                    <li>Revenus complémentaires de 85k&euro;/an</li>
+                                    <li>Rendement global de 4,8% net</li>
+                                    <li>Fiscalité optimisée via réemploi</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="segment-cta reveal">
+            <a href="contact.html">Vous vous reconnaissez dans cette situation ? <span>&rarr;</span> Échanger avec un conseiller</a>
+        </div>
+    </section>
+
+    <!-- ========== SEGMENT 2 — PROFESSIONS LIBÉRALES & CADRES SUP ========== -->
+    <section class="cas-segment bg-cream">
+        <div class="cas-section-label reveal">Segment 02</div>
+        <h2 class="segment-title dark reveal">Professions libérales &amp; cadres supérieurs</h2>
+
+        <div class="cases-grid">
+
+            <!-- CASE 3 -->
+            <div class="case-card reveal reveal-delay-1">
+                <div class="case-tag liberal">Profession libérale</div>
+                <div class="case-header">
+                    <div class="case-title">Médecin libéral fin de carrière</div>
+                    <div class="case-profile">Médecin, 57 ans, divorcé, 3 enfants &middot; Patrimoine : 1,1M&euro; &middot; Revenus : 190k&euro;/an</div>
+                </div>
+                <div class="case-body">
+                    <div class="case-block">
+                        <div class="case-block-label">Situation</div>
+                        <div class="case-block-text">Aucune stratégie patrimoniale, épargne placée sur livrets, transmission non anticipée.</div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Objectifs</div>
+                        <div class="case-block-text">
+                            <ul>
+                                <li>Réduire l'impôt sur le revenu</li>
+                                <li>Préparer la retraite à 65 ans</li>
+                                <li>Organiser la transmission</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Analyse via l'outil</div>
+                        <div class="case-block-text">Simulation PER avec rattrapage plafonds N-1/N-2/N-3, projection démembrement, comparatif clauses bénéficiaires AV.</div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Stratégie mise en place</div>
+                        <div class="case-block-text">
+                            <ul>
+                                <li>PER optimisé avec rattrapage N-1/N-2/N-3</li>
+                                <li>Donation en démembrement du bien locatif</li>
+                                <li>AV restructurée avec clause bénéficiaire optimisée</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-results">
+                            <div class="case-block-label">Résultats projetés</div>
+                            <div class="case-block-text">
+                                <ul>
+                                    <li>-21k&euro;/an d'impôt sur le revenu</li>
+                                    <li>450k&euro; transmis en nue-propriété sans droits</li>
+                                    <li>Revenus retraite complémentaires projetés : 3,2k&euro;/mois</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CASE 4 -->
+            <div class="case-card reveal reveal-delay-2">
+                <div class="case-tag liberal">Cadre dirigeant</div>
+                <div class="case-header">
+                    <div class="case-title">Cadre dirigeant expatrié de retour</div>
+                    <div class="case-profile">Cadre dirigeant, 45 ans, marié, 2 enfants, retour d'expatriation &middot; Patrimoine : 890k&euro; &middot; Revenus : 210k&euro;/an</div>
+                </div>
+                <div class="case-body">
+                    <div class="case-block">
+                        <div class="case-block-label">Situation</div>
+                        <div class="case-block-text">Comptes dans 3 pays, fiscalité complexe, aucun PEA ni AV ouvert en France.</div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Objectifs</div>
+                        <div class="case-block-text">
+                            <ul>
+                                <li>Rapatrier et structurer l'épargne</li>
+                                <li>Optimiser la fiscalité française</li>
+                                <li>Capitaliser sur 15 ans</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Analyse via l'outil</div>
+                        <div class="case-block-text">Simulation multi-enveloppes France, comparaison régimes fiscaux, projection capitalisation à 15 ans.</div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Stratégie mise en place</div>
+                        <div class="case-block-text">
+                            <ul>
+                                <li>Ouverture PEA + AV pour prendre date fiscale</li>
+                                <li>PER avec versements optimisés</li>
+                                <li>Investissement locatif LMNP</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-results">
+                            <div class="case-block-label">Résultats projetés</div>
+                            <div class="case-block-text">
+                                <ul>
+                                    <li>Structuration complète en 6 mois</li>
+                                    <li>Économie fiscale de 12k&euro;/an</li>
+                                    <li>Rendement projeté de 4,6% net</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="segment-cta reveal">
+            <a href="contact.html">Vous vous reconnaissez dans cette situation ? <span>&rarr;</span> Échanger avec un conseiller</a>
+        </div>
+    </section>
+
+    <!-- ========== SEGMENT 3 — FAMILLES PATRIMONIALES ========== -->
+    <section class="cas-segment bg-dark">
+        <div class="cas-section-label reveal">Segment 03</div>
+        <h2 class="segment-title light reveal">Familles patrimoniales</h2>
+
+        <div class="cases-grid">
+
+            <!-- CASE 5 -->
+            <div class="case-card reveal reveal-delay-1">
+                <div class="case-tag famille">Famille patrimoniale</div>
+                <div class="case-header">
+                    <div class="case-title">Couple cadres avec épargne dormante</div>
+                    <div class="case-profile">Couple, 43 ans, 2 enfants, CDI cadres sup &middot; Patrimoine : 310k&euro; (livrets + fonds euros) &middot; Revenus : 155k&euro;/an</div>
+                </div>
+                <div class="case-body">
+                    <div class="case-block">
+                        <div class="case-block-label">Situation</div>
+                        <div class="case-block-text">Épargne non structurée, rendement actuel de 1,1%, aucune diversification.</div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Objectifs</div>
+                        <div class="case-block-text">
+                            <ul>
+                                <li>Faire travailler l'épargne</li>
+                                <li>Diversifier les placements</li>
+                                <li>Réduire la fiscalité</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Analyse via l'outil</div>
+                        <div class="case-block-text">Comparatif rendement actuel vs allocation optimisée, simulation PEA/AV/SCPI, projection à 20 ans.</div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Stratégie mise en place</div>
+                        <div class="case-block-text">
+                            <ul>
+                                <li>PEA ETF monde</li>
+                                <li>AV en gestion pilotée</li>
+                                <li>SCPI en assurance-vie</li>
+                                <li>Investissement locatif structuré</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-results">
+                            <div class="case-block-label">Résultats projetés</div>
+                            <div class="case-block-text">
+                                <ul>
+                                    <li>Rendement 5,4% net vs 1,1% initial</li>
+                                    <li>Réduction fiscale de 4,5k&euro;/an</li>
+                                    <li>Capital projeté +180k&euro; à 15 ans</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CASE 6 -->
+            <div class="case-card reveal reveal-delay-2">
+                <div class="case-tag famille">Famille patrimoniale</div>
+                <div class="case-header">
+                    <div class="case-title">Famille avec patrimoine immobilier hérité</div>
+                    <div class="case-profile">Couple, 58 ans, 3 enfants, patrimoine hérité &middot; Patrimoine : 2,8M&euro; (2,2M&euro; immobilier, 4 biens locatifs) &middot; Revenus fonciers : 72k&euro;/an</div>
+                </div>
+                <div class="case-body">
+                    <div class="case-block">
+                        <div class="case-block-label">Situation</div>
+                        <div class="case-block-text">Concentration immobilière excessive, revenus fonciers lourdement taxés, succession non préparée.</div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Objectifs</div>
+                        <div class="case-block-text">
+                            <ul>
+                                <li>Rééquilibrer le patrimoine</li>
+                                <li>Optimiser la fiscalité foncière</li>
+                                <li>Anticiper la succession</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Analyse via l'outil</div>
+                        <div class="case-block-text">Simulation passage régime réel vs micro-foncier, comparatif SCI à l'IS vs IR, projection démembrement croisé.</div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-block-label">Stratégie mise en place</div>
+                        <div class="case-block-text">
+                            <ul>
+                                <li>SCI à l'IS pour 2 biens</li>
+                                <li>Cession d'un bien + réinvestissement SCPI en AV</li>
+                                <li>Démembrement croisé pour les enfants</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="case-block">
+                        <div class="case-results">
+                            <div class="case-block-label">Résultats projetés</div>
+                            <div class="case-block-text">
+                                <ul>
+                                    <li>-18k&euro;/an de fiscalité foncière</li>
+                                    <li>Patrimoine rééquilibré : 55% immo / 45% financier</li>
+                                    <li>Succession structurée et optimisée</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="segment-cta reveal">
+            <a href="contact.html">Vous vous reconnaissez dans cette situation ? <span>&rarr;</span> Échanger avec un conseiller</a>
+        </div>
+    </section>
+
+    <!-- ========== OUTIL PATRIMONIAL ========== -->
+    <section class="cas-tool">
+        <div class="cas-section-label reveal">Technologie</div>
+        <h2 class="cas-section-title dark reveal">Notre outil patrimonial : diagnostic, simulation, décision</h2>
+        <p class="cas-section-subtitle dark reveal">Un outil propriétaire au service de votre stratégie, pour des recommandations chiffrées et documentées.</p>
+
+        <div class="tool-grid">
+            <div class="tool-item reveal reveal-delay-1">
+                <span class="tool-item-icon">&#9670;</span>
+                <p>Diagnostic patrimonial complet (immobilier, financier, fiscal, transmission)</p>
+            </div>
+            <div class="tool-item reveal reveal-delay-2">
+                <span class="tool-item-icon">&#9673;</span>
+                <p>Simulations multi-enveloppes comparées</p>
+            </div>
+            <div class="tool-item reveal reveal-delay-3">
+                <span class="tool-item-icon">&#9678;</span>
+                <p>Projections à 10, 20, 30 ans</p>
+            </div>
+            <div class="tool-item reveal reveal-delay-4">
+                <span class="tool-item-icon">&#10022;</span>
+                <p>Allocation optimisée selon profil de risque</p>
+            </div>
+            <div class="tool-item reveal reveal-delay-1">
+                <span class="tool-item-icon">&#9671;</span>
+                <p>Rapport structuré avec recommandations chiffrées</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== CTA FINAL ========== -->
+    <section class="cas-cta">
+        <h2 class="reveal">Votre situation mérite une analyse personnalisée.</h2>
+        <p class="reveal reveal-delay-1">Prenez 45 minutes pour identifier vos leviers d'optimisation avec un conseiller dédié.</p>
+        <button class="btn btn-gold reveal reveal-delay-2" onclick="window.location='contact.html'">Réserver mon entretien stratégique</button>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="landing-footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:36px;"></div>
+            <div style="font-size:0.85rem;opacity:0.6;margin-top:4px;">Cabinet de conseil en gestion de patrimoine</div>
+            <div class="footer-links">
+                <a href="mentions-legales.html">Mentions légales</a>
+                <a href="confidentialite.html">Confidentialité</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div style="font-size:0.75rem;opacity:0.45;margin-top:12px;line-height:1.7;max-width:700px;margin-left:auto;margin-right:auto;">
+                CIF &middot; ORIAS n&deg; [NUMÉRO] &middot; Membre de [ASSOCIATION] &middot; RCP assurée par [ASSUREUR]<br>
+                Les informations présentées ne constituent pas un conseil en investissement au sens de la directive MIF 2 (2014/65/UE). Tout investissement comporte des risques, y compris un risque de perte en capital.
+            </div>
+            <div class="footer-copy">&copy; 2026 Patria Capital. Tous droits réservés.</div>
+        </div>
+    </footer>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script>
+        // --- Nav scroll behavior ---
+        const nav = document.getElementById('cas-nav');
+        function updateNav() {
+            if (window.scrollY > 60) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        }
+        window.addEventListener('scroll', updateNav, { passive: true });
+        updateNav();
+
+        // --- Mobile nav toggle ---
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const navLinks = document.getElementById('nav-links');
+        mobileToggle.addEventListener('click', function() {
+            navLinks.classList.toggle('open');
+            mobileToggle.innerHTML = navLinks.classList.contains('open') ? '&times;' : '&#9776;';
+        });
+
+        // --- Scroll reveal animations (IntersectionObserver) ---
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.12,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        revealElements.forEach(function(el) {
+            revealObserver.observe(el);
+        });
+
+        // --- Smooth scroll for anchor links ---
+        document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+            anchor.addEventListener('click', function(e) {
+                var target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

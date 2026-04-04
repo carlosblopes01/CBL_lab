@@ -24,13 +24,12 @@
                 <a href="index.html" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:44px;"></a>
                 <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
                 <div class="landing-nav-links" id="nav-links">
-                    <a href="#expertises">Nos expertises</a>
-                    <a href="offre.html">Notre offre</a>
-                    <a href="equipe.html">L'équipe</a>
+                    <a href="#expertises">Expertises</a>
                     <a href="#features">Notre approche</a>
+                    <a href="cas-concrets.html">Cas concrets</a>
+                    <a href="equipe.html">Le cabinet</a>
                     <a href="contact.html">Contact</a>
-                    <span style="font-size:0.85rem;opacity:0.7;letter-spacing:0.5px;">01 86 XX XX XX</span>
-                    <button class="btn btn-gold btn-sm" onclick="showAuthScreen('signup')">Prendre rendez-vous</button>
+                    <button class="btn btn-gold btn-sm" onclick="showAuthScreen('signup')">Échanger avec un conseiller</button>
                 </div>
             </div>
         </nav>
@@ -38,253 +37,283 @@
         <!-- HERO -->
         <section class="landing-hero">
             <div class="hero-content">
-                <div class="hero-badge">Conseil en gestion de patrimoine &middot; CIF enregistré ORIAS</div>
-                <h1 class="hero-title">Votre patrimoine mérite mieux qu'une gestion standard.</h1>
-                <p class="hero-subtitle">Nous structurons des stratégies patrimoniales sur-mesure pour les dirigeants et familles exigeantes — fiscalité, transmission, investissements et protection.</p>
-                <p class="hero-targeting">Dirigeants &middot; Professions libérales &middot; Familles patrimoniales</p>
+                <div class="hero-badge">Conseil patrimonial indépendant &middot; CIF enregistré ORIAS</div>
+                <h1 class="hero-title">Structurer. Optimiser.<br>Transmettre.</h1>
+                <p class="hero-subtitle">Nous construisons des stratégies patrimoniales sur-mesure pour ceux qui refusent les solutions standardisées.</p>
                 <div class="hero-ctas">
-                    <button class="btn btn-gold btn-lg" onclick="showAuthScreen('signup')">Réserver un entretien confidentiel</button>
-                    <a href="#expertises" class="btn btn-outline-light btn-lg">Découvrir nos expertises</a>
+                    <button class="btn btn-gold btn-lg" onclick="showAuthScreen('signup')">Échanger avec un conseiller</button>
+                    <a href="cas-concrets.html" class="btn btn-outline-light btn-lg">Voir nos cas concrets</a>
                 </div>
-            </div>
-            <div class="hero-stats">
-                <div class="hero-stat-card">
-                    <div class="hero-stat-label">CIF</div>
-                    <div class="hero-stat-value">Enregistré ORIAS</div>
-                </div>
-                <div class="hero-stat-card">
-                    <div class="hero-stat-label">Indépendant</div>
-                    <div class="hero-stat-value">Conseil non lié</div>
-                </div>
-                <div class="hero-stat-card">
-                    <div class="hero-stat-label">RCP</div>
-                    <div class="hero-stat-value">Responsabilité assurée</div>
+                <div class="hero-proof">
+                    <span>Cabinet indépendant</span>
+                    <span>CIF enregistré ORIAS</span>
+                    <span>RCP assurée</span>
                 </div>
             </div>
         </section>
 
-        <!-- TRUST BAR -->
-        <div class="trust-bar trust-bar-modern">
-            <div class="trust-item">CIF enregistré ORIAS</div>
-            <span class="trust-sep"></span>
-            <div class="trust-item">Conseil 100% indépendant</div>
-            <span class="trust-sep"></span>
-            <div class="trust-item">RCP assurée</div>
-            <span class="trust-sep"></span>
-            <div class="trust-item">Premier entretien sans engagement</div>
-        </div>
+        <!-- MANIFESTE -->
+        <section class="landing-section landing-section-cream" id="manifeste">
+            <div class="manifeste-layout">
+                <div class="manifeste-text animate-on-scroll">
+                    <h2 class="manifeste-title">Pourquoi un cabinet patrimonial nouvelle génération ?</h2>
+                    <p>Les cabinets traditionnels proposent des produits. Nous construisons des stratégies.</p>
+                    <p>Chaque recommandation est chiffrée, documentée, argumentée. Chaque client dispose d'un diagnostic structuré, d'un plan d'action priorisé et d'un suivi formalisé.</p>
+                    <p class="manifeste-conviction">Patria Capital est né d'une conviction : le conseil patrimonial mérite plus de rigueur, plus de clarté et plus d'exigence.</p>
+                </div>
+                <div class="manifeste-piliers">
+                    <div class="manifeste-pilier animate-on-scroll">
+                        <h4>Diagnostic structuré</h4>
+                        <p>Pas d'intuition, des données. Votre patrimoine est analysé dans sa globalité avant toute recommandation.</p>
+                    </div>
+                    <div class="manifeste-pilier animate-on-scroll">
+                        <h4>Stratégie documentée</h4>
+                        <p>Chaque arbitrage est justifié, chiffré et formalisé dans un plan d'action clair.</p>
+                    </div>
+                    <div class="manifeste-pilier animate-on-scroll">
+                        <h4>Suivi formalisé</h4>
+                        <p>Reporting trimestriel, révision annuelle. Pas de promesses vagues, des livrables concrets.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- EXPERTISES -->
         <section class="landing-section" id="expertises">
-            <h2 class="landing-section-title">Nos domaines d'expertise</h2>
-            <p class="landing-section-subtitle">Des compétences spécialisées au service de votre patrimoine.</p>
-            <div class="expertises-grid">
-                <div class="expertise-card animate-on-scroll">
-                    <div class="expertise-icon">&#9879;</div>
+            <h2 class="landing-section-title">Nos expertises patrimoniales</h2>
+            <p class="landing-section-subtitle">Six domaines de compétence au service d'une stratégie globale.</p>
+            <div class="expertises-grid expertises-grid-main">
+                <div class="expertise-card expertise-card-featured animate-on-scroll">
+                    <div class="expertise-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
                     <h3>Optimisation fiscale</h3>
-                    <p>Analyse de votre pression fiscale, stratégies de défiscalisation, arbitrages IR/IS, réduction d'IFI et structuration des revenus.</p>
+                    <p>Arbitrages IR/IS, réduction IFI, structuration des revenus. Chaque levier est chiffré et priorisé selon votre situation.</p>
                 </div>
-                <div class="expertise-card animate-on-scroll">
-                    <div class="expertise-icon">&#9670;</div>
+                <div class="expertise-card expertise-card-featured animate-on-scroll">
+                    <div class="expertise-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
                     <h3>Patrimoine du dirigeant</h3>
-                    <p>Cession de parts (150-0 B ter), OBO immobilier, pacte Dutreil, holding patrimoniale, optimisation de la rémunération.</p>
+                    <p>Cession 150-0 B ter, OBO, holding, Dutreil. Les mécanismes propres au chef d'entreprise, maîtrisés et déployés.</p>
                 </div>
-                <div class="expertise-card animate-on-scroll">
-                    <div class="expertise-icon">&#9883;</div>
+                <div class="expertise-card expertise-card-featured animate-on-scroll">
+                    <div class="expertise-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
                     <h3>Transmission &amp; succession</h3>
-                    <p>Démembrement de propriété, donations, clause bénéficiaire AV, anticipation successorale et protection du conjoint.</p>
-                </div>
-                <div class="expertise-card animate-on-scroll">
-                    <div class="expertise-icon">&#8962;</div>
-                    <h3>Investissements immobiliers</h3>
-                    <p>Immobilier locatif, SCPI, structuration en SCI, crédit patrimonial et analyse de rendement net après fiscalité.</p>
-                </div>
-                <div class="expertise-card animate-on-scroll">
-                    <div class="expertise-icon">&#9878;</div>
-                    <h3>Épargne &amp; placements</h3>
-                    <p>Assurance vie, PEA, PER, compte-titres — allocation multi-enveloppes, gestion pilotée et produits structurés.</p>
-                </div>
-                <div class="expertise-card animate-on-scroll">
-                    <div class="expertise-icon">&#9733;</div>
-                    <h3>Préparation retraite</h3>
-                    <p>Projection de revenus, stratégie de capitalisation long terme, arbitrage PER/AV et optimisation du départ.</p>
+                    <p>Démembrement, donations, clause bénéficiaire. Anticiper pour protéger et transmettre dans les meilleures conditions.</p>
                 </div>
             </div>
-        </section>
-
-        <!-- POUR QUI -->
-        <section class="landing-section landing-section-cream" id="pour-qui">
-            <h2 class="landing-section-title dark">À qui s'adresse Patria Capital ?</h2>
-            <p class="landing-section-subtitle dark">Nous accompagnons des profils patrimoniaux exigeants qui recherchent un conseil indépendant et structuré.</p>
-            <div class="profils-grid">
-                <div class="profil-card animate-on-scroll">
-                    <div class="profil-icon">&#9670;</div>
-                    <h3>Dirigeants &amp; entrepreneurs</h3>
-                    <p>Vous pilotez une entreprise et souhaitez structurer votre patrimoine professionnel et personnel. Cession, OBO, holding, Dutreil — nous maîtrisons les mécanismes propres aux chefs d'entreprise.</p>
+            <div class="expertises-grid expertises-grid-secondary">
+                <div class="expertise-card expertise-card-compact animate-on-scroll">
+                    <h3>Investissements immobiliers</h3>
+                    <p>Locatif, SCPI, SCI. Rendement net après fiscalité, pas rendement brut marketing.</p>
                 </div>
-                <div class="profil-card animate-on-scroll">
-                    <div class="profil-icon">&#9823;</div>
-                    <h3>Professions libérales &amp; cadres supérieurs</h3>
-                    <p>Revenus élevés, fiscalité lourde, peu de temps : vous avez besoin d'un partenaire qui structure votre épargne, optimise votre IR et prépare votre transmission.</p>
+                <div class="expertise-card expertise-card-compact animate-on-scroll">
+                    <h3>Épargne &amp; placements</h3>
+                    <p>AV, PEA, PER, CTO. Allocation multi-enveloppes et gestion pilotée sur-mesure.</p>
                 </div>
-                <div class="profil-card animate-on-scroll">
-                    <div class="profil-icon">&#9961;</div>
-                    <h3>Familles patrimoniales</h3>
-                    <p>Patrimoine immobilier, financier ou mixte : nous vous aidons à le structurer, le protéger et le transmettre dans les meilleures conditions fiscales et juridiques.</p>
+                <div class="expertise-card expertise-card-compact animate-on-scroll">
+                    <h3>Préparation retraite</h3>
+                    <p>Projection de revenus, capitalisation long terme. Optimiser le départ, pas le subir.</p>
                 </div>
             </div>
         </section>
 
         <!-- METHODE -->
-        <section class="landing-section" id="features">
-            <h2 class="landing-section-title">Notre méthode d'accompagnement</h2>
-            <p class="landing-section-subtitle">Un processus rigoureux, du diagnostic à la mise en œuvre.</p>
+        <section class="landing-section landing-section-cream" id="features">
+            <h2 class="landing-section-title dark">Une méthode. Quatre étapes. Des livrables concrets.</h2>
+            <p class="landing-section-subtitle dark">Nous ne vendons pas des produits. Nous structurons des stratégies.</p>
             <div class="features-grid">
                 <div class="feature-card animate-on-scroll">
                     <div class="feature-number">01</div>
-                    <h3>Diagnostic patrimonial</h3>
-                    <p>Analyse complète de votre patrimoine immobilier, financier et professionnel. Revenus, charges, fiscalité, protection et transmission — rien n'est laissé au hasard.</p>
-                    <p class="feature-livrable">Livrable : rapport de situation patrimoniale consolidé</p>
+                    <h3>Comprendre votre situation</h3>
+                    <p>Patrimoine, revenus, fiscalité, protection, transmission. Une analyse exhaustive avant toute recommandation.</p>
+                    <div class="feature-livrable-badge">Rapport de situation patrimoniale consolidé</div>
                 </div>
                 <div class="feature-card animate-on-scroll">
                     <div class="feature-number">02</div>
-                    <h3>Stratégie patrimoniale</h3>
-                    <p>Arbitrages fiscaux, restructuration de l'épargne, stratégie de transmission, optimisation de la rémunération dirigeant. Chaque recommandation est chiffrée et argumentée.</p>
-                    <p class="feature-livrable">Livrable : plan d'action structuré avec arbitrages priorisés</p>
+                    <h3>Construire votre stratégie</h3>
+                    <p>Arbitrages chiffrés, scénarios comparés, recommandations argumentées. Rien n'est laissé à l'intuition.</p>
+                    <div class="feature-livrable-badge">Plan d'action structuré avec priorisation</div>
                 </div>
                 <div class="feature-card animate-on-scroll">
                     <div class="feature-number">03</div>
-                    <h3>Mise en œuvre</h3>
-                    <p>Sélection des contrats, négociation des frais, coordination avec vos conseils (notaire, avocat, expert-comptable). Nous pilotons la mise en place opérationnelle.</p>
-                    <p class="feature-livrable">Livrable : comparatif multi-enveloppes et projections à 10/20/30 ans</p>
+                    <h3>Déployer les solutions</h3>
+                    <p>Sélection des contrats, négociation des frais, coordination avec vos conseils. Nous pilotons.</p>
+                    <div class="feature-livrable-badge">Comparatifs multi-enveloppes, projections 10/20/30 ans</div>
                 </div>
                 <div class="feature-card animate-on-scroll">
                     <div class="feature-number">04</div>
-                    <h3>Suivi &amp; reporting</h3>
-                    <p>Reportings trimestriels, révision annuelle de la stratégie, ajustements selon l'évolution de votre situation et des marchés. Un interlocuteur dédié, disponible.</p>
-                    <p class="feature-livrable">Livrable : rapport de suivi trimestriel et révision annuelle</p>
+                    <h3>Suivre et ajuster</h3>
+                    <p>Reporting trimestriel, révision annuelle, ajustements tactiques. Un interlocuteur dédié, pas un numéro client.</p>
+                    <div class="feature-livrable-badge">Rapport de suivi trimestriel</div>
                 </div>
             </div>
         </section>
 
-        <!-- CHIFFRES CLÉS -->
-        <section class="landing-section landing-section-dark" id="chiffres">
-            <h2 class="landing-section-title light">Le cabinet en quelques chiffres</h2>
-            <div class="chiffres-grid">
-                <div class="chiffre-card animate-on-scroll">
-                    <div class="chiffre-value">CIF</div>
-                    <div class="chiffre-label">Conseiller en Investissements Financiers enregistré ORIAS</div>
-                </div>
-                <div class="chiffre-card animate-on-scroll">
-                    <div class="chiffre-value">100%</div>
-                    <div class="chiffre-label">Indépendant — conseil non lié, dans votre seul intérêt</div>
-                </div>
-                <div class="chiffre-card animate-on-scroll">
-                    <div class="chiffre-value">360°</div>
-                    <div class="chiffre-label">Approche globale — fiscalité, immobilier, financier, transmission</div>
-                </div>
-                <div class="chiffre-card animate-on-scroll">
-                    <div class="chiffre-value">RCP</div>
-                    <div class="chiffre-label">Responsabilité Civile Professionnelle assurée</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CAS CLIENTS -->
-        <section class="landing-section landing-section-cream">
-            <h2 class="landing-section-title dark">Situations accompagnées</h2>
-            <p class="landing-section-subtitle dark">Exemples anonymisés de missions réalisées par le cabinet.</p>
+        <!-- CAS ACCOMPAGNÉS -->
+        <section class="landing-section" id="cas-clients">
+            <h2 class="landing-section-title">Situations accompagnées</h2>
+            <p class="landing-section-subtitle">Trois exemples anonymisés de missions réalisées par le cabinet.</p>
             <div class="cas-grid">
                 <div class="cas-card animate-on-scroll">
-                    <div class="cas-profil">Dirigeant SAS · 48 ans</div>
-                    <div class="cas-situation">Patrimoine de 2,4M€ dont 1,8M€ en immobilier. TMI 41%. Projet de cession à 5 ans.</div>
-                    <div class="cas-action">Structuration holding + apport-cession 150-0 B ter. Mise en place d'un pacte Dutreil pour la transmission partielle. Réallocation vers AV luxembourgeoise et SCPI en démembrement.</div>
-                    <div class="cas-resultat">Économie fiscale structurée de 42k€/an. Report d'imposition sur la plus-value de cession.</div>
+                    <div class="cas-tag">Dirigeant</div>
+                    <div class="cas-profil">Dirigeant SAS, 48 ans, marié, 2 enfants</div>
+                    <div class="cas-situation"><strong>Patrimoine :</strong> 2,4M€ dont 1,8M€ immobilier &middot; <strong>TMI :</strong> 41%</div>
+                    <div class="cas-enjeu"><strong>Enjeu :</strong> Anticiper la cession à 5 ans, limiter la fiscalité, protéger la famille.</div>
+                    <div class="cas-action">
+                        <ul>
+                            <li>Holding patrimoniale + apport-cession 150-0 B ter</li>
+                            <li>Pacte Dutreil pour transmission partielle</li>
+                            <li>Réallocation AV luxembourgeoise + SCPI en démembrement</li>
+                        </ul>
+                    </div>
+                    <div class="cas-resultat">Optimisation fiscale : &minus;42k€/an &middot; Report PV cession &middot; Transmission anticipée 380k€</div>
                 </div>
                 <div class="cas-card animate-on-scroll">
-                    <div class="cas-profil">Médecin libéral · 55 ans</div>
-                    <div class="cas-situation">Revenus de 180k€/an. Aucune stratégie patrimoniale en place. 3 enfants, transmission non anticipée.</div>
-                    <div class="cas-action">Ouverture PER avec versements optimisés (plafonds N-1/N-2/N-3). Donation en démembrement d'un bien locatif. Restructuration de l'assurance vie avec clause bénéficiaire optimisée.</div>
-                    <div class="cas-resultat">Réduction IR de 18k€/an via PER. Transmission anticipée de 420k€ en nue-propriété sans droits.</div>
+                    <div class="cas-tag">Profession libérale</div>
+                    <div class="cas-profil">Médecin libéral, 57 ans, divorcé, 3 enfants</div>
+                    <div class="cas-situation"><strong>Patrimoine :</strong> 1,1M€ (bien locatif + livrets) &middot; <strong>Revenus :</strong> 190k€/an</div>
+                    <div class="cas-enjeu"><strong>Enjeu :</strong> Réduire l'IR, préparer la retraite, organiser la transmission.</div>
+                    <div class="cas-action">
+                        <ul>
+                            <li>PER optimisé (rattrapage plafonds N-1/N-2/N-3)</li>
+                            <li>Donation en démembrement d'un bien locatif</li>
+                            <li>AV restructurée avec clause bénéficiaire optimisée</li>
+                        </ul>
+                    </div>
+                    <div class="cas-resultat">IR : &minus;21k€/an via PER &middot; 450k€ transmis en nue-propriété sans droits</div>
                 </div>
                 <div class="cas-card animate-on-scroll">
-                    <div class="cas-profil">Couple cadres supérieurs · 42 ans</div>
-                    <div class="cas-situation">Revenus cumulés de 140k€. RP financée. Épargne de 280k€ non structurée sur livrets et fonds euros.</div>
-                    <div class="cas-action">Allocation multi-enveloppes : PEA ETF monde, AV en gestion pilotée, SCPI en assurance vie. Mise en place d'un investissement locatif Pinel optimisé.</div>
-                    <div class="cas-resultat">Rendement global porté à 5,2% net vs 1,1% précédemment. Réduction fiscale de 4k€/an.</div>
+                    <div class="cas-tag">Famille patrimoniale</div>
+                    <div class="cas-profil">Couple cadres supérieurs, 43 ans, 2 enfants</div>
+                    <div class="cas-situation"><strong>Patrimoine :</strong> 310k€ (livrets + fonds euros) &middot; <strong>Revenus :</strong> 155k€</div>
+                    <div class="cas-enjeu"><strong>Enjeu :</strong> Faire travailler l'épargne dormante, diversifier, réduire la fiscalité.</div>
+                    <div class="cas-action">
+                        <ul>
+                            <li>PEA ETF monde + AV gestion pilotée</li>
+                            <li>SCPI en assurance vie</li>
+                            <li>Investissement locatif structuré</li>
+                        </ul>
+                    </div>
+                    <div class="cas-resultat">Rendement : 5,4% net vs 1,1% &middot; Réduction fiscale : 4,5k€/an</div>
                 </div>
             </div>
-            <p style="text-align:center;font-size:0.75rem;opacity:0.5;margin-top:20px;font-style:italic;">Cas illustratifs anonymisés. Les résultats passés ne préjugent pas des résultats futurs. Chaque situation est unique.</p>
+            <p class="cas-disclaimer">Cas illustratifs anonymisés à vocation pédagogique. Les résultats dépendent de chaque situation individuelle.</p>
+            <div style="text-align:center;margin-top:24px;">
+                <a href="cas-concrets.html" class="btn btn-outline-dark">Découvrir tous nos cas détaillés</a>
+            </div>
         </section>
 
-        <!-- EQUIPE EXTRAIT -->
-        <section class="landing-section" id="equipe-preview">
-            <h2 class="landing-section-title">Votre interlocuteur dédié</h2>
-            <p class="landing-section-subtitle">Un conseiller formé aux enjeux patrimoniaux les plus complexes.</p>
-            <div class="equipe-preview-grid">
-                <div class="equipe-preview-card animate-on-scroll">
-                    <div class="equipe-avatar">CL</div>
-                    <h3>Carlos Lopes</h3>
-                    <p class="equipe-titre">Fondateur &amp; Conseil en Gestion de Patrimoine</p>
-                    <p class="equipe-bio">Spécialiste en stratégie patrimoniale pour dirigeants et familles. Expertise en optimisation fiscale, structuration de la transmission et investissements immobiliers et financiers.</p>
-                    <div class="equipe-certifs">
-                        <span>CIF ORIAS</span>
-                        <span>Courtier en assurance</span>
-                        <span>IOBSP</span>
-                    </div>
+        <!-- ENGAGEMENTS -->
+        <section class="landing-section landing-section-dark" id="engagements">
+            <h2 class="landing-section-title light">Nos engagements</h2>
+            <p class="landing-section-subtitle" style="color:rgba(255,255,255,0.55);">Ce que nous garantissons à chaque client.</p>
+            <div class="engagements-grid">
+                <div class="engagement-card animate-on-scroll">
+                    <div class="engagement-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                    <h4>Indépendance totale</h4>
+                    <p>Aucun lien avec un réseau bancaire ou un assureur. Notre conseil est dans votre seul intérêt.</p>
+                </div>
+                <div class="engagement-card animate-on-scroll">
+                    <div class="engagement-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+                    <h4>Transparence des frais</h4>
+                    <p>Chaque rémunération est expliquée en amont. Aucun frais caché, aucune commission dissimulée.</p>
+                </div>
+                <div class="engagement-card animate-on-scroll">
+                    <div class="engagement-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+                    <h4>Conseil documenté</h4>
+                    <p>Chaque recommandation est chiffrée, argumentée et formalisée dans un livrable écrit.</p>
+                </div>
+                <div class="engagement-card animate-on-scroll">
+                    <div class="engagement-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
+                    <h4>Disponibilité réelle</h4>
+                    <p>Un interlocuteur dédié, joignable et impliqué. Pas un numéro client, un partenaire de confiance.</p>
                 </div>
             </div>
-            <div style="text-align:center;margin-top:24px;">
-                <a href="equipe.html" class="btn btn-outline-dark">Découvrir l'équipe complète</a>
+        </section>
+
+        <!-- INTERLOCUTEUR -->
+        <section class="landing-section" id="equipe-preview">
+            <h2 class="landing-section-title">Un interlocuteur, pas un intermédiaire</h2>
+            <p class="landing-section-subtitle">Chez Patria Capital, votre conseiller est votre stratège patrimonial.</p>
+            <div class="interlocuteur-layout animate-on-scroll">
+                <div class="interlocuteur-avatar">
+                    <div class="equipe-avatar equipe-avatar-lg">CL</div>
+                </div>
+                <div class="interlocuteur-content">
+                    <h3>Carlos Lopes</h3>
+                    <p class="equipe-titre">Fondateur &middot; Conseil en Gestion de Patrimoine</p>
+                    <blockquote class="interlocuteur-quote">&laquo; J'ai créé Patria Capital avec une conviction : le conseil patrimonial mérite plus de rigueur, plus de clarté et plus d'exigence. &raquo;</blockquote>
+                    <div class="equipe-certifs">
+                        <span>CIF enregistré ORIAS</span>
+                        <span>Courtier en assurance</span>
+                        <span>IOBSP</span>
+                        <span>Patrimoine dirigeant</span>
+                    </div>
+                    <div style="margin-top:20px;">
+                        <button class="btn btn-gold btn-sm" onclick="showAuthScreen('signup')">Échanger avec Carlos</button>
+                        <a href="equipe.html" class="btn btn-outline-dark btn-sm" style="margin-left:12px;">Découvrir le cabinet</a>
+                    </div>
+                </div>
             </div>
         </section>
 
         <!-- CTA FINAL -->
         <section class="landing-cta landing-cta-dark">
-            <h2>Structurons ensemble votre stratégie patrimoniale</h2>
-            <p>Un premier entretien confidentiel et sans engagement, pour comprendre votre situation et identifier les leviers d'optimisation adaptés.</p>
+            <h2>45 minutes pour identifier vos leviers d'optimisation.</h2>
+            <p>Un premier échange confidentiel pour comprendre votre situation, identifier les points d'amélioration et évaluer si nous pouvons vous accompagner.</p>
+            <div class="cta-checklist">
+                <div class="cta-check-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Analyse préliminaire de votre situation</div>
+                <div class="cta-check-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Identification des premiers leviers</div>
+                <div class="cta-check-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Évaluation de la pertinence d'un accompagnement</div>
+            </div>
             <div class="cta-features">
-                <span>Entretien de 45 min</span>
                 <span>Confidentiel</span>
                 <span>Sans engagement</span>
+                <span>En visio ou en présentiel</span>
             </div>
-            <button class="btn btn-gold btn-lg" onclick="showAuthScreen('signup')">Réserver mon entretien</button>
-            <p style="margin-top:20px;font-size:0.9rem;opacity:0.7;">Ou contactez-nous directement : <strong>contact@patriacapital.fr</strong> &middot; <strong>01 86 XX XX XX</strong></p>
+            <button class="btn btn-gold btn-lg" onclick="showAuthScreen('signup')">Réserver mon entretien stratégique</button>
+            <p style="margin-top:20px;font-size:0.85rem;opacity:0.5;position:relative;z-index:1;">contact@patriacapital.fr &middot; 01 86 XX XX XX</p>
         </section>
 
         <!-- FOOTER -->
         <footer class="landing-footer">
-            <div class="footer-columns">
+            <div class="footer-columns footer-columns-5">
                 <div class="footer-col">
                     <div class="footer-brand"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:36px;"></div>
-                    <p style="font-size:0.82rem;opacity:0.6;margin-top:8px;line-height:1.6;">Cabinet de conseil en gestion de patrimoine.<br>Conseil indépendant, enregistré CIF à l'ORIAS.</p>
+                    <p style="font-size:0.82rem;opacity:0.6;margin-top:8px;line-height:1.6;">Cabinet de conseil en gestion de patrimoine indépendant, enregistré CIF à l'ORIAS.</p>
                 </div>
                 <div class="footer-col">
                     <h4>Expertises</h4>
                     <a href="#expertises">Optimisation fiscale</a>
                     <a href="#expertises">Patrimoine du dirigeant</a>
-                    <a href="#expertises">Transmission &amp; succession</a>
-                    <a href="#expertises">Investissements</a>
+                    <a href="#expertises">Transmission</a>
+                    <a href="#expertises">Immobilier</a>
+                    <a href="#expertises">Épargne &amp; placements</a>
                 </div>
                 <div class="footer-col">
                     <h4>Le cabinet</h4>
+                    <a href="#features">Notre approche</a>
                     <a href="offre.html">Notre offre</a>
                     <a href="equipe.html">L'équipe</a>
-                    <a href="contact.html">Contact</a>
                     <a href="#" onclick="showAuthScreen('login')">Espace client</a>
                 </div>
                 <div class="footer-col">
-                    <h4>Réglementaire</h4>
+                    <h4>Ressources</h4>
+                    <a href="cas-concrets.html">Cas concrets</a>
                     <a href="mentions-legales.html">Mentions légales</a>
-                    <a href="confidentialite.html">Confidentialité &amp; RGPD</a>
+                    <a href="confidentialite.html">Confidentialité</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <a href="mailto:contact@patriacapital.fr">contact@patriacapital.fr</a>
+                    <a href="tel:+33186000000">01 86 XX XX XX</a>
+                    <a href="contact.html">Prendre rendez-vous</a>
                 </div>
             </div>
             <div class="footer-bottom">
                 <div style="font-size:11px;opacity:0.5;">
-                    CIF enregistré à l'ORIAS · Conseil indépendant · RCP assurée · Courtier en assurance · IOBSP
+                    CIF enregistré à l'ORIAS &middot; Conseil indépendant &middot; RCP assurée &middot; Courtier en assurance &middot; IOBSP
                 </div>
                 <div style="margin-top:8px;font-size:10px;opacity:0.35;max-width:700px;margin-left:auto;margin-right:auto;font-style:italic;">
-                    Les informations présentes sur ce site sont fournies à titre indicatif. Elles ne constituent pas un conseil en investissement personnalisé au sens de la réglementation MIF2. Les performances passées ne préjugent pas des performances futures.
+                    Les informations présentes sur ce site sont fournies à titre indicatif et ne constituent pas un conseil en investissement personnalisé au sens de la réglementation MIF2. Les performances passées ne préjugent pas des performances futures.
                 </div>
                 <div class="footer-copy">&copy; 2026 Patria Capital. Tous droits réservés.</div>
             </div>
