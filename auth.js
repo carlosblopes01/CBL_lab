@@ -146,6 +146,19 @@ function enterApp() {
         localStorage.setItem('cgp_offer_type', urlParams.get('offer'));
     }
 
+    // Auto-detect admin by email — must run before access control
+    if (typeof isAdminEmail === 'function' && isAdminEmail(user.email)) {
+        if (typeof setUserRole === 'function') setUserRole('admin');
+    } else if (typeof getUserRole === 'function' && getUserRole() === 'admin') {
+        // User was admin but email no longer matches — downgrade
+        if (typeof setUserRole === 'function') setUserRole('free');
+    }
+
+    // Re-init access control now that role is set
+    if (typeof initAccessControl === 'function') {
+        setTimeout(function() { initAccessControl(); }, 50);
+    }
+
     document.getElementById('landing-page').classList.add('hidden');
     document.getElementById('auth-screen').classList.add('hidden');
     document.getElementById('sidebar').classList.remove('hidden');

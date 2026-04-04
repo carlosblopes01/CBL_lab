@@ -2272,6 +2272,12 @@ function updateProfileCompletion() {
 
 // ===== SIDEBAR LOCKING =====
 function updateSidebarLock() {
+    // Admin: never lock sidebar
+    if (typeof isAdmin === 'function' && isAdmin()) {
+        document.querySelectorAll('.nav-link.locked').forEach(l => l.classList.remove('locked'));
+        return;
+    }
+
     const isComplete = sessionStorage.getItem('profileComplete') === 'true';
     const pct = parseInt(sessionStorage.getItem('profileCompletion')) || 0;
 

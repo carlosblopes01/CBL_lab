@@ -13,6 +13,9 @@
 //   2 = strategie (full features)
 //   3 = accompagnement (full + support)
 
+// ===== ADMIN CONFIGURATION =====
+const ADMIN_EMAILS = ['carlos@patriacapital.fr', 'carlos.lopes@patriacapital.fr'];
+
 const ACCESS = {
     // Feature permissions by role
     permissions: {
@@ -35,6 +38,11 @@ const ACCESS = {
             level: 3,
             sections: ['accueil', 'profil', 'patrimoine', 'immobilier', 'assurance-vie', 'pea', 'cto', 'comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef', 'dirigeant', 'obo', 'plan-action', 'allocation', 'alertes'],
             features: ['saisie', 'vue-globale', 'indicateurs', 'simulations-base', 'dashboard', 'optimisation-fiscale', 'allocation', 'arbitrages', 'comparatifs', 'projections', 'rapport', 'suivi', 'reporting', 'coordination']
+        },
+        admin: {
+            level: 99,
+            sections: ['accueil', 'profil', 'patrimoine', 'immobilier', 'assurance-vie', 'pea', 'cto', 'comparatif', 'recommandation', 'fiscalite', 'ifi', 'demembrement', 'clause-benef', 'dirigeant', 'obo', 'plan-action', 'allocation', 'alertes'],
+            features: ['saisie', 'vue-globale', 'indicateurs', 'simulations-base', 'dashboard', 'optimisation-fiscale', 'allocation', 'arbitrages', 'comparatifs', 'projections', 'rapport', 'suivi', 'reporting', 'coordination', 'admin']
         }
     },
 
@@ -123,9 +131,19 @@ function hasFeature(feature) {
 
 function isLocked(section) {
     const role = getUserRole();
+    if (role === 'admin' || role === 'accompagnement' || role === 'strategie') return false;
     if (role === 'free') return true;
     if (role === 'simulation') return ACCESS.lockedForSimulation.includes(section);
     return false;
+}
+
+function isAdmin() {
+    return getUserRole() === 'admin';
+}
+
+function isAdminEmail(email) {
+    if (!email) return false;
+    return ADMIN_EMAILS.includes(email.toLowerCase().trim());
 }
 
 // ===== UI INTEGRATION =====
@@ -173,9 +191,23 @@ function applySidebarLocks() {
                 link.appendChild(lockSpan);
             }
         } else {
+            // Unlock — remove lock class and icon
             link.classList.remove('locked');
             var existingLock = link.querySelector('.lock-icon');
             if (existingLock) existingLock.remove();
+
+            // Also remove blur overlay from the section content
+            var sectionEl = document.getElementById(section);
+            if (sectionEl) {
+                var overlay = sectionEl.querySelector('.locked-overlay');
+                if (overlay) overlay.remove();
+                var children = sectionEl.children;
+                for (var i = 0; i < children.length; i++) {
+                    children[i].style.filter = '';
+                    children[i].style.pointerEvents = '';
+                    children[i].style.userSelect = '';
+                }
+            }
         }
     });
 }
@@ -229,12 +261,17 @@ function updateUserBadge() {
         free: '',
         simulation: 'Simulation',
         strategie: 'Stratégie',
-        accompagnement: 'Accompagnement'
+        accompagnement: 'Accompagnement',
+        admin: 'Administrateur'
     };
 
     if (badgeEl && roleLabels[role]) {
         badgeEl.textContent = roleLabels[role];
         badgeEl.style.display = 'inline-block';
+        if (role === 'admin') {
+            badgeEl.style.background = 'linear-gradient(135deg, #c1925e, #dbb88a)';
+            badgeEl.style.color = '#fff';
+        }
     }
 
     // Also update sidebar footer if exists
@@ -249,6 +286,46 @@ function updateUserBadge() {
             upgradeBtn.textContent = 'Passer à la Stratégie →';
             sidebarFooter.insertBefore(upgradeBtn, sidebarFooter.querySelector('.version'));
         }
+    }
+
+    // Admin: add admin link in sidebar
+    if (role === 'admin') {
+        addAdminSidebarLink();
+    }
+}
+
+function addAdminSidebarLink() {
+    var sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+
+    // Check if admin link already exists
+    if (sidebar.querySelector('.admin-link')) return;
+
+    var navLinks = sidebar.querySelector('.nav-links');
+    if (!navLinks) return;
+
+    // Add admin separator + link
+    var separator = document.createElement('li');
+    separator.className = 'nav-separator admin-link';
+    separator.textContent = 'Administration';
+
+    var adminItem = document.createElement('li');
+    adminItem.className = 'admin-link';
+    adminItem.innerHTML = '<a href="admin-v2.html" class="nav-link" style="color:#c1925e;">' +
+        '<span class="nav-icon">&#9881;</span> Paramètres admin' +
+        '</a>';
+
+    navLinks.appendChild(separator);
+    navLinks.appendChild(adminItem);
+
+    // Style admin badge next to user name
+    var userName = document.getElementById('user-name');
+    if (userName && !userName.querySelector('.admin-badge')) {
+        var badge = document.createElement('span');
+        badge.className = 'admin-badge';
+        badge.textContent = 'Admin';
+        badge.style.cssText = 'display:inline-block;margin-left:8px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:linear-gradient(135deg,#c1925e,#dbb88a);color:#fff;text-transform:uppercase;letter-spacing:0.5px;vertical-align:middle;';
+        userName.appendChild(badge);
     }
 }
 
