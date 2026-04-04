@@ -1443,7 +1443,10 @@ function autoSimulateOBO(d) {
 
     if (oboValEl && !parseFloat(oboValEl.value)) oboValEl.value = best.value;
     if (oboDetteEl && !parseFloat(oboDetteEl.value)) oboDetteEl.value = best.credit;
-    if (oboBienEl) oboBienEl.value = best.key.startsWith('locatif') ? 'locatif' : best.key;
+    // Only pre-fill "bien" if it hasn't been manually changed (check via data attribute)
+    if (oboBienEl && !oboBienEl.dataset.userChanged) {
+        oboBienEl.value = best.key.startsWith('locatif') ? 'locatif' : best.key;
+    }
     if (oboLoyerEl && !parseFloat(oboLoyerEl.value) && best.loyer > 0) oboLoyerEl.value = best.loyer;
     if (oboPrixEl && !parseFloat(oboPrixEl.value) && best.prixAcq > 0) oboPrixEl.value = best.prixAcq;
 
@@ -3235,7 +3238,22 @@ document.addEventListener('DOMContentLoaded', () => {
         el.addEventListener('input', () => {
             recalcAll();
         });
+        // Select elements need 'change' event too (input doesn't fire reliably on selects)
+        if (el.tagName === 'SELECT') {
+            el.addEventListener('change', () => {
+                recalcAll();
+            });
+        }
     });
+
+    // Mark OBO bien select as user-changed when manually modified
+    const oboBienSelect = document.querySelector('[data-field="obo_bien"]');
+    if (oboBienSelect) {
+        oboBienSelect.addEventListener('change', () => {
+            oboBienSelect.dataset.userChanged = '1';
+        });
+    }
+
     // Init dirigeant visibility
     toggleDirigeantSection();
 });

@@ -3363,6 +3363,13 @@ body {
     -moz-appearance: none;
     appearance: none;
     padding-right: 32px;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+}
+#main-content select:focus {
+    border-color: #c1925e;
+    box-shadow: 0 0 0 3px rgba(193,146,94,0.15);
 }
 
 /* Calendly embed dark wrapper */

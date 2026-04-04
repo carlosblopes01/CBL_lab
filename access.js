@@ -331,7 +331,7 @@ function addAdminSidebarLink() {
 
     var adminItem = document.createElement('li');
     adminItem.className = 'admin-link';
-    adminItem.innerHTML = '<a href="admin-v2.html" class="nav-link" style="color:#c1925e;">' +
+    adminItem.innerHTML = '<a href="admin-v2.html" target="_blank" class="nav-link admin-nav-link" style="color:#c1925e;">' +
         '<span class="nav-icon">&#9881;</span> Paramètres admin' +
         '</a>';
 

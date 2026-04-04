@@ -29,6 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', (e) => {
         const link = e.target.closest('.nav-link');
         if (link) {
+            // Let admin link navigate normally (opens admin-v2.html)
+            if (link.classList.contains('admin-nav-link')) return;
             e.preventDefault();
             const sectionId = link.dataset.section;
             if (sectionId) {
