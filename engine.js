@@ -1802,8 +1802,10 @@ function sendBilan() {
 function exportBilanPDF() {
     const d = collectFormData();
     const r = getSimResults();
+    const ps = window._patriScore || null;
     const nf = new Intl.NumberFormat('fr-FR');
-    const fmtEur = (v) => v != null && v !== 0 ? nf.format(v) + ' \u20AC' : '\u2014';
+    const fmtEur = (v) => v != null && v !== 0 ? nf.format(Math.round(v)) + ' \u20ac' : '\u2014';
+    const fmtPct = (v) => v != null ? (v * 100).toFixed(1) + ' %' : '\u2014';
     const dateStr = new Date().toLocaleDateString('fr-FR');
     const clientName = `${d.prenom || ''} ${d.nom || ''}`.trim() || 'Client';
 
@@ -1811,18 +1813,64 @@ function exportBilanPDF() {
     const totalCharges = (d.loyer || 0) + (d.creditRP || 0) + (d.creditLocatif || 0) + (d.creditConso || 0) + (d.pensionAlim || 0) + (d.autresCharges || 0);
     const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoSCPI || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
     const totalFin = (d.livrets || 0) + (d.pel || 0) + (d.assuranceVie || 0) + (d.pea || 0) + (d.cto || 0) + (d.per || 0) + (d.epargneSalariale || 0) + (d.autresPlacement || 0);
+    const liquidites = (d.livrets || 0) + (d.pel || 0);
     const patriBrut = totalImmo + totalFin;
     const dettes = (d.capitalRestantRP || 0) + (d.immoRP_creditRestant || 0) + (d.immoRS_creditRestant || 0) + (d.immoLoc1_creditRestant || 0) + (d.immoLoc2_creditRestant || 0);
     const patriNet = patriBrut - dettes;
+    const capaciteEpargne = Math.round(totalRevenus / 12 - totalCharges);
 
-    // Helper to build a table row
-    const row = (label, value) => `<tr><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;">${label}</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;font-weight:500;">${value}</td></tr>`;
+    // ===== INLINE STYLE HELPERS =====
+    const row = (label, value) => `<tr><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;font-size:13px;">${label}</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;font-weight:500;font-size:13px;">${value}</td></tr>`;
     const totalRow = (label, value) => `<tr><td style="padding:8px 12px;border-top:2px solid #254a65;font-weight:700;color:#254a65;">${label}</td><td style="padding:8px 12px;border-top:2px solid #254a65;text-align:right;font-weight:700;color:#254a65;">${value}</td></tr>`;
-    const sectionTitle = (title) => `<h2 style="color:#254a65;font-size:16px;margin:28px 0 6px 0;padding-bottom:6px;border-bottom:2px solid #c8a94e;font-family:'Georgia',serif;">${title}</h2>`;
-    const tableOpen = '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;">';
+    const sectionTitle = (title) => `<h2 style="color:#254a65;font-size:16px;margin:28px 0 8px 0;padding-bottom:6px;border-bottom:2px solid #c8a94e;font-family:'Georgia',serif;page-break-after:avoid;">${title}</h2>`;
+    const tableOpen = '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;page-break-inside:avoid;">';
     const tableClose = '</table>';
+    const barCSS = (pct, color, label) => {
+        const w = Math.min(Math.max(pct, 0), 100);
+        return `<div style="display:flex;align-items:center;margin:4px 0;">
+            <span style="width:110px;font-size:11px;color:#555;flex-shrink:0;">${label}</span>
+            <div style="flex:1;background:#e8e8e8;border-radius:3px;height:14px;overflow:hidden;">
+                <div style="display:block;height:14px;border-radius:3px;background:${color};width:${w}%;"></div>
+            </div>
+            <span style="width:48px;text-align:right;font-size:11px;font-weight:600;color:#333;flex-shrink:0;margin-left:6px;">${Math.round(pct)}%</span>
+        </div>`;
+    };
+    const scoreColor = (s) => s >= 70 ? '#10b981' : s >= 45 ? '#c8a94e' : '#ef4444';
 
-    // Build sections
+    // ===== 1. HEADER (built in HTML below) =====
+
+    // ===== 2. SCORE PATRIMONIAL =====
+    let scoreSection = '';
+    if (ps && ps.global != null) {
+        const g = ps.global;
+        const gc = scoreColor(g);
+        scoreSection += `<div style="page-break-inside:avoid;margin:16px 0;">`;
+        scoreSection += sectionTitle('Score patrimonial');
+        scoreSection += `<div style="text-align:center;margin:12px 0 18px 0;">
+            <div style="display:inline-block;width:90px;height:90px;border-radius:50%;border:5px solid ${gc};text-align:center;line-height:80px;">
+                <span style="font-size:28px;font-weight:700;color:${gc};font-family:'Georgia',serif;">${g}</span><span style="font-size:12px;color:#888;">/100</span>
+            </div>
+        </div>`;
+        if (ps.scores) {
+            const scoreLabels = {
+                diversification: 'Diversification',
+                fiscalite: 'Optimisation fiscale',
+                liquidite: 'Liquidit\u00e9',
+                risque: 'Ma\u00eetrise du risque',
+                coherence: 'Coh\u00e9rence objectifs',
+                structuration: 'Structuration'
+            };
+            for (const key of Object.keys(scoreLabels)) {
+                const val = ps.scores[key];
+                if (val != null) {
+                    scoreSection += barCSS(val, scoreColor(val), scoreLabels[key]);
+                }
+            }
+        }
+        scoreSection += `</div>`;
+    }
+
+    // ===== 3. IDENTITE + SITUATION =====
     let identite = sectionTitle('Identit\u00e9');
     identite += tableOpen;
     identite += row('Nom', `${d.nom || '\u2014'} ${d.prenom || ''}`);
@@ -1839,6 +1887,40 @@ function exportBilanPDF() {
     sitPro += row('Secteur', d.secteur || '\u2014');
     sitPro += tableClose;
 
+    // ===== 4. SYNTHESE PATRIMONIALE (visual) =====
+    let synthese = sectionTitle('Synth\u00e8se patrimoniale');
+    synthese += `<div style="background:linear-gradient(135deg,#f8f6f0,#fff);border:2px solid #c8a94e;border-radius:10px;padding:20px;margin:12px 0;page-break-inside:avoid;">`;
+    synthese += tableOpen;
+    synthese += row('Patrimoine brut', fmtEur(patriBrut));
+    synthese += row('Dettes', fmtEur(dettes));
+    synthese += `<tr><td style="padding:12px;border-top:2px solid #c8a94e;font-size:16px;font-weight:700;color:#254a65;">Patrimoine net</td><td style="padding:12px;border-top:2px solid #c8a94e;text-align:right;font-size:18px;font-weight:700;color:#c8a94e;">${fmtEur(patriNet)}</td></tr>`;
+    synthese += tableClose;
+    synthese += tableOpen;
+    synthese += row('TMI', d.tmi ? (parseFloat(d.tmi) * 100) + ' %' : '\u2014');
+    synthese += row('Parts fiscales', d.partsFiscales || '\u2014');
+    synthese += tableClose;
+    // Horizontal stacked bar: Immobilier vs Financier vs Liquidites
+    if (patriBrut > 0) {
+        const pImmo = (totalImmo / patriBrut) * 100;
+        const pFin = ((totalFin - liquidites) / patriBrut) * 100;
+        const pLiq = (liquidites / patriBrut) * 100;
+        synthese += `<div style="margin:14px 0 6px 0;">
+            <div style="font-size:11px;color:#555;margin-bottom:4px;font-weight:600;">R\u00e9partition du patrimoine brut</div>
+            <div style="display:flex;height:22px;border-radius:4px;overflow:hidden;border:1px solid #ddd;">
+                <div style="width:${pImmo}%;background:#254a65;height:22px;"></div>
+                <div style="width:${pFin}%;background:#c8a94e;height:22px;"></div>
+                <div style="width:${pLiq}%;background:#10b981;height:22px;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;margin-top:4px;color:#555;">
+                <span><span style="display:inline-block;width:10px;height:10px;background:#254a65;border-radius:2px;margin-right:3px;"></span>Immobilier ${Math.round(pImmo)}%</span>
+                <span><span style="display:inline-block;width:10px;height:10px;background:#c8a94e;border-radius:2px;margin-right:3px;"></span>Financier ${Math.round(pFin)}%</span>
+                <span><span style="display:inline-block;width:10px;height:10px;background:#10b981;border-radius:2px;margin-right:3px;"></span>Liquidit\u00e9s ${Math.round(pLiq)}%</span>
+            </div>
+        </div>`;
+    }
+    synthese += '</div>';
+
+    // ===== 5. REVENUS & CHARGES =====
     let revenus = sectionTitle('Revenus annuels');
     revenus += tableOpen;
     if (d.salairesClient) revenus += row('Salaires client', fmtEur(d.salairesClient));
@@ -1860,15 +1942,17 @@ function exportBilanPDF() {
     if (d.pensionAlim) charges += row('Pension alimentaire', fmtEur(d.pensionAlim) + ' /mois');
     if (d.autresCharges) charges += row('Autres charges', fmtEur(d.autresCharges) + ' /mois');
     charges += totalRow('Total charges', fmtEur(totalCharges) + ' /mois');
-    charges += row('Capacit\u00e9 d\u2019\u00e9pargne', fmtEur(Math.round(totalRevenus / 12 - totalCharges)) + ' /mois');
+    charges += row('Capacit\u00e9 d\u2019\u00e9pargne', fmtEur(capaciteEpargne) + ' /mois');
     charges += tableClose;
 
+    // ===== 6. PATRIMOINE DETAILLE =====
     let immo = sectionTitle('Patrimoine immobilier');
     immo += tableOpen;
     if (d.immoRP) immo += row('R\u00e9sidence principale', fmtEur(d.immoRP));
     if (d.immoRS) immo += row('R\u00e9sidence secondaire', fmtEur(d.immoRS));
     if (d.immoLoc1) immo += row('Locatif 1', fmtEur(d.immoLoc1));
     if (d.immoLoc2) immo += row('Locatif 2', fmtEur(d.immoLoc2));
+    if (d.immoSCPI) immo += row('SCPI', fmtEur(d.immoSCPI));
     if (d.immoPro) immo += row('Immobilier professionnel', fmtEur(d.immoPro));
     if (d.immoAutres) immo += row('Autres immobiliers', fmtEur(d.immoAutres));
     immo += totalRow('Total immobilier', fmtEur(totalImmo));
@@ -1887,19 +1971,260 @@ function exportBilanPDF() {
     fin += totalRow('Total financier', fmtEur(totalFin));
     fin += tableClose;
 
-    let synthese = sectionTitle('Synth\u00e8se patrimoniale');
-    synthese += `<div style="background:linear-gradient(135deg,#f8f6f0,#fff);border:2px solid #c8a94e;border-radius:10px;padding:20px;margin:12px 0;">`;
-    synthese += tableOpen;
-    synthese += row('Patrimoine brut', fmtEur(patriBrut));
-    synthese += row('Dettes', fmtEur(dettes));
-    synthese += `<tr><td style="padding:12px;border-top:2px solid #c8a94e;font-size:16px;font-weight:700;color:#254a65;">Patrimoine net</td><td style="padding:12px;border-top:2px solid #c8a94e;text-align:right;font-size:18px;font-weight:700;color:#c8a94e;">${fmtEur(patriNet)}</td></tr>`;
-    synthese += tableClose;
-    synthese += tableOpen;
-    synthese += row('TMI', d.tmi ? (parseFloat(d.tmi) * 100) + ' %' : '\u2014');
-    synthese += row('Parts fiscales', d.partsFiscales || '\u2014');
-    synthese += tableClose;
-    synthese += '</div>';
+    // ===== 7. ALLOCATION ACTUELLE VS CIBLE =====
+    let allocSection = '';
+    const profil = (d.profilRisque || '').toLowerCase();
+    if (patriBrut > 0) {
+        allocSection += sectionTitle('Allocation actuelle vs cible');
+        // Current allocation
+        const currentAlloc = {};
+        if (totalImmo > 0) currentAlloc['Immobilier'] = totalImmo;
+        if (d.assuranceVie > 0) currentAlloc['Assurance-vie'] = d.assuranceVie;
+        if (d.pea > 0) currentAlloc['PEA'] = d.pea;
+        if (d.per > 0) currentAlloc['PER'] = d.per;
+        if (d.immoSCPI > 0) currentAlloc['SCPI'] = d.immoSCPI;
+        if (d.cto > 0) currentAlloc['CTO'] = d.cto;
+        if (liquidites > 0) currentAlloc['Liquidit\u00e9s'] = liquidites;
+        const otherFin = (d.epargneSalariale || 0) + (d.autresPlacement || 0);
+        if (otherFin > 0) currentAlloc['Autres'] = otherFin;
 
+        // Target allocation
+        let targetAlloc = {};
+        if (typeof getTargetAllocation === 'function') {
+            targetAlloc = getTargetAllocation(profil || 'equilibre', patriBrut);
+        }
+
+        const allocColors = {
+            'Immobilier': '#254a65', 'Assurance-vie': '#c8a94e', 'PEA': '#10b981',
+            'PER': '#6366f1', 'SCPI': '#8b5cf6', 'CTO': '#f59e0b',
+            'Liquidit\u00e9s': '#06b6d4', 'Autres': '#94a3b8'
+        };
+        const allKeys = [...new Set([...Object.keys(currentAlloc), ...Object.keys(targetAlloc)])];
+
+        allocSection += `<div style="display:flex;gap:20px;page-break-inside:avoid;">`;
+        // Current
+        allocSection += `<div style="flex:1;">
+            <div style="font-size:12px;font-weight:700;color:#254a65;text-align:center;margin-bottom:8px;">Allocation actuelle</div>`;
+        for (const key of allKeys) {
+            const val = currentAlloc[key] || 0;
+            const pct = patriBrut > 0 ? (val / patriBrut) * 100 : 0;
+            allocSection += barCSS(pct, allocColors[key] || '#94a3b8', key);
+        }
+        allocSection += `</div>`;
+        // Target
+        allocSection += `<div style="flex:1;">
+            <div style="font-size:12px;font-weight:700;color:#254a65;text-align:center;margin-bottom:8px;">Allocation cible (${profil || '\u00e9quilibr\u00e9'})</div>`;
+        for (const key of allKeys) {
+            const val = targetAlloc[key] || 0;
+            const pct = patriBrut > 0 ? (val / patriBrut) * 100 : 0;
+            allocSection += barCSS(pct, allocColors[key] || '#94a3b8', key);
+        }
+        allocSection += `</div>`;
+        allocSection += `</div>`;
+    }
+
+    // ===== 8. SIMULATIONS =====
+    let simulations = '';
+    const simItems = [
+        { key: 'immo', name: 'Immobilier locatif', color: '#254a65' },
+        { key: 'av', name: 'Assurance Vie', color: '#c8a94e' },
+        { key: 'peaLibre', name: 'PEA Libre', color: '#10b981' },
+        { key: 'peaMandat', name: 'PEA Mandat', color: '#6366f1' },
+        { key: 'cto', name: 'CTO', color: '#f59e0b' }
+    ].filter(x => r[x.key]);
+
+    if (simItems.length > 0) {
+        simulations += sectionTitle('R\u00e9sultats des simulations');
+
+        // Per-envelope detail cards
+        for (const item of simItems) {
+            const s = r[item.key];
+            const invested = s.capitalInvesti || 0;
+            const capital = s.capitalNet || 0;
+            const gain = capital - invested;
+            const tri = s.tri || 0;
+            const fiscalite = s.fiscalite || 0;
+
+            simulations += `<div style="background:#f8f6f0;border-radius:8px;padding:14px 16px;margin:10px 0;border-left:4px solid ${item.color};page-break-inside:avoid;">`;
+            simulations += `<div style="font-size:14px;font-weight:700;color:#254a65;font-family:'Georgia',serif;margin-bottom:8px;">${item.name}</div>`;
+            // Metrics table
+            simulations += `<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px;">`;
+            simulations += `<tr><td style="padding:4px 8px;color:#555;">Capital investi</td><td style="padding:4px 8px;text-align:right;font-weight:600;">${fmtEur(invested)}</td></tr>`;
+            simulations += `<tr><td style="padding:4px 8px;color:#555;">Capital net final</td><td style="padding:4px 8px;text-align:right;font-weight:700;color:${item.color};">${fmtEur(capital)}</td></tr>`;
+            simulations += `<tr><td style="padding:4px 8px;color:#555;">Plus-value nette</td><td style="padding:4px 8px;text-align:right;font-weight:600;color:${gain >= 0 ? '#10b981' : '#ef4444'};">${gain >= 0 ? '+' : ''}${fmtEur(gain)}</td></tr>`;
+            simulations += `<tr><td style="padding:4px 8px;color:#555;">TRI annualis\u00e9</td><td style="padding:4px 8px;text-align:right;font-weight:600;">${fmtPct(tri)}</td></tr>`;
+            if (fiscalite > 0) {
+                simulations += `<tr><td style="padding:4px 8px;color:#555;">Fiscalit\u00e9</td><td style="padding:4px 8px;text-align:right;font-weight:600;color:#ef4444;">-${fmtEur(fiscalite)}</td></tr>`;
+            }
+            if (item.key === 'immo' && s.cashFlowMens != null) {
+                simulations += `<tr><td style="padding:4px 8px;color:#555;">Cash-flow mensuel</td><td style="padding:4px 8px;text-align:right;font-weight:600;color:${s.cashFlowMens >= 0 ? '#10b981' : '#ef4444'};">${fmtEur(s.cashFlowMens)}</td></tr>`;
+            }
+            if (item.key === 'av' && s.transmission) {
+                simulations += `<tr><td style="padding:4px 8px;color:#555;">Transmission hors succession</td><td style="padding:4px 8px;text-align:right;font-weight:600;color:#10b981;">${fmtEur(s.transmission)}</td></tr>`;
+            }
+            simulations += `</table>`;
+            // Bar comparison: invested vs capital
+            const maxVal = Math.max(invested, capital, 1);
+            simulations += `<div style="margin:4px 0;">
+                <div style="display:flex;align-items:center;margin:3px 0;">
+                    <span style="width:80px;font-size:10px;color:#555;">Investi</span>
+                    <div style="flex:1;background:#e8e8e8;border-radius:3px;height:14px;overflow:hidden;">
+                        <div style="display:block;height:14px;border-radius:3px;background:#254a65;width:${(invested / maxVal) * 100}%;"></div>
+                    </div>
+                    <span style="width:80px;text-align:right;font-size:10px;font-weight:600;">${fmtEur(invested)}</span>
+                </div>
+                <div style="display:flex;align-items:center;margin:3px 0;">
+                    <span style="width:80px;font-size:10px;color:#555;">Capital net</span>
+                    <div style="flex:1;background:#e8e8e8;border-radius:3px;height:14px;overflow:hidden;">
+                        <div style="display:block;height:14px;border-radius:3px;background:${item.color};width:${(capital / maxVal) * 100}%;"></div>
+                    </div>
+                    <span style="width:80px;text-align:right;font-size:10px;font-weight:600;">${fmtEur(capital)}</span>
+                </div>
+                <div style="display:flex;align-items:center;margin:3px 0;">
+                    <span style="width:80px;font-size:10px;color:#555;">Gain net</span>
+                    <div style="flex:1;background:#e8e8e8;border-radius:3px;height:14px;overflow:hidden;">
+                        <div style="display:block;height:14px;border-radius:3px;background:${gain >= 0 ? '#10b981' : '#ef4444'};width:${(Math.abs(gain) / maxVal) * 100}%;"></div>
+                    </div>
+                    <span style="width:80px;text-align:right;font-size:10px;font-weight:600;color:${gain >= 0 ? '#10b981' : '#ef4444'};">${gain >= 0 ? '+' : ''}${fmtEur(gain)}</span>
+                </div>
+            </div>`;
+            simulations += `</div>`;
+        }
+
+        // Comparative bar chart: all envelopes side by side
+        if (simItems.length > 1) {
+            simulations += `<div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:16px;margin:16px 0;page-break-inside:avoid;">`;
+            simulations += `<div style="font-size:13px;font-weight:700;color:#254a65;font-family:'Georgia',serif;margin-bottom:12px;">Comparatif des enveloppes - Capital net</div>`;
+            const maxCap = Math.max(...simItems.map(x => r[x.key].capitalNet || 0), 1);
+            for (const item of simItems) {
+                const cap = r[item.key].capitalNet || 0;
+                simulations += `<div style="display:flex;align-items:center;margin:5px 0;">
+                    <span style="width:100px;font-size:11px;color:#555;flex-shrink:0;">${item.name}</span>
+                    <div style="flex:1;background:#e8e8e8;border-radius:3px;height:18px;overflow:hidden;">
+                        <div style="display:block;height:18px;border-radius:3px;background:${item.color};width:${(cap / maxCap) * 100}%;"></div>
+                    </div>
+                    <span style="width:90px;text-align:right;font-size:11px;font-weight:700;color:#333;flex-shrink:0;margin-left:6px;">${fmtEur(cap)}</span>
+                </div>`;
+            }
+            // TRI comparison
+            simulations += `<div style="font-size:12px;font-weight:600;color:#254a65;margin:14px 0 6px 0;">TRI annualis\u00e9</div>`;
+            const maxTRI = Math.max(...simItems.map(x => (r[x.key].tri || 0) * 100), 1);
+            for (const item of simItems) {
+                const tri = (r[item.key].tri || 0) * 100;
+                simulations += `<div style="display:flex;align-items:center;margin:4px 0;">
+                    <span style="width:100px;font-size:11px;color:#555;flex-shrink:0;">${item.name}</span>
+                    <div style="flex:1;background:#e8e8e8;border-radius:3px;height:14px;overflow:hidden;">
+                        <div style="display:block;height:14px;border-radius:3px;background:${item.color};width:${(tri / maxTRI) * 100}%;"></div>
+                    </div>
+                    <span style="width:60px;text-align:right;font-size:11px;font-weight:600;color:#333;flex-shrink:0;margin-left:6px;">${tri.toFixed(1)}%</span>
+                </div>`;
+            }
+            simulations += `</div>`;
+        }
+    }
+
+    // ===== 9. PROJECTION PATRIMONIALE =====
+    let projSection = '';
+    if (patriNet > 0 && capaciteEpargne > 0) {
+        projSection += sectionTitle('Projection patrimoniale');
+        const annualSavings = capaciteEpargne * 12;
+        const rdtSans = 0.02; // without strategy: 2%
+        const rdtAvec = 0.05; // with strategy: 5%
+        const years = [0, 5, 10, 15, 20];
+        const projSans = years.map(y => patriNet * Math.pow(1 + rdtSans, y) + annualSavings * ((Math.pow(1 + rdtSans, y) - 1) / rdtSans));
+        const projAvec = years.map(y => patriNet * Math.pow(1 + rdtAvec, y) + annualSavings * ((Math.pow(1 + rdtAvec, y) - 1) / rdtAvec));
+        const maxProj = Math.max(...projAvec, 1);
+
+        projSection += `<div style="page-break-inside:avoid;margin:10px 0;">`;
+        projSection += `<div style="display:flex;justify-content:space-around;align-items:flex-end;height:180px;border-bottom:2px solid #ddd;margin-bottom:8px;padding:0 10px;">`;
+        for (let i = 0; i < years.length; i++) {
+            const hSans = Math.max((projSans[i] / maxProj) * 160, 4);
+            const hAvec = Math.max((projAvec[i] / maxProj) * 160, 4);
+            projSection += `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+                <div style="display:flex;align-items:flex-end;gap:4px;">
+                    <div style="width:24px;background:#94a3b8;border-radius:3px 3px 0 0;height:${hSans}px;" title="Sans strat\u00e9gie: ${fmtEur(projSans[i])}"></div>
+                    <div style="width:24px;background:#254a65;border-radius:3px 3px 0 0;height:${hAvec}px;" title="Avec strat\u00e9gie: ${fmtEur(projAvec[i])}"></div>
+                </div>
+            </div>`;
+        }
+        projSection += `</div>`;
+        // X-axis labels
+        projSection += `<div style="display:flex;justify-content:space-around;padding:0 10px;">`;
+        for (const y of years) {
+            projSection += `<div style="text-align:center;width:52px;font-size:10px;color:#555;">An ${y}</div>`;
+        }
+        projSection += `</div>`;
+        // Legend
+        projSection += `<div style="display:flex;justify-content:center;gap:20px;margin-top:8px;font-size:10px;color:#555;">
+            <span><span style="display:inline-block;width:12px;height:12px;background:#94a3b8;border-radius:2px;margin-right:3px;vertical-align:middle;"></span>Sans strat\u00e9gie (2%/an)</span>
+            <span><span style="display:inline-block;width:12px;height:12px;background:#254a65;border-radius:2px;margin-right:3px;vertical-align:middle;"></span>Avec strat\u00e9gie (5%/an)</span>
+        </div>`;
+        // Values table
+        projSection += `<table style="width:100%;border-collapse:collapse;font-size:11px;margin-top:8px;">`;
+        projSection += `<tr style="background:#254a65;color:#fff;"><th style="padding:5px 6px;text-align:center;">Ann\u00e9e</th>`;
+        for (const y of years) projSection += `<th style="padding:5px 6px;text-align:center;">An ${y}</th>`;
+        projSection += `</tr>`;
+        projSection += `<tr><td style="padding:4px 6px;border-bottom:1px solid #e8e8e8;font-weight:600;color:#94a3b8;">Sans strat\u00e9gie</td>`;
+        for (const v of projSans) projSection += `<td style="padding:4px 6px;border-bottom:1px solid #e8e8e8;text-align:center;">${fmtEur(v)}</td>`;
+        projSection += `</tr>`;
+        projSection += `<tr><td style="padding:4px 6px;border-bottom:1px solid #e8e8e8;font-weight:600;color:#254a65;">Avec strat\u00e9gie</td>`;
+        for (const v of projAvec) projSection += `<td style="padding:4px 6px;border-bottom:1px solid #e8e8e8;text-align:center;">${fmtEur(v)}</td>`;
+        projSection += `</tr>`;
+        projSection += `<tr><td style="padding:4px 6px;font-weight:700;color:#10b981;">Gain strat\u00e9gie</td>`;
+        for (let i = 0; i < years.length; i++) projSection += `<td style="padding:4px 6px;text-align:center;font-weight:700;color:#10b981;">+${fmtEur(projAvec[i] - projSans[i])}</td>`;
+        projSection += `</tr></table>`;
+        projSection += `</div>`;
+    }
+
+    // ===== 10. ALERTES =====
+    let alertSection = '';
+    if (ps && ps.alerts && ps.alerts.length > 0) {
+        alertSection += sectionTitle('Alertes');
+        const alertColors = { critical: '#ef4444', warning: '#f59e0b', info: '#c8a94e', success: '#10b981' };
+        const alertBg = { critical: '#fef2f2', warning: '#fffbeb', info: '#fefce8', success: '#f0fdf4' };
+        const topAlerts = ps.alerts.slice(0, 3);
+        for (const a of topAlerts) {
+            const col = alertColors[a.type] || '#c8a94e';
+            const bg = alertBg[a.type] || '#fefce8';
+            alertSection += `<div style="background:${bg};border-left:4px solid ${col};border-radius:4px;padding:10px 14px;margin:8px 0;page-break-inside:avoid;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                    <span style="display:inline-block;padding:2px 8px;border-radius:10px;background:${col};color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;">${a.type}</span>
+                    <span style="font-size:13px;font-weight:700;color:#333;">${a.title || ''}</span>
+                </div>
+                <div style="font-size:12px;color:#555;line-height:1.4;">${a.message || ''}</div>
+                ${a.action ? '<div style="font-size:11px;color:' + col + ';font-weight:600;margin-top:4px;">' + a.action + '</div>' : ''}
+            </div>`;
+        }
+    }
+
+    // ===== 11. PLAN D'ACTION =====
+    let actionSection = '';
+    if (ps && ps.actions && ps.actions.length > 0) {
+        actionSection += sectionTitle('Plan d\u2019action');
+        const prioColors = { urgent: '#ef4444', important: '#f59e0b', normal: '#254a65', optionnel: '#94a3b8' };
+        const topActions = ps.actions.slice(0, 5);
+        actionSection += `<table style="width:100%;border-collapse:collapse;font-size:12px;page-break-inside:avoid;">`;
+        actionSection += `<tr style="background:#254a65;color:#fff;"><th style="padding:6px 8px;text-align:left;">Priorit\u00e9</th><th style="padding:6px 8px;text-align:left;">Action</th><th style="padding:6px 8px;text-align:left;">Horizon</th></tr>`;
+        for (const a of topActions) {
+            const pc = prioColors[a.priority] || '#254a65';
+            actionSection += `<tr style="border-bottom:1px solid #e8e8e8;">
+                <td style="padding:6px 8px;"><span style="display:inline-block;padding:2px 8px;border-radius:10px;background:${pc};color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;">${a.priority || 'normal'}</span></td>
+                <td style="padding:6px 8px;"><strong>${a.title || ''}</strong><br><span style="color:#666;font-size:11px;">${a.description || ''}</span></td>
+                <td style="padding:6px 8px;font-size:11px;color:#555;">${a.horizon || '\u2014'}</td>
+            </tr>`;
+        }
+        actionSection += `</table>`;
+    }
+
+    // ===== 12. RECOMMANDATION =====
+    let recoSection = '';
+    const recoEl = document.getElementById('reco-detail');
+    if (recoEl && recoEl.innerHTML.trim().length > 10) {
+        recoSection += sectionTitle('Recommandation');
+        recoSection += `<div style="background:#f8f6f0;border:1px solid #c8a94e;border-radius:8px;padding:16px;margin:10px 0;font-size:12px;line-height:1.5;page-break-inside:avoid;">${recoEl.innerHTML}</div>`;
+    }
+
+    // ===== OBJECTIFS =====
     let objectifs = sectionTitle('Objectifs');
     objectifs += tableOpen;
     objectifs += row('Objectif principal', d.objectifPrincipal || '\u2014');
@@ -1911,20 +2236,7 @@ function exportBilanPDF() {
     objectifs += row('Pr\u00e9occupation succession', d.preoccSucc || 'Non');
     objectifs += tableClose;
 
-    let simulations = '';
-    if (Object.keys(r).length > 0) {
-        simulations = sectionTitle('R\u00e9sultats des simulations');
-        simulations += tableOpen;
-        simulations += `<tr style="background:#254a65;color:#fff;"><th style="padding:8px 12px;text-align:left;">Enveloppe</th><th style="padding:8px 12px;text-align:right;">Capital net</th><th style="padding:8px 12px;text-align:right;">TRI</th></tr>`;
-        if (r.immo) simulations += `<tr><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;">Immobilier</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${fmtEur(Math.round(r.immo.capitalNet))}</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${(r.immo.tri * 100).toFixed(1)} %</td></tr>`;
-        if (r.av) simulations += `<tr><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;">Assurance Vie</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${fmtEur(Math.round(r.av.capitalNet))}</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${(r.av.tri * 100).toFixed(1)} %</td></tr>`;
-        if (r.peaLibre) simulations += `<tr><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;">PEA Libre</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${fmtEur(Math.round(r.peaLibre.capitalNet))}</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${(r.peaLibre.tri * 100).toFixed(1)} %</td></tr>`;
-        if (r.peaMandat) simulations += `<tr><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;">PEA Mandat</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${fmtEur(Math.round(r.peaMandat.capitalNet))}</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${(r.peaMandat.tri * 100).toFixed(1)} %</td></tr>`;
-        if (r.cto) simulations += `<tr><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;">CTO</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${fmtEur(Math.round(r.cto.capitalNet))}</td><td style="padding:6px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${(r.cto.tri * 100).toFixed(1)} %</td></tr>`;
-        simulations += tableClose;
-    }
-
-    // Full HTML document
+    // ===== FULL HTML DOCUMENT =====
     const html = `<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -1933,11 +2245,12 @@ function exportBilanPDF() {
 <style>
     @page {
         size: A4;
-        margin: 20mm 18mm 25mm 18mm;
+        margin: 18mm;
     }
     @media print {
         body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .no-print { display: none; }
+        .section { page-break-inside: avoid; }
     }
     * { box-sizing: border-box; }
     body {
@@ -1953,73 +2266,64 @@ function exportBilanPDF() {
         margin: 0 auto;
         padding: 10px 0;
     }
-    .header {
-        text-align: center;
-        padding-bottom: 16px;
-        margin-bottom: 10px;
-    }
-    .header img {
-        max-height: 70px;
-        margin-bottom: 8px;
-    }
-    .header h1 {
-        font-family: 'Georgia', serif;
-        font-size: 22px;
-        letter-spacing: 6px;
-        color: #254a65;
-        margin: 0 0 4px 0;
-        font-weight: 400;
-    }
-    .header .gold-line {
-        width: 120px;
-        height: 2px;
-        background: #c8a94e;
-        margin: 10px auto;
-    }
-    .subtitle {
-        text-align: center;
-        font-size: 15px;
-        color: #555;
-        margin-bottom: 6px;
-    }
-    .date-line {
-        text-align: center;
-        font-size: 12px;
-        color: #888;
-        margin-bottom: 24px;
-    }
     table { page-break-inside: avoid; }
     h2 { page-break-after: avoid; }
-    .footer {
-        margin-top: 40px;
-        padding-top: 12px;
-        border-top: 1px solid #ccc;
-        text-align: center;
-        font-size: 10px;
-        color: #999;
-    }
 </style>
 </head>
 <body>
 <div class="page-wrapper">
-    <div class="header">
-        <img src="logo.png" alt="Patria Capital">
-        <h1>PATRIA CAPITAL</h1>
-        <div class="gold-line"></div>
+    <!-- HEADER -->
+    <div style="text-align:center;padding-bottom:16px;margin-bottom:10px;">
+        <img src="logo.png" alt="Patria Capital" style="max-height:70px;margin-bottom:8px;">
+        <h1 style="font-family:'Georgia',serif;font-size:22px;letter-spacing:6px;color:#254a65;margin:0 0 4px 0;font-weight:400;">PATRIA CAPITAL</h1>
+        <div style="width:120px;height:2px;background:#c8a94e;margin:10px auto;"></div>
     </div>
-    <div class="subtitle">Bilan Patrimonial \u2014 ${clientName}</div>
-    <div class="date-line">${dateStr}</div>
-    ${identite}
-    ${sitPro}
-    ${revenus}
-    ${charges}
-    ${immo}
-    ${fin}
-    ${synthese}
-    ${objectifs}
-    ${simulations}
-    <div class="footer">
-        Document confidentiel \u2014 Patria Capital \u2014 ${dateStr}
+    <div style="text-align:center;font-size:15px;color:#555;margin-bottom:6px;">Bilan Patrimonial \u2014 ${clientName}</div>
+    <div style="text-align:center;font-size:12px;color:#888;margin-bottom:24px;">${dateStr}</div>
+
+    <!-- SCORE PATRIMONIAL -->
+    <div class="section">${scoreSection}</div>
+
+    <!-- IDENTITE + SITUATION PRO -->
+    <div class="section">${identite}</div>
+    <div class="section">${sitPro}</div>
+
+    <!-- SYNTHESE -->
+    <div class="section">${synthese}</div>
+
+    <!-- REVENUS & CHARGES -->
+    <div class="section">${revenus}</div>
+    <div class="section">${charges}</div>
+
+    <!-- PATRIMOINE DETAILLE -->
+    <div class="section">${immo}</div>
+    <div class="section">${fin}</div>
+
+    <!-- OBJECTIFS -->
+    <div class="section">${objectifs}</div>
+
+    <!-- ALLOCATION ACTUELLE VS CIBLE -->
+    <div class="section">${allocSection}</div>
+
+    <!-- SIMULATIONS -->
+    <div class="section">${simulations}</div>
+
+    <!-- PROJECTION PATRIMONIALE -->
+    <div class="section">${projSection}</div>
+
+    <!-- ALERTES -->
+    <div class="section">${alertSection}</div>
+
+    <!-- PLAN D'ACTION -->
+    <div class="section">${actionSection}</div>
+
+    <!-- RECOMMANDATION -->
+    <div class="section">${recoSection}</div>
+
+    <!-- FOOTER -->
+    <div style="margin-top:40px;padding-top:12px;border-top:1px solid #ccc;text-align:center;font-size:10px;color:#999;">
+        <p>Document confidentiel \u2014 Patria Capital \u2014 ${dateStr}</p>
+        <p style="margin-top:6px;">Ce document est \u00e9tabli \u00e0 titre informatif et ne constitue pas un conseil en investissement. Les simulations pr\u00e9sent\u00e9es reposent sur des hypoth\u00e8ses et ne garantissent pas les performances futures. Patria Capital recommande de consulter un conseiller agr\u00e9\u00e9 avant toute d\u00e9cision patrimoniale.</p>
     </div>
 </div>
 </body>
