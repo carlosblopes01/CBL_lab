@@ -3376,6 +3376,19 @@ body {
     z-index: 1;
     cursor: pointer;
 }
+/* Patria locked fields - read only */
+.patria-locked {
+    background: rgba(193,146,94,0.06) !important;
+    border: 1px solid rgba(193,146,94,0.20) !important;
+    color: #c1925e !important;
+    cursor: not-allowed !important;
+    opacity: 0.85;
+}
+.patria-locked:focus {
+    box-shadow: none !important;
+    border-color: rgba(193,146,94,0.20) !important;
+}
+
 #main-content select:focus {
     border-color: #c1925e;
     box-shadow: 0 0 0 3px rgba(193,146,94,0.15);

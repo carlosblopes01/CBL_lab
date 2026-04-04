@@ -1082,12 +1082,12 @@
                     <div class="form-group"><label>Apport initial (&euro;)</label><input type="number" data-field="av_apport" min="0" value="60000" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Versements mensuels (&euro;)</label><input type="number" data-field="av_mensuel" min="0" value="0" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Horizon (ans)</label><input type="number" data-field="av_horizon" min="1" max="40" value="8" class="sim-input"></div>
-                    <div class="form-group"><label>% Fonds Euros</label><input type="number" data-field="av_pct_fe" min="0" max="100" value="60" class="sim-input"></div>
-                    <div class="form-group"><label>Rdt Fonds Euros (%)</label><input type="number" data-field="av_rdt_fe" min="0" step="0.1" value="2.5" class="sim-input"></div>
-                    <div class="form-group"><label>% Mandat Gestion</label><input type="number" data-field="av_pct_mandat" min="0" max="100" value="30" class="sim-input"></div>
-                    <div class="form-group"><label>Rdt Mandat (%)</label><input type="number" data-field="av_rdt_mandat" min="0" step="0.1" value="4.4" class="sim-input"></div>
-                    <div class="form-group"><label>% Produits Structurés</label><input type="number" data-field="av_pct_struct" min="0" max="100" value="10" class="sim-input"></div>
-                    <div class="form-group"><label>Coupon Structure (%/an)</label><input type="number" data-field="av_rdt_struct" min="0" step="0.1" value="7" class="sim-input"></div>
+                    <div class="form-group"><label>% Fonds Euros &#128274;</label><input type="number" data-field="av_pct_fe" min="0" max="100" value="60" class="sim-input patria-locked" readonly></div>
+                    <div class="form-group"><label>Rdt Fonds Euros (%) &#128274;</label><input type="number" data-field="av_rdt_fe" min="0" step="0.1" value="2.5" class="sim-input patria-locked" readonly></div>
+                    <div class="form-group"><label>% Mandat Gestion &#128274;</label><input type="number" data-field="av_pct_mandat" min="0" max="100" value="30" class="sim-input patria-locked" readonly></div>
+                    <div class="form-group"><label>Rdt Mandat (%) &#128274;</label><input type="number" data-field="av_rdt_mandat" min="0" step="0.1" value="4.4" class="sim-input patria-locked" readonly></div>
+                    <div class="form-group"><label>% Produits Structurés &#128274;</label><input type="number" data-field="av_pct_struct" min="0" max="100" value="10" class="sim-input patria-locked" readonly></div>
+                    <div class="form-group"><label>Coupon Structure (%/an) &#128274;</label><input type="number" data-field="av_rdt_struct" min="0" step="0.1" value="7" class="sim-input patria-locked" readonly></div>
                 </div>
                 <button class="btn btn-primary" onclick="calculateAV()" style="margin-top:16px;">Calculer</button>
             </div>
@@ -1125,10 +1125,10 @@
                 <div class="form-grid">
                     <div class="form-group"><label>Capital investi (&euro;)</label><input type="number" data-field="pea_capital" min="0" max="150000" value="60000" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Horizon (ans)</label><input type="number" data-field="pea_horizon" min="1" max="40" value="8" class="sim-input"></div>
-                    <div class="form-group"><label>Rdt brut ETF (%/an)</label><input type="number" data-field="pea_rdt_etf" min="0" step="0.1" value="7" class="sim-input"></div>
-                    <div class="form-group"><label>Frais TER ETF (%/an)</label><input type="number" data-field="pea_ter" min="0" step="0.01" value="0.2" class="sim-input"></div>
-                    <div class="form-group"><label>Rdt brut Mandat (%/an)</label><input type="number" data-field="pea_rdt_mandat" min="0" step="0.1" value="6.5" class="sim-input"></div>
-                    <div class="form-group"><label>Frais Mandat (%/an)</label><input type="number" data-field="pea_frais_mandat" min="0" step="0.1" value="1.5" class="sim-input"></div>
+                    <div class="form-group"><label>Rdt brut ETF (%/an) &#128274;</label><input type="number" data-field="pea_rdt_etf" min="0" step="0.1" value="7" class="sim-input patria-locked" readonly></div>
+                    <div class="form-group"><label>Frais TER ETF (%/an) &#128274;</label><input type="number" data-field="pea_ter" min="0" step="0.01" value="0.2" class="sim-input patria-locked" readonly></div>
+                    <div class="form-group"><label>Rdt brut Mandat (%/an) &#128274;</label><input type="number" data-field="pea_rdt_mandat" min="0" step="0.1" value="6.5" class="sim-input patria-locked" readonly></div>
+                    <div class="form-group"><label>Frais Mandat (%/an) &#128274;</label><input type="number" data-field="pea_frais_mandat" min="0" step="0.1" value="1.5" class="sim-input patria-locked" readonly></div>
                 </div>
                 <button class="btn btn-primary" onclick="calculatePEA()" style="margin-top:16px;">Calculer</button>
             </div>
@@ -1181,8 +1181,8 @@
                 <div class="form-grid">
                     <div class="form-group"><label>Capital investi (&euro;)</label><input type="number" data-field="cto_capital" min="0" value="300000" class="input-currency sim-input"></div>
                     <div class="form-group"><label>Horizon (ans)</label><input type="number" data-field="cto_horizon" min="1" max="40" value="8" class="sim-input"></div>
-                    <div class="form-group"><label>Rendement brut (%/an)</label><input type="number" data-field="cto_rdt" min="0" step="0.1" value="7" class="sim-input"></div>
-                    <div class="form-group"><label>Frais annuels (%)</label><input type="number" data-field="cto_frais" min="0" step="0.01" value="0.05" class="sim-input"></div>
+                    <div class="form-group"><label>Rendement brut (%/an) &#128274;</label><input type="number" data-field="cto_rdt" min="0" step="0.1" value="7" class="sim-input patria-locked" readonly></div>
+                    <div class="form-group"><label>Frais annuels (%) &#128274;</label><input type="number" data-field="cto_frais" min="0" step="0.01" value="0.05" class="sim-input patria-locked" readonly></div>
                 </div>
                 <button class="btn btn-primary" onclick="calculateCTO()" style="margin-top:16px;">Calculer</button>
             </div>

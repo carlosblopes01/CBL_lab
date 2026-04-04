@@ -1140,13 +1140,15 @@ function getAdminEnveloppes() {
 
 function prefillPatriaParams() {
     const env = getAdminEnveloppes();
+    const _isAdmin = typeof isAdmin === 'function' && isAdmin();
+
+    const setVal = (field, val) => {
+        const el = document.querySelector('[data-field="' + field + '"]');
+        if (el) el.value = val;
+    };
 
     // Pre-fill AV Patria fields from admin params
     if (env.av) {
-        const setVal = (field, val) => {
-            const el = document.querySelector('[data-field="' + field + '"]');
-            if (el && (!el.dataset.userSet)) el.value = val;
-        };
         if (env.av.rendementFondsEuros) setVal('av_rdt_fe', env.av.rendementFondsEuros);
         if (env.av.rendementMandat) setVal('av_rdt_mandat', env.av.rendementMandat);
         if (env.av.rendementStructure) setVal('av_rdt_struct', env.av.rendementStructure);
@@ -1154,32 +1156,25 @@ function prefillPatriaParams() {
 
     // Pre-fill PEA Patria fields from admin params
     if (env.pea) {
-        const setVal = (field, val) => {
-            const el = document.querySelector('[data-field="' + field + '"]');
-            if (el && (!el.dataset.userSet)) el.value = val;
-        };
         if (env.pea.rendementEstime) setVal('pea_rdt_etf', env.pea.rendementEstime);
         if (env.pea.fraisCourtage !== undefined) setVal('pea_ter', env.pea.fraisCourtage || 0.2);
     }
 
     // Pre-fill CTO Patria fields from admin params
     if (env.cto) {
-        const setVal = (field, val) => {
-            const el = document.querySelector('[data-field="' + field + '"]');
-            if (el && (!el.dataset.userSet)) el.value = val;
-        };
         if (env.cto.rendementEstime) setVal('cto_rdt', env.cto.rendementEstime);
         if (env.cto.fraisGarde !== undefined) setVal('cto_frais', env.cto.fraisGarde);
     }
 
     // Pre-fill PER Patria fields from admin params
-    if (env.per) {
-        const setVal = (field, val) => {
-            const el = document.querySelector('[data-field="' + field + '"]');
-            if (el && (!el.dataset.userSet)) el.value = val;
-        };
-        // Note: PER rendement is set via profil/config, not directly from admin params
-        // But we can inform the user about frais gestion via admin
+    // PER rendement is set via profil/config, not directly
+
+    // Admin can edit locked fields — remove readonly + locked style
+    if (_isAdmin) {
+        document.querySelectorAll('.patria-locked').forEach(el => {
+            el.removeAttribute('readonly');
+            el.classList.remove('patria-locked');
+        });
     }
 }
 
