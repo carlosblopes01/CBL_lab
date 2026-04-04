@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cas concret : cadre dirigeant expatrié de retour en France. Structuration patrimoniale, rapatriement d'épargne et optimisation fiscale avec Patria Capital.">
+    <meta property="og:title" content="Cadre dirigeant expatrié de retour | Patria Capital">
+    <meta property="og:description" content="Simulation patrimoniale complète pour un cadre dirigeant de retour d'expatriation : rapatriement, structuration et optimisation fiscale.">
+    <meta property="og:type" content="website">
+    <title>Cadre dirigeant expatrié de retour | Patria Capital</title>
+    <link rel="icon" type="image/png" href="icone.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icone.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        body { display: block; background: #0c0f1a; }
+
+        /* --- Nav active state --- */
+        .landing-nav-links a.nav-active { color: #fff; position: relative; }
+        .landing-nav-links a.nav-active::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+            height: 2px; background: var(--accent-gradient); border-radius: 1px;
+        }
+        .landing-nav.scrolled .landing-nav-links a.nav-active { color: var(--primary); }
+
+        /* --- Mobile Nav --- */
+        .mobile-nav-toggle {
+            display: none; background: none; border: none; color: #fff;
+            font-size: 28px; cursor: pointer; padding: 4px; line-height: 1;
+        }
+        .landing-nav.scrolled .mobile-nav-toggle { color: var(--primary); }
+
+        /* --- Reveal animations --- */
+        .reveal {
+            opacity: 0; transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.4,0,0.2,1), transform 0.8s cubic-bezier(0.4,0,0.2,1);
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* ========== HERO ========== */
+        .cas-detail-hero {
+            position: relative; min-height: 50vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+            padding: 160px 48px 80px; background: #0c0f1a; overflow: hidden;
+        }
+        .cas-detail-hero::before {
+            content: ''; position: absolute; top: -50%; right: -20%; width: 80%; height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(90,126,194,0.10) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .cas-detail-hero::after {
+            content: ''; position: absolute; bottom: -30%; left: -10%; width: 60%; height: 160%;
+            background: radial-gradient(ellipse at 70% 50%, rgba(193,146,94,0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero-tag {
+            display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; padding: 7px 20px; border-radius: 20px; color: #fff;
+            margin-bottom: 24px; position: relative; z-index: 1;
+        }
+        .hero-tag.cadre { background: linear-gradient(135deg, #c1925e, #dbb88a); }
+        .hero-tag.famille { background: linear-gradient(135deg, #4a6741, #6b8f60); }
+        .hero-title {
+            font-family: 'Playfair Display', serif; font-size: clamp(32px,4vw,52px); font-weight: 700;
+            color: #fff; line-height: 1.15; max-width: 800px; margin-bottom: 20px;
+            position: relative; z-index: 1;
+        }
+        .hero-profile {
+            font-size: 15px; color: rgba(255,255,255,0.50); max-width: 650px;
+            line-height: 1.75; position: relative; z-index: 1;
+        }
+        .hero-profile strong { color: rgba(255,255,255,0.70); font-weight: 600; }
+
+        /* ========== BREADCRUMB ========== */
+        .breadcrumb {
+            background: var(--bg); padding: 18px 48px; font-size: 13px; color: var(--text-light);
+        }
+        .breadcrumb a { color: var(--gold); text-decoration: none; font-weight: 500; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { margin: 0 8px; opacity: 0.4; }
+
+        /* ========== SECTIONS ========== */
+        .section-cream { background: var(--bg); padding: 100px 48px; }
+        .section-white { background: #fff; padding: 100px 48px; }
+        .section-dark {
+            background: #0c0f1a; padding: 100px 48px; position: relative; overflow: hidden;
+        }
+        .section-dark::before {
+            content: ''; position: absolute; top: -40%; right: -10%; width: 60%; height: 180%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(90,126,194,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .section-inner { max-width: 1000px; margin: 0 auto; }
+
+        .section-label {
+            display: block; font-size: 11px; font-weight: 600; letter-spacing: 3px;
+            text-transform: uppercase; background: var(--accent-gradient);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; text-align: center; margin-bottom: 16px;
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif; font-size: clamp(26px,3vw,38px); font-weight: 700;
+            text-align: center; margin-bottom: 16px; line-height: 1.2;
+        }
+        .section-title.dark { color: var(--primary); }
+        .section-title.light { color: #fff; }
+        .section-title::after {
+            content: ''; display: block; width: 60px; height: 3px;
+            background: var(--accent-gradient); margin: 20px auto 0; border-radius: 2px;
+        }
+        .section-desc {
+            font-size: 15px; text-align: center; max-width: 650px; margin: 24px auto 0; line-height: 1.75;
+        }
+        .section-desc.dark { color: var(--text-light); }
+        .section-desc.light { color: rgba(255,255,255,0.55); }
+
+        /* ========== SITUATION TEXT ========== */
+        .situation-text {
+            font-size: 16px; line-height: 1.85; color: var(--text-light); max-width: 750px;
+            margin: 48px auto 0; text-align: center;
+        }
+
+        /* ========== OBJECTIFS CARDS ========== */
+        .obj-grid {
+            display: grid; grid-template-columns: repeat(3,1fr); gap: 28px;
+            max-width: 1000px; margin: 56px auto 0;
+        }
+        .obj-card {
+            background: var(--bg); border: 1px solid var(--border-light); border-radius: var(--radius-lg);
+            padding: 36px 28px; text-align: center;
+            transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+        }
+        .obj-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(37,74,101,0.08); }
+        .obj-icon { font-size: 32px; margin-bottom: 16px; display: block; }
+        .obj-card h3 {
+            font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700;
+            color: var(--primary); margin-bottom: 10px; border: none; padding: 0;
+        }
+        .obj-card p { font-size: 13.5px; color: var(--text-light); line-height: 1.7; }
+
+        /* ========== SIMULATION SECTION ========== */
+        .sim-block {
+            max-width: 1000px; margin: 0 auto; position: relative; z-index: 1;
+        }
+        .sim-panel {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius-lg); padding: 40px 36px; margin-bottom: 32px;
+            backdrop-filter: blur(16px);
+        }
+        .sim-panel-title {
+            font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700;
+            color: #fff; margin-bottom: 8px;
+        }
+        .sim-panel-subtitle {
+            font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 28px; line-height: 1.6;
+        }
+        .sim-tool-badge {
+            display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; color: var(--gold); border: 1px solid rgba(193,146,94,0.3);
+            padding: 4px 12px; border-radius: 12px; margin-bottom: 20px;
+        }
+
+        /* --- Country Asset Map --- */
+        .country-map { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+        .country-box {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
+            border-radius: var(--radius-sm); padding: 24px 20px; text-align: center;
+            position: relative; overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+        .country-box:hover { border-color: rgba(193,146,94,0.35); }
+        .country-flag { font-size: 28px; margin-bottom: 10px; display: block; }
+        .country-name {
+            font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+            color: rgba(255,255,255,0.6); margin-bottom: 6px;
+        }
+        .country-amount {
+            font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: #fff;
+        }
+        .country-bar {
+            position: absolute; bottom: 0; left: 0; height: 3px;
+            background: var(--accent-gradient); border-radius: 0 2px 0 0;
+            transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        /* --- Comparison Table --- */
+        .comp-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+        .comp-table th {
+            font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+            color: rgba(255,255,255,0.4); padding: 12px 16px; text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .comp-table td {
+            font-size: 14px; color: rgba(255,255,255,0.75); padding: 14px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .comp-table tr:last-child td { border-bottom: none; }
+        .comp-table .val-bad { color: rgba(255,100,100,0.8); }
+        .comp-table .val-good { color: #6bdf8e; }
+        .comp-table .val-highlight {
+            color: var(--gold-light); font-weight: 600;
+        }
+
+        /* --- CSS Bars --- */
+        .bar-group { margin-bottom: 20px; }
+        .bar-group:last-child { margin-bottom: 0; }
+        .bar-label {
+            font-size: 13px; color: rgba(255,255,255,0.65); margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: baseline;
+        }
+        .bar-label .bar-value { font-weight: 700; color: #fff; font-size: 14px; }
+        .bar-track {
+            background: rgba(255,255,255,0.06); border-radius: 6px; height: 28px;
+            overflow: hidden; position: relative;
+        }
+        .bar-fill {
+            height: 100%; border-radius: 6px; display: flex; align-items: center;
+            padding-left: 12px; font-size: 11px; font-weight: 600; color: #fff;
+            transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
+            width: 0;
+        }
+        .bar-fill.animated { /* set via JS or CSS */ }
+        .bar-fill.gold { background: linear-gradient(90deg, #c1925e, #dbb88a); }
+        .bar-fill.blue { background: linear-gradient(90deg, #5a7ec2, #7b9fd6); }
+        .bar-fill.green { background: linear-gradient(90deg, #4a6741, #6b8f60); }
+        .bar-fill.navy { background: linear-gradient(90deg, #254a65, #3a7ca5); }
+        .bar-fill.red { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+
+        /* --- Tax Comparison --- */
+        .tax-compare {
+            display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px;
+            align-items: center; text-align: center;
+        }
+        .tax-box {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius-sm); padding: 28px 20px;
+        }
+        .tax-label { font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+        .tax-amount {
+            font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700;
+        }
+        .tax-amount.before { color: rgba(255,100,100,0.85); }
+        .tax-amount.after { color: #6bdf8e; }
+        .tax-arrow { font-size: 28px; color: var(--gold); }
+        .tax-savings {
+            display: inline-block; margin-top: 16px; background: rgba(107,223,142,0.1);
+            border: 1px solid rgba(107,223,142,0.2); border-radius: 20px;
+            padding: 8px 20px; font-size: 14px; font-weight: 700; color: #6bdf8e;
+        }
+
+        /* --- Timeline --- */
+        .timeline { position: relative; padding-left: 32px; margin-top: 8px; }
+        .timeline::before {
+            content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+            width: 2px; background: rgba(193,146,94,0.25);
+        }
+        .timeline-item { position: relative; padding-bottom: 24px; }
+        .timeline-item:last-child { padding-bottom: 0; }
+        .timeline-dot {
+            position: absolute; left: -28px; top: 4px; width: 12px; height: 12px;
+            border-radius: 50%; background: var(--gold); border: 2px solid #0c0f1a;
+        }
+        .timeline-date {
+            font-size: 11px; font-weight: 600; color: var(--gold); letter-spacing: 1px;
+            text-transform: uppercase; margin-bottom: 4px;
+        }
+        .timeline-text { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+
+        /* ========== STRATEGIE ========== */
+        .strat-grid {
+            display: grid; grid-template-columns: repeat(2,1fr); gap: 24px;
+            max-width: 1000px; margin: 56px auto 0;
+        }
+        .strat-card {
+            background: #fff; border: 1px solid var(--border-light); border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+        }
+        .strat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(37,74,101,0.08); }
+        .strat-number {
+            font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 1.5px;
+            margin-bottom: 10px;
+        }
+        .strat-card h3 {
+            font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700;
+            color: var(--primary); margin-bottom: 10px; border: none; padding: 0;
+        }
+        .strat-card p { font-size: 13.5px; color: var(--text-light); line-height: 1.75; }
+
+        /* ========== RESULTATS ========== */
+        .results-grid {
+            display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;
+            max-width: 1000px; margin: 56px auto 0;
+        }
+        .result-card {
+            background: var(--bg); border: 1px solid var(--border-light);
+            border-left: 4px solid var(--gold); border-radius: var(--radius-sm);
+            padding: 32px 28px; text-align: center;
+        }
+        .result-value {
+            font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700;
+            background: var(--accent-gradient); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;
+        }
+        .result-label { font-size: 14px; color: var(--text-light); line-height: 1.6; }
+
+        /* ========== NAVIGATION + CTA ========== */
+        .cas-nav-bottom {
+            background: var(--bg); padding: 60px 48px; border-top: 1px solid var(--border-light);
+        }
+        .cas-nav-inner {
+            max-width: 1000px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center; gap: 24px;
+        }
+        .cas-nav-link {
+            font-size: 14px; color: var(--gold); text-decoration: none; font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .cas-nav-link:hover { color: var(--gold-dark); }
+        .cas-cta-section {
+            background: #0c0f1a; padding: 100px 48px; text-align: center;
+            position: relative; overflow: hidden;
+        }
+        .cas-cta-section::before {
+            content: ''; position: absolute; top: -30%; left: 20%; width: 60%; height: 160%;
+            background: radial-gradient(ellipse, rgba(90,126,194,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .cas-cta-section h2 {
+            font-family: 'Playfair Display', serif; font-size: clamp(26px,3vw,38px); font-weight: 700;
+            background: var(--accent-gradient); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; background-clip: text;
+            margin-bottom: 20px; position: relative;
+        }
+        .cas-cta-section p {
+            font-size: 16px; color: rgba(255,255,255,0.50); max-width: 520px;
+            margin: 0 auto 40px; line-height: 1.75; position: relative;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 900px) {
+            .cas-detail-hero, .section-cream, .section-white, .section-dark,
+            .cas-nav-bottom, .cas-cta-section, .breadcrumb {
+                padding-left: 24px; padding-right: 24px;
+            }
+            .cas-detail-hero { padding-top: 120px; padding-bottom: 60px; min-height: auto; }
+            .section-cream, .section-white, .section-dark { padding-top: 72px; padding-bottom: 72px; }
+            .obj-grid, .results-grid { grid-template-columns: 1fr; max-width: 480px; }
+            .strat-grid { grid-template-columns: 1fr; max-width: 520px; }
+            .country-map { grid-template-columns: 1fr; max-width: 320px; margin: 0 auto; }
+            .tax-compare { grid-template-columns: 1fr; }
+            .tax-arrow { transform: rotate(90deg); }
+            .comp-table { font-size: 13px; }
+            .comp-table th, .comp-table td { padding: 10px 12px; }
+            .cas-nav-inner { flex-direction: column; text-align: center; }
+            .sim-panel { padding: 28px 20px; }
+            .landing-nav-links {
+                display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(12,15,26,0.97); backdrop-filter: blur(12px);
+                flex-direction: column; align-items: center; justify-content: center;
+                gap: 32px; z-index: 999;
+            }
+            .landing-nav-links.open { display: flex; }
+            .landing-nav-links.open a { font-size: 18px; color: rgba(255,255,255,0.85); }
+            .mobile-nav-toggle { display: block; z-index: 1000; }
+        }
+        @media (max-width: 600px) {
+            .sim-panel { padding: 24px 16px; }
+            .country-amount { font-size: 20px; }
+            .tax-amount { font-size: 24px; }
+            .result-value { font-size: 26px; }
+            .comp-table { display: block; overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== NAV ========== -->
+    <nav class="landing-nav">
+        <div class="landing-nav-inner">
+            <a href="index.html" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img"></a>
+            <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+            <div class="landing-nav-links" id="nav-links">
+                <a href="index.html">Accueil</a>
+                <a href="index.html#expertises">Expertises</a>
+                <a href="outil.html">Notre outil</a>
+                <a href="cas-concrets.html" class="nav-active">Cas concrets</a>
+                <a href="equipe.html">Le cabinet</a>
+                <a href="contact.html">Contact</a>
+                <button class="btn btn-gold btn-sm" onclick="window.location.href='contact.html'">Échanger avec un conseiller</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== HERO ========== -->
+    <section class="cas-detail-hero">
+        <div class="hero-tag cadre reveal">CADRE DIRIGEANT</div>
+        <h1 class="hero-title reveal reveal-delay-1">Cadre dirigeant expatrié de retour</h1>
+        <p class="hero-profile reveal reveal-delay-2">
+            Cadre dirigeant, <strong>45 ans</strong>, marié, 2 enfants, retour d'expatriation<br>
+            Patrimoine : <strong>890 000 &euro;</strong> &middot; Revenus : <strong>210 000 &euro;/an</strong>
+        </p>
+    </section>
+
+    <!-- ========== BREADCRUMB ========== -->
+    <div class="breadcrumb">
+        <a href="cas-concrets.html">Cas concrets</a>
+        <span>&rsaquo;</span>
+        Cadre dirigeant expatrié de retour
+    </div>
+
+    <!-- ========== SITUATION ========== -->
+    <section class="section-cream">
+        <div class="section-inner">
+            <div class="section-label reveal">Diagnostic initial</div>
+            <h2 class="section-title dark reveal">Situation patrimoniale</h2>
+            <p class="situation-text reveal reveal-delay-1">
+                Après 12 ans d'expatriation entre la Suisse et le Royaume-Uni, ce cadre dirigeant revient en France avec une épargne répartie sur <strong>3 pays</strong>. La fiscalité est complexe et non optimisée. Aucun PEA ni assurance-vie n'a été ouvert en France, ce qui prive le ménage de toute antériorité fiscale sur les enveloppes françaises les plus avantageuses.
+            </p>
+        </div>
+    </section>
+
+    <!-- ========== OBJECTIFS ========== -->
+    <section class="section-white">
+        <div class="section-inner">
+            <div class="section-label reveal">Objectifs identifiés</div>
+            <h2 class="section-title dark reveal">Trois priorités stratégiques</h2>
+            <div class="obj-grid">
+                <div class="obj-card reveal reveal-delay-1">
+                    <span class="obj-icon">&#9670;</span>
+                    <h3>Rapatrier et structurer</h3>
+                    <p>Consolider l'épargne dispersée dans trois juridictions au sein d'enveloppes françaises optimisées.</p>
+                </div>
+                <div class="obj-card reveal reveal-delay-2">
+                    <span class="obj-icon">&#9673;</span>
+                    <h3>Optimiser la fiscalité</h3>
+                    <p>Réduire l'imposition française en tirant parti des enveloppes défiscalisantes (PEA, AV, PER).</p>
+                </div>
+                <div class="obj-card reveal reveal-delay-3">
+                    <span class="obj-icon">&#9678;</span>
+                    <h3>Capitaliser sur 15 ans</h3>
+                    <p>Construire une allocation diversifiée avec un horizon long terme pour maximiser la capitalisation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SIMULATION VISUELLE ========== -->
+    <section class="section-dark">
+        <div class="section-inner">
+            <div class="section-label reveal">Analyse via l'outil</div>
+            <h2 class="section-title light reveal">Simulation patrimoniale</h2>
+            <p class="section-desc light reveal">Notre outil propriétaire modélise le rapatriement, la restructuration et la projection à 15 ans.</p>
+        </div>
+
+        <div class="sim-block" style="margin-top: 56px;">
+
+            <!-- Panel 1: Multi-country asset map -->
+            <div class="sim-panel reveal">
+                <div class="sim-tool-badge">Outil Patria &mdash; Cartographie</div>
+                <div class="sim-panel-title">Répartition géographique de l'épargne</div>
+                <div class="sim-panel-subtitle">Épargne dispersée dans 3 juridictions &mdash; aucune enveloppe fiscale française ouverte</div>
+                <div class="country-map">
+                    <div class="country-box">
+                        <span class="country-flag">&#127464;&#127469;</span>
+                        <div class="country-name">Suisse</div>
+                        <div class="country-amount">340k&euro;</div>
+                        <div class="country-bar" style="width: 38%;"></div>
+                    </div>
+                    <div class="country-box">
+                        <span class="country-flag">&#127468;&#127463;</span>
+                        <div class="country-name">Royaume-Uni</div>
+                        <div class="country-amount">280k&euro;</div>
+                        <div class="country-bar" style="width: 31%;"></div>
+                    </div>
+                    <div class="country-box">
+                        <span class="country-flag">&#127467;&#127479;</span>
+                        <div class="country-name">France</div>
+                        <div class="country-amount">270k&euro;</div>
+                        <div class="country-bar" style="width: 30%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 2: Comparison table -->
+            <div class="sim-panel reveal">
+                <div class="sim-tool-badge">Outil Patria &mdash; Comparatif</div>
+                <div class="sim-panel-title">Épargne non structurée vs allocation France optimisée</div>
+                <div class="sim-panel-subtitle">Comparaison des rendements, de la fiscalité et de l'accessibilité entre les deux scénarios</div>
+                <table class="comp-table">
+                    <thead>
+                        <tr>
+                            <th>Critère</th>
+                            <th>Situation actuelle</th>
+                            <th>Allocation optimisée</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Rendement moyen</td>
+                            <td class="val-bad">1,8%</td>
+                            <td class="val-good">4,6%</td>
+                        </tr>
+                        <tr>
+                            <td>Fiscalité annuelle</td>
+                            <td class="val-bad">~18 000 &euro;</td>
+                            <td class="val-good">~6 000 &euro;</td>
+                        </tr>
+                        <tr>
+                            <td>Enveloppes défiscalisantes</td>
+                            <td class="val-bad">Aucune</td>
+                            <td class="val-good">PEA + AV + PER</td>
+                        </tr>
+                        <tr>
+                            <td>Diversification</td>
+                            <td class="val-bad">Comptes bancaires</td>
+                            <td class="val-good">Multi-classe</td>
+                        </tr>
+                        <tr>
+                            <td>Capital projeté à 15 ans</td>
+                            <td class="val-highlight">1 160k&euro;</td>
+                            <td class="val-highlight">1 720k&euro;</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Panel 3: 15-year projection bars -->
+            <div class="sim-panel reveal">
+                <div class="sim-tool-badge">Outil Patria &mdash; Projection 15 ans</div>
+                <div class="sim-panel-title">Croissance projetée par enveloppe</div>
+                <div class="sim-panel-subtitle">Répartition cible après rapatriement &mdash; projection à 15 ans, rendement net de frais</div>
+
+                <div class="bar-group">
+                    <div class="bar-label"><span>PEA &mdash; ETF monde</span> <span class="bar-value">150k&euro; &rarr; 310k&euro;</span></div>
+                    <div class="bar-track"><div class="bar-fill blue" data-width="75%">+107%</div></div>
+                </div>
+                <div class="bar-group">
+                    <div class="bar-label"><span>Assurance-vie &mdash; Pilotée</span> <span class="bar-value">280k&euro; &rarr; 530k&euro;</span></div>
+                    <div class="bar-track"><div class="bar-fill gold" data-width="85%">+89%</div></div>
+                </div>
+                <div class="bar-group">
+                    <div class="bar-label"><span>PER &mdash; Versements optimisés</span> <span class="bar-value">200k&euro; &rarr; 420k&euro;</span></div>
+                    <div class="bar-track"><div class="bar-fill green" data-width="68%">+110%</div></div>
+                </div>
+                <div class="bar-group">
+                    <div class="bar-label"><span>LMNP &mdash; Investissement locatif</span> <span class="bar-value">260k&euro; &rarr; 460k&euro;</span></div>
+                    <div class="bar-track"><div class="bar-fill navy" data-width="72%">+77%</div></div>
+                </div>
+            </div>
+
+            <!-- Panel 4: Tax savings -->
+            <div class="sim-panel reveal">
+                <div class="sim-tool-badge">Outil Patria &mdash; Fiscalité</div>
+                <div class="sim-panel-title">Économie fiscale annuelle</div>
+                <div class="sim-panel-subtitle">Comparaison de la charge fiscale annuelle avant et après restructuration</div>
+                <div class="tax-compare">
+                    <div class="tax-box">
+                        <div class="tax-label">Avant</div>
+                        <div class="tax-amount before">18 000 &euro;</div>
+                    </div>
+                    <div class="tax-arrow">&rarr;</div>
+                    <div class="tax-box">
+                        <div class="tax-label">Après</div>
+                        <div class="tax-amount after">6 000 &euro;</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <div class="tax-savings">&minus;12 000 &euro; / an</div>
+                </div>
+            </div>
+
+            <!-- Panel 5: Timeline -->
+            <div class="sim-panel reveal">
+                <div class="sim-tool-badge">Outil Patria &mdash; Calendrier</div>
+                <div class="sim-panel-title">Chronologie d'ouverture des enveloppes</div>
+                <div class="sim-panel-subtitle">Prise de date fiscale optimisée pour maximiser les avantages à terme</div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">Mois 1</div>
+                        <div class="timeline-text">Ouverture PEA &mdash; prise de date pour bénéficier de l'exonération après 5 ans</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">Mois 1</div>
+                        <div class="timeline-text">Ouverture assurance-vie &mdash; démarrage de l'antériorité fiscale (abattement après 8 ans)</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">Mois 2-3</div>
+                        <div class="timeline-text">Rapatriement progressif des avoirs suisses et britanniques</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">Mois 3</div>
+                        <div class="timeline-text">Ouverture PER &mdash; versements optimisés pour déduction IR dès la première année</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">Mois 4-6</div>
+                        <div class="timeline-text">Investissement LMNP &mdash; acquisition et structuration du bien locatif meublé</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ========== STRATÉGIE ========== -->
+    <section class="section-cream">
+        <div class="section-inner">
+            <div class="section-label reveal">Stratégie déployée</div>
+            <h2 class="section-title dark reveal">Plan d'action structuré</h2>
+            <div class="strat-grid">
+                <div class="strat-card reveal reveal-delay-1">
+                    <div class="strat-number">01</div>
+                    <h3>PEA + Assurance-vie</h3>
+                    <p>Ouverture immédiate pour prendre date fiscale. Le PEA est investi en ETF monde, l'AV en gestion pilotée diversifiée.</p>
+                </div>
+                <div class="strat-card reveal reveal-delay-2">
+                    <div class="strat-number">02</div>
+                    <h3>PER optimisé</h3>
+                    <p>Versements calibrés pour maximiser la déduction IR (TMI 41%). Rattrapage des plafonds non utilisés les années précédentes.</p>
+                </div>
+                <div class="strat-card reveal reveal-delay-3">
+                    <div class="strat-number">03</div>
+                    <h3>LMNP structuré</h3>
+                    <p>Investissement locatif en meublé avec amortissement comptable. Revenus défiscalisés grâce au régime BIC réel.</p>
+                </div>
+                <div class="strat-card reveal reveal-delay-4">
+                    <div class="strat-number">04</div>
+                    <h3>Rapatriement séquencé</h3>
+                    <p>Transfert progressif des avoirs étrangers pour lisser l'impact fiscal et alimenter les enveloppes au bon rythme.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== RÉSULTATS ========== -->
+    <section class="section-white">
+        <div class="section-inner">
+            <div class="section-label reveal">Résultats projetés</div>
+            <h2 class="section-title dark reveal">Impact mesurable</h2>
+            <div class="results-grid">
+                <div class="result-card reveal reveal-delay-1">
+                    <div class="result-value">6 mois</div>
+                    <div class="result-label">Structuration complète du patrimoine</div>
+                </div>
+                <div class="result-card reveal reveal-delay-2">
+                    <div class="result-value">&minus;12k&euro;/an</div>
+                    <div class="result-label">Économie fiscale annuelle</div>
+                </div>
+                <div class="result-card reveal reveal-delay-3">
+                    <div class="result-value">4,6%</div>
+                    <div class="result-label">Rendement net projeté</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== NAVIGATION + CTA ========== -->
+    <div class="cas-nav-bottom">
+        <div class="cas-nav-inner">
+            <a href="cas-concrets.html" class="cas-nav-link">&larr; Tous les cas concrets</a>
+            <a href="outil.html" class="cas-nav-link">Découvrir notre outil &rarr;</a>
+        </div>
+    </div>
+
+    <section class="cas-cta-section">
+        <h2 class="reveal">Votre situation mérite une analyse personnalisée.</h2>
+        <p class="reveal reveal-delay-1">Prenez 45 minutes pour identifier vos leviers d'optimisation avec un conseiller dédié.</p>
+        <button class="btn btn-gold reveal reveal-delay-2" onclick="window.location='contact.html'" style="font-size:16px;padding:16px 40px;border-radius:40px;position:relative;">Réserver mon entretien stratégique</button>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="landing-footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:36px;"></div>
+            <div style="font-size:0.85rem;opacity:0.6;margin-top:4px;">Cabinet de conseil en gestion de patrimoine</div>
+            <div class="footer-links">
+                <a href="mentions-legales.html">Mentions légales</a>
+                <a href="confidentialite.html">Confidentialité</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div style="font-size:0.75rem;opacity:0.45;margin-top:12px;line-height:1.7;max-width:700px;margin-left:auto;margin-right:auto;">
+                CIF &middot; ORIAS n&deg; [NUMÉRO] &middot; Membre de [ASSOCIATION] &middot; RCP assurée par [ASSUREUR]<br>
+                Les informations présentées ne constituent pas un conseil en investissement au sens de la directive MIF 2 (2014/65/UE).
+            </div>
+            <div class="footer-copy">&copy; 2026 Patria Capital. Tous droits réservés.</div>
+        </div>
+    </footer>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script>
+        const nav = document.querySelector('.landing-nav');
+        function updateNav() { if (window.scrollY > 60) nav.classList.add('scrolled'); else nav.classList.remove('scrolled'); }
+        window.addEventListener('scroll', updateNav, { passive: true }); updateNav();
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const navLinks = document.getElementById('nav-links');
+        mobileToggle.addEventListener('click', function() { navLinks.classList.toggle('open'); mobileToggle.innerHTML = navLinks.classList.contains('open') ? '&times;' : '&#9776;'; });
+        navLinks.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', function() { navLinks.classList.remove('open'); mobileToggle.innerHTML = '&#9776;'; }); });
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver(function(entries) { entries.forEach(function(entry) { if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); } }); }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        revealElements.forEach(function(el) { revealObserver.observe(el); });
+
+        // Animate bars on scroll
+        const barObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.querySelectorAll('.bar-fill').forEach(function(bar) {
+                        bar.style.width = bar.getAttribute('data-width');
+                    });
+                    barObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+        document.querySelectorAll('.sim-panel').forEach(function(panel) { barObserver.observe(panel); });
+    </script>
+
+</body>
+</html>

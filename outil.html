@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Notre outil propriétaire de diagnostic et simulation patrimoniale. Analyse structurée, simulations multi-enveloppes, projections fiscales sur 10 à 30 ans. Patria Capital.">
+    <meta property="og:title" content="Notre Outil Patrimonial | Patria Capital">
+    <meta property="og:description" content="Outil propriétaire de diagnostic et simulation patrimoniale : analyse globale, simulations comparées, stratégie documentée.">
+    <meta property="og:type" content="website">
+    <title>Notre Outil Patrimonial | Patria Capital — Gestion de Patrimoine</title>
+    <link rel="icon" type="image/png" href="icone.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icone.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ====================================================
+           OUTIL PAGE — Page-specific styles
+           ==================================================== */
+
+        body {
+            display: block;
+            background: #0c0f1a;
+        }
+
+        /* --- Nav active state --- */
+        .landing-nav-links a.nav-active {
+            color: #fff;
+            position: relative;
+        }
+        .landing-nav-links a.nav-active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-gradient);
+            border-radius: 1px;
+        }
+        .landing-nav.scrolled .landing-nav-links a.nav-active {
+            color: var(--primary);
+        }
+
+        /* --- Hero --- */
+        .outil-hero {
+            position: relative;
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 160px 48px 100px;
+            background: #0c0f1a;
+            overflow: hidden;
+        }
+
+        .outil-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(90, 126, 194, 0.10) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .outil-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 60%;
+            height: 160%;
+            background: radial-gradient(ellipse at 70% 50%, rgba(193, 146, 94, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .outil-hero .hero-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3.5px;
+            text-transform: uppercase;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .outil-hero .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(36px, 4.5vw, 56px);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.15;
+            max-width: 820px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .outil-hero .hero-subtitle {
+            font-size: clamp(16px, 1.8vw, 19px);
+            color: rgba(255, 255, 255, 0.50);
+            max-width: 640px;
+            line-height: 1.75;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- Section Shared Styles --- */
+        .outil-section-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .outil-section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 3.5vw, 42px);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .outil-section-title.dark { color: var(--primary); }
+        .outil-section-title.light { color: #fff; }
+
+        .outil-section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--accent-gradient);
+            margin: 20px auto 0;
+            border-radius: 2px;
+        }
+
+        .outil-section-subtitle {
+            font-size: 16px;
+            text-align: center;
+            max-width: 620px;
+            margin: 0 auto 64px;
+            line-height: 1.75;
+        }
+
+        .outil-section-subtitle.dark { color: var(--text-light); }
+        .outil-section-subtitle.light { color: rgba(255,255,255,0.55); }
+
+        /* --- Overview Section (cream) --- */
+        .outil-overview {
+            background: var(--bg);
+            padding: 120px 48px;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .overview-card {
+            display: block;
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 44px 32px 36px;
+            text-align: center;
+            text-decoration: none;
+            transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease);
+        }
+
+        .overview-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 48px rgba(37, 74, 101, 0.12);
+            border-color: rgba(193, 146, 94, 0.3);
+        }
+
+        .overview-card-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overview-card-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .overview-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            border: none;
+            padding: 0;
+        }
+
+        .overview-card p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.75;
+            margin-bottom: 20px;
+        }
+
+        .overview-card .card-link {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gold);
+            letter-spacing: 0.3px;
+            transition: color 0.3s ease;
+        }
+
+        .overview-card .card-link span {
+            margin-left: 6px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .overview-card:hover .card-link span {
+            margin-left: 12px;
+        }
+
+        /* --- Capabilities Section (white) --- */
+        .outil-capabilities {
+            background: #fff;
+            padding: 120px 48px;
+        }
+
+        .capabilities-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .capability-card {
+            background: var(--bg);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 36px 28px;
+            text-align: center;
+            transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+        }
+
+        .capability-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(37, 74, 101, 0.08);
+        }
+
+        .capability-icon {
+            width: 44px;
+            height: 44px;
+            margin: 0 auto 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(193, 146, 94, 0.12), rgba(37, 74, 101, 0.08));
+            border-radius: 12px;
+        }
+
+        .capability-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .capability-card h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .capability-card p {
+            font-size: 13.5px;
+            color: var(--text-light);
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* --- Visual Demo Section (dark) --- */
+        .outil-demo {
+            background: #0c0f1a;
+            padding: 120px 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .outil-demo::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -10%;
+            width: 60%;
+            height: 180%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(90, 126, 194, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .demo-mockup {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            backdrop-filter: blur(16px);
+            position: relative;
+        }
+
+        .demo-topbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .demo-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .demo-dot:first-child { background: #ff5f56; }
+        .demo-dot:nth-child(2) { background: #ffbd2e; }
+        .demo-dot:nth-child(3) { background: #27c93f; }
+
+        .demo-topbar-title {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-left: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .demo-content {
+            padding: 36px 32px;
+        }
+
+        .demo-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .demo-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 32px;
+        }
+
+        .demo-table th {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.35);
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .demo-table th:not(:first-child) {
+            text-align: center;
+        }
+
+        .demo-table td {
+            font-size: 14px;
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .demo-table td:not(:first-child) {
+            text-align: center;
+        }
+
+        .demo-table td.metric-label {
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 13px;
+        }
+
+        .demo-table td.current {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .demo-table td.optimised {
+            color: #c1925e;
+            font-weight: 600;
+        }
+
+        .demo-table td.delta {
+            font-weight: 600;
+        }
+
+        .delta-positive {
+            color: #27c93f;
+        }
+
+        .delta-negative {
+            color: #27c93f;
+        }
+
+        /* Visual bars */
+        .demo-bars {
+            display: flex;
+            gap: 28px;
+            margin-top: 8px;
+        }
+
+        .demo-bar-group {
+            flex: 1;
+        }
+
+        .demo-bar-title {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .demo-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .demo-bar-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            width: 60px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .demo-bar-track {
+            flex: 1;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .demo-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .demo-bar-fill.current-fill {
+            background: linear-gradient(90deg, rgba(37, 74, 101, 0.6), rgba(37, 74, 101, 0.3));
+        }
+
+        .demo-bar-fill.optimised-fill {
+            background: linear-gradient(90deg, #c1925e, rgba(193, 146, 94, 0.6));
+        }
+
+        .demo-bar-value {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            width: 70px;
+            flex-shrink: 0;
+        }
+
+        .demo-bar-value.gold { color: #c1925e; }
+
+        /* --- Cases Section (cream) --- */
+        .outil-cases {
+            background: var(--bg);
+            padding: 120px 48px;
+        }
+
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .case-link-card {
+            display: block;
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 0;
+            overflow: hidden;
+            text-decoration: none;
+            transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease);
+        }
+
+        .case-link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 48px rgba(37, 74, 101, 0.10);
+            border-color: rgba(193, 146, 94, 0.25);
+        }
+
+        .case-link-tag {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border-radius: 0 0 8px 0;
+            color: #fff;
+        }
+
+        .case-link-tag.dirigeant {
+            background: linear-gradient(135deg, #254a65, #3a6d8c);
+        }
+
+        .case-link-tag.liberal {
+            background: linear-gradient(135deg, #c1925e, #dbb88a);
+        }
+
+        .case-link-tag.famille {
+            background: linear-gradient(135deg, #4a6741, #6b8f60);
+        }
+
+        .case-link-body {
+            padding: 24px 28px 28px;
+        }
+
+        .case-link-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .case-link-desc {
+            font-size: 13.5px;
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .case-link-cta {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .case-link-cta span {
+            margin-left: 6px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .case-link-card:hover .case-link-cta span {
+            margin-left: 12px;
+        }
+
+        /* --- Final CTA --- */
+        .outil-cta {
+            background: #0c0f1a;
+            padding: 120px 48px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .outil-cta::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: 20%;
+            width: 60%;
+            height: 160%;
+            background: radial-gradient(ellipse, rgba(90, 126, 194, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .outil-cta h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 3.5vw, 40px);
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .outil-cta p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.50);
+            max-width: 520px;
+            margin: 0 auto 44px;
+            line-height: 1.75;
+            position: relative;
+        }
+
+        .outil-cta .btn-gold {
+            position: relative;
+            font-size: 16px;
+            padding: 16px 40px;
+            border-radius: 40px;
+        }
+
+        /* --- Scroll Animations --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+        .reveal-delay-5 { transition-delay: 0.5s; }
+        .reveal-delay-6 { transition-delay: 0.6s; }
+
+        /* --- Mobile Nav Toggle --- */
+        .mobile-nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+        }
+
+        .landing-nav.scrolled .mobile-nav-toggle {
+            color: var(--primary);
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 900px) {
+            .overview-grid,
+            .capabilities-grid,
+            .cases-grid {
+                grid-template-columns: 1fr;
+                max-width: 520px;
+            }
+
+            .outil-hero,
+            .outil-overview,
+            .outil-capabilities,
+            .outil-demo,
+            .outil-cases,
+            .outil-cta {
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+
+            .outil-hero {
+                padding-top: 120px;
+                padding-bottom: 80px;
+                min-height: auto;
+            }
+
+            .outil-overview,
+            .outil-capabilities,
+            .outil-demo,
+            .outil-cases,
+            .outil-cta {
+                padding-top: 80px;
+                padding-bottom: 80px;
+            }
+
+            .demo-bars {
+                flex-direction: column;
+                gap: 24px;
+            }
+
+            .demo-content {
+                padding: 24px 20px;
+            }
+
+            .landing-nav-links {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(12, 15, 26, 0.97);
+                backdrop-filter: blur(12px);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 32px;
+                z-index: 999;
+            }
+
+            .landing-nav-links.open {
+                display: flex;
+            }
+
+            .landing-nav-links.open a {
+                font-size: 18px;
+                color: rgba(255,255,255,0.85);
+            }
+
+            .mobile-nav-toggle {
+                display: block;
+                z-index: 1000;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .capabilities-grid {
+                grid-template-columns: 1fr 1fr;
+                max-width: 100%;
+            }
+
+            .cases-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .demo-table th,
+            .demo-table td {
+                padding: 10px 8px;
+                font-size: 12px;
+            }
+
+            .demo-bar-label {
+                width: 48px;
+                font-size: 10px;
+            }
+
+            .demo-bar-value {
+                width: 56px;
+                font-size: 10px;
+            }
+
+            .capability-card {
+                padding: 24px 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== NAV ========== -->
+    <nav class="landing-nav">
+        <div class="landing-nav-inner">
+            <a href="index.html" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img"></a>
+            <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+            <div class="landing-nav-links" id="nav-links">
+                <a href="index.html">Accueil</a>
+                <a href="index.html#expertises">Expertises</a>
+                <a href="outil.html" class="nav-active">Notre outil</a>
+                <a href="cas-concrets.html">Cas concrets</a>
+                <a href="equipe.html">Le cabinet</a>
+                <a href="contact.html">Contact</a>
+                <button class="btn btn-gold btn-sm" onclick="window.location.href='contact.html'">Échanger avec un conseiller</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== HERO ========== -->
+    <section class="outil-hero">
+        <div class="hero-badge reveal">OUTIL PATRIMONIAL PROPRIÉTAIRE</div>
+        <h1 class="hero-title reveal reveal-delay-1">Un outil de diagnostic et de simulation au service de votre patrimoine</h1>
+        <p class="hero-subtitle reveal reveal-delay-2">Chaque recommandation repose sur une analyse chiffrée. Notre outil propriétaire permet de modéliser, comparer et documenter les stratégies patrimoniales avec rigueur.</p>
+    </section>
+
+    <!-- ========== OVERVIEW — COMMENT ÇA FONCTIONNE ========== -->
+    <section class="outil-overview">
+        <div class="outil-section-label reveal">Notre méthodologie</div>
+        <h2 class="outil-section-title dark reveal">Comment fonctionne notre outil</h2>
+        <p class="outil-section-subtitle dark reveal">Une approche en trois temps pour transformer vos données patrimoniales en stratégie actionnable.</p>
+
+        <div class="overview-grid">
+            <a href="cas-dirigeant-cession.html" class="overview-card reveal reveal-delay-1">
+                <div class="overview-card-icon">
+                    <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M28 6L50 28L28 50L6 28L28 6Z" stroke="#c1925e" stroke-width="2" fill="rgba(193,146,94,0.08)"/>
+                        <path d="M28 16L40 28L28 40L16 28L28 16Z" stroke="#254a65" stroke-width="1.5" fill="rgba(37,74,101,0.06)"/>
+                        <circle cx="28" cy="28" r="4" fill="#c1925e" opacity="0.6"/>
+                    </svg>
+                </div>
+                <h3>Diagnostic structuré</h3>
+                <p>Analyse globale de votre patrimoine : immobilier, financier, fiscal, transmission. Identification des déséquilibres, des risques et des leviers d'optimisation.</p>
+                <div class="card-link">Voir le cas concret <span>&rarr;</span></div>
+            </a>
+
+            <a href="cas-medecin-liberal.html" class="overview-card reveal reveal-delay-2">
+                <div class="overview-card-icon">
+                    <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="6" y="36" width="8" height="14" rx="2" fill="rgba(37,74,101,0.25)"/>
+                        <rect x="18" y="26" width="8" height="24" rx="2" fill="rgba(37,74,101,0.35)"/>
+                        <rect x="30" y="18" width="8" height="32" rx="2" fill="rgba(193,146,94,0.5)"/>
+                        <rect x="42" y="10" width="8" height="40" rx="2" fill="#c1925e"/>
+                        <line x1="4" y1="52" x2="52" y2="52" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+                    </svg>
+                </div>
+                <h3>Simulations comparées</h3>
+                <p>Comparaison multi-enveloppes (AV, PEA, SCPI, PER, CTO) avec projections de rendement net et d'impact fiscal sur 10, 20 ou 30 ans.</p>
+                <div class="card-link">Voir le cas concret <span>&rarr;</span></div>
+            </a>
+
+            <a href="cas-famille-immobilier.html" class="overview-card reveal reveal-delay-3">
+                <div class="overview-card-icon">
+                    <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="8" y="8" width="40" height="40" rx="4" stroke="#254a65" stroke-width="1.5" fill="rgba(37,74,101,0.04)"/>
+                        <line x1="8" y1="18" x2="48" y2="18" stroke="#254a65" stroke-width="1" opacity="0.3"/>
+                        <line x1="8" y1="28" x2="48" y2="28" stroke="#254a65" stroke-width="1" opacity="0.2"/>
+                        <line x1="8" y1="38" x2="48" y2="38" stroke="#254a65" stroke-width="1" opacity="0.2"/>
+                        <rect x="14" y="12" width="20" height="3" rx="1.5" fill="#c1925e" opacity="0.7"/>
+                        <rect x="14" y="22" width="28" height="2" rx="1" fill="#254a65" opacity="0.25"/>
+                        <rect x="14" y="32" width="24" height="2" rx="1" fill="#254a65" opacity="0.2"/>
+                        <rect x="14" y="42" width="16" height="2" rx="1" fill="#254a65" opacity="0.15"/>
+                        <path d="M38 34L42 38L48 30" stroke="#c1925e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>Stratégie documentée</h3>
+                <p>Chaque recommandation est formalisée dans un plan d'action chiffré, avec calendrier de mise en oeuvre, indicateurs de suivi et reporting structuré.</p>
+                <div class="card-link">Voir le cas concret <span>&rarr;</span></div>
+            </a>
+        </div>
+    </section>
+
+    <!-- ========== CAPACITÉS DE L'OUTIL ========== -->
+    <section class="outil-capabilities">
+        <div class="outil-section-label reveal">Fonctionnalités</div>
+        <h2 class="outil-section-title dark reveal">Les capacités de notre outil</h2>
+        <p class="outil-section-subtitle dark reveal">Six modules intégrés pour couvrir l'ensemble de vos problématiques patrimoniales.</p>
+
+        <div class="capabilities-grid">
+            <div class="capability-card reveal reveal-delay-1">
+                <div class="capability-icon">
+                    <svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" stroke="#254a65" stroke-width="1.5"/><path d="M11 6v5l3.5 3.5" stroke="#c1925e" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                <h4>Diagnostic patrimonial global</h4>
+                <p>Vision complète de votre patrimoine : actifs, passifs, revenus, charges, régimes matrimoniaux et structure juridique.</p>
+            </div>
+
+            <div class="capability-card reveal reveal-delay-2">
+                <div class="capability-icon">
+                    <svg viewBox="0 0 22 22" fill="none"><rect x="2" y="12" width="4" height="8" rx="1" fill="#254a65" opacity="0.4"/><rect x="9" y="7" width="4" height="13" rx="1" fill="#254a65" opacity="0.6"/><rect x="16" y="3" width="4" height="17" rx="1" fill="#c1925e"/></svg>
+                </div>
+                <h4>Simulations multi-enveloppes</h4>
+                <p>Comparaison chiffrée AV, PEA, SCPI, PER, CTO, holding. Rendement net, liquidité, fiscalité par enveloppe.</p>
+            </div>
+
+            <div class="capability-card reveal reveal-delay-3">
+                <div class="capability-icon">
+                    <svg viewBox="0 0 22 22" fill="none"><path d="M3 17L8 10L12 13L19 5" stroke="#c1925e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="19" cy="5" r="2" fill="#c1925e" opacity="0.3"/></svg>
+                </div>
+                <h4>Projections fiscales 10-30 ans</h4>
+                <p>Modélisation de l'évolution de votre fiscalité selon différents scénarios d'allocation et de structuration.</p>
+            </div>
+
+            <div class="capability-card reveal reveal-delay-4">
+                <div class="capability-icon">
+                    <svg viewBox="0 0 22 22" fill="none"><rect x="2" y="2" width="8" height="8" rx="2" stroke="#254a65" stroke-width="1.2"/><rect x="12" y="2" width="8" height="8" rx="2" stroke="#c1925e" stroke-width="1.2"/><rect x="2" y="12" width="8" height="8" rx="2" stroke="#c1925e" stroke-width="1.2"/><rect x="12" y="12" width="8" height="8" rx="2" stroke="#254a65" stroke-width="1.2"/></svg>
+                </div>
+                <h4>Comparatifs allocation</h4>
+                <p>Mise en regard de votre allocation actuelle vs optimisée : écarts de rendement, de risque et de fiscalité visualisés.</p>
+            </div>
+
+            <div class="capability-card reveal reveal-delay-5">
+                <div class="capability-icon">
+                    <svg viewBox="0 0 22 22" fill="none"><path d="M11 2v4M11 16v4M2 11h4M16 11h4" stroke="#254a65" stroke-width="1.2" stroke-linecap="round"/><circle cx="11" cy="11" r="5" stroke="#c1925e" stroke-width="1.5"/></svg>
+                </div>
+                <h4>Analyse des régimes fiscaux</h4>
+                <p>IR, IS, flat tax, régime réel, micro-foncier, IFI... Identification du régime optimal selon votre situation.</p>
+            </div>
+
+            <div class="capability-card reveal reveal-delay-6">
+                <div class="capability-icon">
+                    <svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="3" stroke="#254a65" stroke-width="1.2"/><path d="M7 11l2.5 2.5L15 8" stroke="#c1925e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <h4>Rapport structuré</h4>
+                <p>Livrable formalisé avec recommandations chiffrées, calendrier de mise en oeuvre et indicateurs de suivi mesurables.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== VISUAL DEMO ========== -->
+    <section class="outil-demo">
+        <div class="outil-section-label reveal">Aperçu</div>
+        <h2 class="outil-section-title light reveal">Illustration : comment l'outil structure votre stratégie</h2>
+        <p class="outil-section-subtitle light reveal">Exemple de comparaison entre un scénario patrimonial actuel et un scénario optimisé.</p>
+
+        <div class="demo-mockup reveal reveal-delay-1">
+            <div class="demo-topbar">
+                <div class="demo-dot"></div>
+                <div class="demo-dot"></div>
+                <div class="demo-dot"></div>
+                <span class="demo-topbar-title">Patria Capital — Simulation patrimoniale</span>
+            </div>
+            <div class="demo-content">
+                <div class="demo-label">Comparaison de scénarios</div>
+
+                <table class="demo-table">
+                    <thead>
+                        <tr>
+                            <th>Indicateur</th>
+                            <th>Scénario actuel</th>
+                            <th>Scénario optimisé</th>
+                            <th>Écart</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="metric-label">Rendement net annuel</td>
+                            <td class="current">2,1 %</td>
+                            <td class="optimised">4,3 %</td>
+                            <td class="delta delta-positive">+2,2 pts</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Fiscalité annuelle</td>
+                            <td class="current">38 400 &euro;</td>
+                            <td class="optimised">21 200 &euro;</td>
+                            <td class="delta delta-negative">&minus;17 200 &euro;</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Capital projeté à 15 ans</td>
+                            <td class="current">1 840 000 &euro;</td>
+                            <td class="optimised">2 680 000 &euro;</td>
+                            <td class="delta delta-positive">+840 000 &euro;</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="demo-bars">
+                    <div class="demo-bar-group">
+                        <div class="demo-bar-title">Allocation actuelle</div>
+                        <div class="demo-bar-row">
+                            <span class="demo-bar-label">Immo</span>
+                            <div class="demo-bar-track"><div class="demo-bar-fill current-fill" style="width:72%"></div></div>
+                            <span class="demo-bar-value">72 %</span>
+                        </div>
+                        <div class="demo-bar-row">
+                            <span class="demo-bar-label">AV</span>
+                            <div class="demo-bar-track"><div class="demo-bar-fill current-fill" style="width:18%"></div></div>
+                            <span class="demo-bar-value">18 %</span>
+                        </div>
+                        <div class="demo-bar-row">
+                            <span class="demo-bar-label">Liquidités</span>
+                            <div class="demo-bar-track"><div class="demo-bar-fill current-fill" style="width:10%"></div></div>
+                            <span class="demo-bar-value">10 %</span>
+                        </div>
+                    </div>
+                    <div class="demo-bar-group">
+                        <div class="demo-bar-title">Allocation optimisée</div>
+                        <div class="demo-bar-row">
+                            <span class="demo-bar-label">Immo</span>
+                            <div class="demo-bar-track"><div class="demo-bar-fill optimised-fill" style="width:40%"></div></div>
+                            <span class="demo-bar-value gold">40 %</span>
+                        </div>
+                        <div class="demo-bar-row">
+                            <span class="demo-bar-label">AV</span>
+                            <div class="demo-bar-track"><div class="demo-bar-fill optimised-fill" style="width:25%"></div></div>
+                            <span class="demo-bar-value gold">25 %</span>
+                        </div>
+                        <div class="demo-bar-row">
+                            <span class="demo-bar-label">SCPI</span>
+                            <div class="demo-bar-track"><div class="demo-bar-fill optimised-fill" style="width:15%"></div></div>
+                            <span class="demo-bar-value gold">15 %</span>
+                        </div>
+                        <div class="demo-bar-row">
+                            <span class="demo-bar-label">PEA</span>
+                            <div class="demo-bar-track"><div class="demo-bar-fill optimised-fill" style="width:12%"></div></div>
+                            <span class="demo-bar-value gold">12 %</span>
+                        </div>
+                        <div class="demo-bar-row">
+                            <span class="demo-bar-label">PER</span>
+                            <div class="demo-bar-track"><div class="demo-bar-fill optimised-fill" style="width:8%"></div></div>
+                            <span class="demo-bar-value gold">8 %</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== CAS CONCRETS ========== -->
+    <section class="outil-cases">
+        <div class="outil-section-label reveal">Mise en pratique</div>
+        <h2 class="outil-section-title dark reveal">Découvrez l'outil en action sur des cas concrets</h2>
+        <p class="outil-section-subtitle dark reveal">Six situations patrimoniales réelles analysées et optimisées grâce à notre outil.</p>
+
+        <div class="cases-grid">
+            <a href="cas-dirigeant-cession.html" class="case-link-card reveal reveal-delay-1">
+                <div class="case-link-tag dirigeant">Dirigeant</div>
+                <div class="case-link-body">
+                    <div class="case-link-title">Dirigeant préparant sa cession</div>
+                    <div class="case-link-desc">Restructuration patrimoniale avant cession : holding, apport-cession 150-0 B ter, optimisation de la fiscalité de sortie.</div>
+                    <div class="case-link-cta">Voir le cas concret <span>&rarr;</span></div>
+                </div>
+            </a>
+
+            <a href="cas-entrepreneur-post-cession.html" class="case-link-card reveal reveal-delay-2">
+                <div class="case-link-tag dirigeant">Dirigeant</div>
+                <div class="case-link-body">
+                    <div class="case-link-title">Entrepreneur post-cession</div>
+                    <div class="case-link-desc">Réemploi structuré du capital post-cession : diversification multi-enveloppes, génération de revenus, préparation de la transmission.</div>
+                    <div class="case-link-cta">Voir le cas concret <span>&rarr;</span></div>
+                </div>
+            </a>
+
+            <a href="cas-medecin-liberal.html" class="case-link-card reveal reveal-delay-3">
+                <div class="case-link-tag liberal">Profession libérale</div>
+                <div class="case-link-body">
+                    <div class="case-link-title">Médecin libéral fin de carrière</div>
+                    <div class="case-link-desc">Optimisation de la rémunération, arbitrage PER vs AV, stratégie de revenus complémentaires pour la retraite.</div>
+                    <div class="case-link-cta">Voir le cas concret <span>&rarr;</span></div>
+                </div>
+            </a>
+
+            <a href="cas-cadre-expatrie.html" class="case-link-card reveal reveal-delay-1">
+                <div class="case-link-tag dirigeant">Dirigeant</div>
+                <div class="case-link-body">
+                    <div class="case-link-title">Cadre dirigeant expatrié</div>
+                    <div class="case-link-desc">Structuration patrimoniale transfrontalière : conventions fiscales, enveloppes compatibles, anticipation du retour en France.</div>
+                    <div class="case-link-cta">Voir le cas concret <span>&rarr;</span></div>
+                </div>
+            </a>
+
+            <a href="cas-couple-epargne.html" class="case-link-card reveal reveal-delay-2">
+                <div class="case-link-tag famille">Famille</div>
+                <div class="case-link-body">
+                    <div class="case-link-title">Couple avec épargne dormante</div>
+                    <div class="case-link-desc">Réallocation d'une épargne sous-exploitée : diversification, optimisation fiscale, mise en place d'une stratégie de capitalisation.</div>
+                    <div class="case-link-cta">Voir le cas concret <span>&rarr;</span></div>
+                </div>
+            </a>
+
+            <a href="cas-famille-immobilier.html" class="case-link-card reveal reveal-delay-3">
+                <div class="case-link-tag famille">Famille</div>
+                <div class="case-link-body">
+                    <div class="case-link-title">Famille patrimoine immobilier hérité</div>
+                    <div class="case-link-desc">Restructuration d'un patrimoine immobilier familial : SCI, démembrement, arbitrages fiscaux, préparation de la transmission.</div>
+                    <div class="case-link-cta">Voir le cas concret <span>&rarr;</span></div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- ========== CTA FINAL ========== -->
+    <section class="outil-cta">
+        <h2 class="reveal">Votre situation mérite une analyse personnalisée.</h2>
+        <p class="reveal reveal-delay-1">Échangeons sur vos objectifs patrimoniaux. Notre outil de diagnostic permettra de structurer une stratégie adaptée à votre situation.</p>
+        <a href="contact.html" class="btn btn-gold reveal reveal-delay-2">Échanger avec un conseiller</a>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="landing-footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:36px;"></div>
+            <div style="font-size:0.85rem;opacity:0.6;margin-top:4px;">Cabinet de conseil en gestion de patrimoine</div>
+            <div class="footer-links">
+                <a href="mentions-legales.html">Mentions légales</a>
+                <a href="confidentialite.html">Confidentialité</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div style="font-size:0.75rem;opacity:0.45;margin-top:12px;line-height:1.7;max-width:700px;margin-left:auto;margin-right:auto;">
+                CIF &middot; ORIAS n&deg; [NUMÉRO] &middot; Membre de [ASSOCIATION] &middot; RCP assurée par [ASSUREUR]<br>
+                Les informations présentées ne constituent pas un conseil en investissement au sens de la directive MIF 2 (2014/65/UE). Tout investissement comporte des risques, y compris un risque de perte en capital.
+            </div>
+            <div class="footer-copy">&copy; 2026 Patria Capital. Tous droits réservés.</div>
+        </div>
+    </footer>
+
+    <!-- ========== JS ========== -->
+    <script>
+    // Nav scroll
+    const nav = document.querySelector('.landing-nav');
+    function updateNav() {
+        if (window.scrollY > 60) nav.classList.add('scrolled');
+        else nav.classList.remove('scrolled');
+    }
+    window.addEventListener('scroll', updateNav, { passive: true });
+    updateNav();
+
+    // Mobile nav toggle
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const navLinks = document.getElementById('nav-links');
+    mobileToggle.addEventListener('click', function() {
+        navLinks.classList.toggle('open');
+        mobileToggle.innerHTML = navLinks.classList.contains('open') ? '&times;' : '&#9776;';
+    });
+    navLinks.querySelectorAll('a').forEach(function(a) {
+        a.addEventListener('click', function() { navLinks.classList.remove('open'); mobileToggle.innerHTML = '&#9776;'; });
+    });
+
+    // Scroll reveal
+    const revealElements = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); }
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealElements.forEach(function(el) { revealObserver.observe(el); });
+    </script>
+
+</body>
+</html>

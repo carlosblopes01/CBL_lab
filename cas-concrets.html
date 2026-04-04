@@ -190,6 +190,13 @@
             box-shadow: 0 16px 48px rgba(37, 74, 101, 0.10);
         }
 
+        a.intro-card-link,
+        a.case-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
         .intro-card-icon {
             font-size: 36px;
             margin-bottom: 20px;
@@ -684,8 +691,8 @@
             <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
             <div class="landing-nav-links" id="nav-links">
                 <a href="index.html">Accueil</a>
-                <a href="offre.html">Expertises</a>
-                <a href="offre.html#engagement">Notre approche</a>
+                <a href="index.html#expertises">Expertises</a>
+                <a href="outil.html">Notre outil</a>
                 <a href="cas-concrets.html" class="nav-active">Cas concrets</a>
                 <a href="equipe.html">Le cabinet</a>
                 <a href="contact.html">Contact</a>
@@ -708,21 +715,30 @@
         <p class="cas-section-subtitle dark reveal">Une approche rigoureuse en trois temps, appuyée par notre outil de diagnostic patrimonial.</p>
 
         <div class="intro-grid">
-            <div class="intro-card reveal reveal-delay-1">
-                <span class="intro-card-icon">&#9670;</span>
-                <h3>Diagnostic structuré</h3>
-                <p>Nous analysons votre patrimoine dans sa globalité : immobilier, financier, fiscal, transmission. Une vision complète pour identifier les déséquilibres et les leviers.</p>
-            </div>
-            <div class="intro-card reveal reveal-delay-2">
-                <span class="intro-card-icon">&#9673;</span>
-                <h3>Simulations comparées</h3>
-                <p>Nous comparons les enveloppes et les scénarios : AV, PEA, SCPI, PER, holding... Projection des rendements et de la fiscalité sur 10, 20 ou 30 ans.</p>
-            </div>
-            <div class="intro-card reveal reveal-delay-3">
-                <span class="intro-card-icon">&#9678;</span>
-                <h3>Stratégie documentée</h3>
-                <p>Chaque recommandation est formalisée dans un plan d'action chiffré, avec un calendrier de mise en oeuvre et un suivi structuré.</p>
-            </div>
+            <a href="cas-dirigeant-cession.html" class="intro-card-link">
+                <div class="intro-card reveal reveal-delay-1">
+                    <span class="intro-card-icon">&#9670;</span>
+                    <h3>Diagnostic structuré</h3>
+                    <p>Nous analysons votre patrimoine dans sa globalité : immobilier, financier, fiscal, transmission. Une vision complète pour identifier les déséquilibres et les leviers.</p>
+                    <span style="display:block;margin-top:14px;font-size:13px;font-weight:600;color:var(--gold);">Voir le cas concret &rarr;</span>
+                </div>
+            </a>
+            <a href="cas-medecin-liberal.html" class="intro-card-link">
+                <div class="intro-card reveal reveal-delay-2">
+                    <span class="intro-card-icon">&#9673;</span>
+                    <h3>Simulations comparées</h3>
+                    <p>Nous comparons les enveloppes et les scénarios : AV, PEA, SCPI, PER, holding... Projection des rendements et de la fiscalité sur 10, 20 ou 30 ans.</p>
+                    <span style="display:block;margin-top:14px;font-size:13px;font-weight:600;color:var(--gold);">Voir le cas concret &rarr;</span>
+                </div>
+            </a>
+            <a href="cas-famille-immobilier.html" class="intro-card-link">
+                <div class="intro-card reveal reveal-delay-3">
+                    <span class="intro-card-icon">&#9678;</span>
+                    <h3>Stratégie documentée</h3>
+                    <p>Chaque recommandation est formalisée dans un plan d'action chiffré, avec un calendrier de mise en oeuvre et un suivi structuré.</p>
+                    <span style="display:block;margin-top:14px;font-size:13px;font-weight:600;color:var(--gold);">Voir le cas concret &rarr;</span>
+                </div>
+            </a>
         </div>
     </section>
 
@@ -734,6 +750,7 @@
         <div class="cases-grid">
 
             <!-- CASE 1 -->
+            <a href="cas-dirigeant-cession.html" class="case-card-link">
             <div class="case-card reveal reveal-delay-1">
                 <div class="case-tag dirigeant">Dirigeant</div>
                 <div class="case-header">
@@ -785,8 +802,10 @@
                     <div class="case-viz">Projection comparée du patrimoine net à 10 ans : scénario sans restructuration vs scénario optimisé</div>
                 </div>
             </div>
+            </a>
 
             <!-- CASE 2 -->
+            <a href="cas-entrepreneur-post-cession.html" class="case-card-link">
             <div class="case-card reveal reveal-delay-2">
                 <div class="case-tag dirigeant">Dirigeant</div>
                 <div class="case-header">
@@ -837,6 +856,7 @@
                     </div>
                 </div>
             </div>
+            </a>
 
         </div>
 
@@ -853,6 +873,7 @@
         <div class="cases-grid">
 
             <!-- CASE 3 -->
+            <a href="cas-medecin-liberal.html" class="case-card-link">
             <div class="case-card reveal reveal-delay-1">
                 <div class="case-tag liberal">Profession libérale</div>
                 <div class="case-header">
@@ -902,8 +923,10 @@
                     </div>
                 </div>
             </div>
+            </a>
 
             <!-- CASE 4 -->
+            <a href="cas-cadre-expatrie.html" class="case-card-link">
             <div class="case-card reveal reveal-delay-2">
                 <div class="case-tag liberal">Cadre dirigeant</div>
                 <div class="case-header">
@@ -953,6 +976,7 @@
                     </div>
                 </div>
             </div>
+            </a>
 
         </div>
 
@@ -969,6 +993,7 @@
         <div class="cases-grid">
 
             <!-- CASE 5 -->
+            <a href="cas-couple-epargne.html" class="case-card-link">
             <div class="case-card reveal reveal-delay-1">
                 <div class="case-tag famille">Famille patrimoniale</div>
                 <div class="case-header">
@@ -1019,8 +1044,10 @@
                     </div>
                 </div>
             </div>
+            </a>
 
             <!-- CASE 6 -->
+            <a href="cas-famille-immobilier.html" class="case-card-link">
             <div class="case-card reveal reveal-delay-2">
                 <div class="case-tag famille">Famille patrimoniale</div>
                 <div class="case-header">
@@ -1070,6 +1097,7 @@
                     </div>
                 </div>
             </div>
+            </a>
 
         </div>
 

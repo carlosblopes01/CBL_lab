@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cas concret : couple cadres avec épargne dormante. Simulation patrimoniale, diversification et optimisation du rendement avec Patria Capital.">
+    <meta property="og:title" content="Couple cadres avec épargne dormante | Patria Capital">
+    <meta property="og:description" content="Comment transformer une épargne à 1,1% en allocation diversifiée à 5,4% : simulation complète et stratégie patrimoniale.">
+    <meta property="og:type" content="website">
+    <title>Couple cadres avec épargne dormante | Patria Capital</title>
+    <link rel="icon" type="image/png" href="icone.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icone.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        body { display: block; background: #0c0f1a; }
+
+        /* --- Nav active state --- */
+        .landing-nav-links a.nav-active { color: #fff; position: relative; }
+        .landing-nav-links a.nav-active::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+            height: 2px; background: var(--accent-gradient); border-radius: 1px;
+        }
+        .landing-nav.scrolled .landing-nav-links a.nav-active { color: var(--primary); }
+
+        /* --- Mobile Nav --- */
+        .mobile-nav-toggle {
+            display: none; background: none; border: none; color: #fff;
+            font-size: 28px; cursor: pointer; padding: 4px; line-height: 1;
+        }
+        .landing-nav.scrolled .mobile-nav-toggle { color: var(--primary); }
+
+        /* --- Reveal animations --- */
+        .reveal {
+            opacity: 0; transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.4,0,0.2,1), transform 0.8s cubic-bezier(0.4,0,0.2,1);
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* ========== HERO ========== */
+        .cas-detail-hero {
+            position: relative; min-height: 50vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+            padding: 160px 48px 80px; background: #0c0f1a; overflow: hidden;
+        }
+        .cas-detail-hero::before {
+            content: ''; position: absolute; top: -50%; right: -20%; width: 80%; height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(90,126,194,0.10) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .cas-detail-hero::after {
+            content: ''; position: absolute; bottom: -30%; left: -10%; width: 60%; height: 160%;
+            background: radial-gradient(ellipse at 70% 50%, rgba(193,146,94,0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero-tag {
+            display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; padding: 7px 20px; border-radius: 20px; color: #fff;
+            margin-bottom: 24px; position: relative; z-index: 1;
+        }
+        .hero-tag.famille { background: linear-gradient(135deg, #4a6741, #6b8f60); }
+        .hero-title {
+            font-family: 'Playfair Display', serif; font-size: clamp(32px,4vw,52px); font-weight: 700;
+            color: #fff; line-height: 1.15; max-width: 800px; margin-bottom: 20px;
+            position: relative; z-index: 1;
+        }
+        .hero-profile {
+            font-size: 15px; color: rgba(255,255,255,0.50); max-width: 650px;
+            line-height: 1.75; position: relative; z-index: 1;
+        }
+        .hero-profile strong { color: rgba(255,255,255,0.70); font-weight: 600; }
+
+        /* ========== BREADCRUMB ========== */
+        .breadcrumb {
+            background: var(--bg); padding: 18px 48px; font-size: 13px; color: var(--text-light);
+        }
+        .breadcrumb a { color: var(--gold); text-decoration: none; font-weight: 500; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { margin: 0 8px; opacity: 0.4; }
+
+        /* ========== SECTIONS ========== */
+        .section-cream { background: var(--bg); padding: 100px 48px; }
+        .section-white { background: #fff; padding: 100px 48px; }
+        .section-dark {
+            background: #0c0f1a; padding: 100px 48px; position: relative; overflow: hidden;
+        }
+        .section-dark::before {
+            content: ''; position: absolute; top: -40%; right: -10%; width: 60%; height: 180%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(90,126,194,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .section-inner { max-width: 1000px; margin: 0 auto; }
+
+        .section-label {
+            display: block; font-size: 11px; font-weight: 600; letter-spacing: 3px;
+            text-transform: uppercase; background: var(--accent-gradient);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; text-align: center; margin-bottom: 16px;
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif; font-size: clamp(26px,3vw,38px); font-weight: 700;
+            text-align: center; margin-bottom: 16px; line-height: 1.2;
+        }
+        .section-title.dark { color: var(--primary); }
+        .section-title.light { color: #fff; }
+        .section-title::after {
+            content: ''; display: block; width: 60px; height: 3px;
+            background: var(--accent-gradient); margin: 20px auto 0; border-radius: 2px;
+        }
+        .section-desc {
+            font-size: 15px; text-align: center; max-width: 650px; margin: 24px auto 0; line-height: 1.75;
+        }
+        .section-desc.dark { color: var(--text-light); }
+        .section-desc.light { color: rgba(255,255,255,0.55); }
+
+        .situation-text {
+            font-size: 16px; line-height: 1.85; color: var(--text-light); max-width: 750px;
+            margin: 48px auto 0; text-align: center;
+        }
+
+        /* ========== OBJECTIFS CARDS ========== */
+        .obj-grid {
+            display: grid; grid-template-columns: repeat(3,1fr); gap: 28px;
+            max-width: 1000px; margin: 56px auto 0;
+        }
+        .obj-card {
+            background: var(--bg); border: 1px solid var(--border-light); border-radius: var(--radius-lg);
+            padding: 36px 28px; text-align: center;
+            transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+        }
+        .obj-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(37,74,101,0.08); }
+        .obj-icon { font-size: 32px; margin-bottom: 16px; display: block; }
+        .obj-card h3 {
+            font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700;
+            color: var(--primary); margin-bottom: 10px; border: none; padding: 0;
+        }
+        .obj-card p { font-size: 13.5px; color: var(--text-light); line-height: 1.7; }
+
+        /* ========== SIMULATION SECTION ========== */
+        .sim-block { max-width: 1000px; margin: 0 auto; position: relative; z-index: 1; }
+        .sim-panel {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius-lg); padding: 40px 36px; margin-bottom: 32px;
+            backdrop-filter: blur(16px);
+        }
+        .sim-panel-title {
+            font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700;
+            color: #fff; margin-bottom: 8px;
+        }
+        .sim-panel-subtitle {
+            font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 28px; line-height: 1.6;
+        }
+        .sim-tool-badge {
+            display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; color: var(--gold); border: 1px solid rgba(193,146,94,0.3);
+            padding: 4px 12px; border-radius: 12px; margin-bottom: 20px;
+        }
+
+        /* --- Pie Chart (CSS) --- */
+        .pie-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;
+        }
+        .pie-chart-wrap { text-align: center; }
+        .pie-chart {
+            width: 200px; height: 200px; border-radius: 50%; margin: 0 auto 16px;
+            position: relative;
+        }
+        .pie-current {
+            background: conic-gradient(
+                #5a7ec2 0deg 58deg,
+                #7b9fd6 58deg 267deg,
+                #c1925e 267deg 360deg
+            );
+        }
+        .pie-optimized {
+            background: conic-gradient(
+                #5a7ec2 0deg 93deg,
+                #c1925e 93deg 209deg,
+                #4a6741 209deg 302deg,
+                #dbb88a 302deg 360deg
+            );
+        }
+        .pie-center {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+            width: 100px; height: 100px; border-radius: 50%; background: #0c0f1a;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .pie-center-value {
+            font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #fff;
+        }
+        .pie-center-label { font-size: 10px; color: rgba(255,255,255,0.45); }
+        .pie-label { font-size: 13px; color: rgba(255,255,255,0.55); font-weight: 600; }
+        .pie-legend { margin-top: 20px; text-align: left; }
+        .pie-legend-item {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+            font-size: 13px; color: rgba(255,255,255,0.7);
+        }
+        .pie-legend-dot {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        }
+        .pie-legend-value { margin-left: auto; font-weight: 600; color: #fff; }
+
+        /* --- Rendement Meter --- */
+        .meter-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 8px;
+        }
+        .meter-box {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius-sm); padding: 28px 24px; text-align: center;
+        }
+        .meter-label { font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+        .meter-track {
+            background: rgba(255,255,255,0.06); border-radius: 8px; height: 16px;
+            overflow: hidden; margin-bottom: 10px;
+        }
+        .meter-fill {
+            height: 100%; border-radius: 8px;
+            transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+        }
+        .meter-fill.low { background: rgba(255,100,100,0.6); }
+        .meter-fill.high { background: linear-gradient(90deg, #4a6741, #6bdf8e); }
+        .meter-value {
+            font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700;
+        }
+        .meter-value.low { color: rgba(255,100,100,0.85); }
+        .meter-value.high { color: #6bdf8e; }
+
+        /* --- CSS Bars --- */
+        .bar-group { margin-bottom: 20px; }
+        .bar-group:last-child { margin-bottom: 0; }
+        .bar-label {
+            font-size: 13px; color: rgba(255,255,255,0.65); margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: baseline;
+        }
+        .bar-label .bar-value { font-weight: 700; color: #fff; font-size: 14px; }
+        .bar-track {
+            background: rgba(255,255,255,0.06); border-radius: 6px; height: 28px;
+            overflow: hidden; position: relative;
+        }
+        .bar-fill {
+            height: 100%; border-radius: 6px; display: flex; align-items: center;
+            padding-left: 12px; font-size: 11px; font-weight: 600; color: #fff;
+            transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+        }
+        .bar-fill.gold { background: linear-gradient(90deg, #c1925e, #dbb88a); }
+        .bar-fill.blue { background: linear-gradient(90deg, #5a7ec2, #7b9fd6); }
+        .bar-fill.green { background: linear-gradient(90deg, #4a6741, #6b8f60); }
+        .bar-fill.navy { background: linear-gradient(90deg, #254a65, #3a7ca5); }
+        .bar-fill.red { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+
+        /* --- Tax Savings --- */
+        .tax-savings-box {
+            background: rgba(107,223,142,0.08); border: 1px solid rgba(107,223,142,0.15);
+            border-radius: var(--radius-sm); padding: 24px; text-align: center; margin-top: 20px;
+        }
+        .tax-savings-label { font-size: 12px; color: rgba(255,255,255,0.45); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+        .tax-savings-value {
+            font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: #6bdf8e;
+        }
+        .tax-savings-note { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 6px; }
+
+        /* ========== STRATEGIE ========== */
+        .strat-grid {
+            display: grid; grid-template-columns: repeat(2,1fr); gap: 24px;
+            max-width: 1000px; margin: 56px auto 0;
+        }
+        .strat-card {
+            background: #fff; border: 1px solid var(--border-light); border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+        }
+        .strat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(37,74,101,0.08); }
+        .strat-number {
+            font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 1.5px;
+            margin-bottom: 10px;
+        }
+        .strat-card h3 {
+            font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700;
+            color: var(--primary); margin-bottom: 10px; border: none; padding: 0;
+        }
+        .strat-card p { font-size: 13.5px; color: var(--text-light); line-height: 1.75; }
+
+        /* ========== RESULTATS ========== */
+        .results-grid {
+            display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;
+            max-width: 1000px; margin: 56px auto 0;
+        }
+        .result-card {
+            background: var(--bg); border: 1px solid var(--border-light);
+            border-left: 4px solid var(--gold); border-radius: var(--radius-sm);
+            padding: 32px 28px; text-align: center;
+        }
+        .result-value {
+            font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700;
+            background: var(--accent-gradient); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;
+        }
+        .result-label { font-size: 14px; color: var(--text-light); line-height: 1.6; }
+
+        /* ========== NAV + CTA ========== */
+        .cas-nav-bottom {
+            background: var(--bg); padding: 60px 48px; border-top: 1px solid var(--border-light);
+        }
+        .cas-nav-inner {
+            max-width: 1000px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center; gap: 24px;
+        }
+        .cas-nav-link {
+            font-size: 14px; color: var(--gold); text-decoration: none; font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .cas-nav-link:hover { color: var(--gold-dark); }
+        .cas-cta-section {
+            background: #0c0f1a; padding: 100px 48px; text-align: center;
+            position: relative; overflow: hidden;
+        }
+        .cas-cta-section::before {
+            content: ''; position: absolute; top: -30%; left: 20%; width: 60%; height: 160%;
+            background: radial-gradient(ellipse, rgba(90,126,194,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .cas-cta-section h2 {
+            font-family: 'Playfair Display', serif; font-size: clamp(26px,3vw,38px); font-weight: 700;
+            background: var(--accent-gradient); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; background-clip: text;
+            margin-bottom: 20px; position: relative;
+        }
+        .cas-cta-section p {
+            font-size: 16px; color: rgba(255,255,255,0.50); max-width: 520px;
+            margin: 0 auto 40px; line-height: 1.75; position: relative;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 900px) {
+            .cas-detail-hero, .section-cream, .section-white, .section-dark,
+            .cas-nav-bottom, .cas-cta-section, .breadcrumb {
+                padding-left: 24px; padding-right: 24px;
+            }
+            .cas-detail-hero { padding-top: 120px; padding-bottom: 60px; min-height: auto; }
+            .section-cream, .section-white, .section-dark { padding-top: 72px; padding-bottom: 72px; }
+            .obj-grid, .results-grid { grid-template-columns: 1fr; max-width: 480px; }
+            .strat-grid { grid-template-columns: 1fr; max-width: 520px; }
+            .pie-row { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+            .meter-row { grid-template-columns: 1fr; }
+            .cas-nav-inner { flex-direction: column; text-align: center; }
+            .sim-panel { padding: 28px 20px; }
+            .landing-nav-links {
+                display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(12,15,26,0.97); backdrop-filter: blur(12px);
+                flex-direction: column; align-items: center; justify-content: center;
+                gap: 32px; z-index: 999;
+            }
+            .landing-nav-links.open { display: flex; }
+            .landing-nav-links.open a { font-size: 18px; color: rgba(255,255,255,0.85); }
+            .mobile-nav-toggle { display: block; z-index: 1000; }
+        }
+        @media (max-width: 600px) {
+            .sim-panel { padding: 24px 16px; }
+            .pie-chart { width: 160px; height: 160px; }
+            .pie-center { width: 80px; height: 80px; }
+            .pie-center-value { font-size: 18px; }
+            .meter-value { font-size: 26px; }
+            .result-value { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== NAV ========== -->
+    <nav class="landing-nav">
+        <div class="landing-nav-inner">
+            <a href="index.html" class="landing-logo"><img src="logo.png" alt="Patria Capital" class="logo-img"></a>
+            <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+            <div class="landing-nav-links" id="nav-links">
+                <a href="index.html">Accueil</a>
+                <a href="index.html#expertises">Expertises</a>
+                <a href="outil.html">Notre outil</a>
+                <a href="cas-concrets.html" class="nav-active">Cas concrets</a>
+                <a href="equipe.html">Le cabinet</a>
+                <a href="contact.html">Contact</a>
+                <button class="btn btn-gold btn-sm" onclick="window.location.href='contact.html'">Échanger avec un conseiller</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== HERO ========== -->
+    <section class="cas-detail-hero">
+        <div class="hero-tag famille reveal">FAMILLE PATRIMONIALE</div>
+        <h1 class="hero-title reveal reveal-delay-1">Couple cadres avec épargne dormante</h1>
+        <p class="hero-profile reveal reveal-delay-2">
+            Couple, <strong>43 ans</strong>, 2 enfants, CDI cadres sup<br>
+            Patrimoine : <strong>310 000 &euro;</strong> (livrets + fonds euros) &middot; Revenus : <strong>155 000 &euro;/an</strong>
+        </p>
+    </section>
+
+    <!-- ========== BREADCRUMB ========== -->
+    <div class="breadcrumb">
+        <a href="cas-concrets.html">Cas concrets</a>
+        <span>&rsaquo;</span>
+        Couple cadres avec épargne dormante
+    </div>
+
+    <!-- ========== SITUATION ========== -->
+    <section class="section-cream">
+        <div class="section-inner">
+            <div class="section-label reveal">Diagnostic initial</div>
+            <h2 class="section-title dark reveal">Situation patrimoniale</h2>
+            <p class="situation-text reveal reveal-delay-1">
+                Ce couple de cadres supérieurs dispose d'une épargne conséquente de <strong>310 000 &euro;</strong>, mais celle-ci reste concentrée sur des livrets bancaires et des fonds euros peu performants. Le rendement moyen de <strong>1,1%</strong> est inférieur à l'inflation. Aucune diversification n'a été mise en place, et le potentiel de capitalisation à long terme est largement sous-exploité.
+            </p>
+        </div>
+    </section>
+
+    <!-- ========== OBJECTIFS ========== -->
+    <section class="section-white">
+        <div class="section-inner">
+            <div class="section-label reveal">Objectifs identifiés</div>
+            <h2 class="section-title dark reveal">Trois priorités stratégiques</h2>
+            <div class="obj-grid">
+                <div class="obj-card reveal reveal-delay-1">
+                    <span class="obj-icon">&#9670;</span>
+                    <h3>Faire travailler l'épargne</h3>
+                    <p>Sortir des livrets et fonds euros pour une allocation performante adaptée à un horizon de 15 ans.</p>
+                </div>
+                <div class="obj-card reveal reveal-delay-2">
+                    <span class="obj-icon">&#9673;</span>
+                    <h3>Diversifier</h3>
+                    <p>Répartir le patrimoine sur plusieurs classes d'actifs : actions, immobilier, SCPI, pour réduire le risque.</p>
+                </div>
+                <div class="obj-card reveal reveal-delay-3">
+                    <span class="obj-icon">&#9678;</span>
+                    <h3>Réduire la fiscalité</h3>
+                    <p>Utiliser les enveloppes défiscalisantes (PEA, AV) pour optimiser l'imposition sur les plus-values.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SIMULATION VISUELLE ========== -->
+    <section class="section-dark">
+        <div class="section-inner">
+            <div class="section-label reveal">Analyse via l'outil</div>
+            <h2 class="section-title light reveal">Simulation patrimoniale</h2>
+            <p class="section-desc light reveal">Notre outil compare l'allocation actuelle avec une stratégie diversifiée et projette les résultats à 15 ans.</p>
+        </div>
+
+        <div class="sim-block" style="margin-top: 56px;">
+
+            <!-- Panel 1: Current vs Optimized Allocation (Pie charts) -->
+            <div class="sim-panel reveal">
+                <div class="sim-tool-badge">Outil Patria &mdash; Allocation</div>
+                <div class="sim-panel-title">Répartition actuelle vs allocation optimisée</div>
+                <div class="sim-panel-subtitle">Transformation d'une épargne concentrée en portefeuille diversifié multi-classes</div>
+                <div class="pie-row">
+                    <div class="pie-chart-wrap">
+                        <div class="pie-chart pie-current">
+                            <div class="pie-center">
+                                <div class="pie-center-value">1,1%</div>
+                                <div class="pie-center-label">rendement</div>
+                            </div>
+                        </div>
+                        <div class="pie-label">Allocation actuelle</div>
+                        <div class="pie-legend">
+                            <div class="pie-legend-item">
+                                <div class="pie-legend-dot" style="background:#5a7ec2;"></div>
+                                <span>Livret A</span>
+                                <span class="pie-legend-value">45k&euro;</span>
+                            </div>
+                            <div class="pie-legend-item">
+                                <div class="pie-legend-dot" style="background:#7b9fd6;"></div>
+                                <span>Fonds euros</span>
+                                <span class="pie-legend-value">180k&euro;</span>
+                            </div>
+                            <div class="pie-legend-item">
+                                <div class="pie-legend-dot" style="background:#c1925e;"></div>
+                                <span>Compte courant</span>
+                                <span class="pie-legend-value">85k&euro;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pie-chart-wrap">
+                        <div class="pie-chart pie-optimized">
+                            <div class="pie-center">
+                                <div class="pie-center-value">5,4%</div>
+                                <div class="pie-center-label">rendement</div>
+                            </div>
+                        </div>
+                        <div class="pie-label">Allocation optimisée</div>
+                        <div class="pie-legend">
+                            <div class="pie-legend-item">
+                                <div class="pie-legend-dot" style="background:#5a7ec2;"></div>
+                                <span>PEA ETF</span>
+                                <span class="pie-legend-value">80k&euro;</span>
+                            </div>
+                            <div class="pie-legend-item">
+                                <div class="pie-legend-dot" style="background:#c1925e;"></div>
+                                <span>AV pilotée</span>
+                                <span class="pie-legend-value">100k&euro;</span>
+                            </div>
+                            <div class="pie-legend-item">
+                                <div class="pie-legend-dot" style="background:#4a6741;"></div>
+                                <span>SCPI en AV</span>
+                                <span class="pie-legend-value">80k&euro;</span>
+                            </div>
+                            <div class="pie-legend-item">
+                                <div class="pie-legend-dot" style="background:#dbb88a;"></div>
+                                <span>Immobilier locatif</span>
+                                <span class="pie-legend-value">50k&euro;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 2: Rendement comparison meter -->
+            <div class="sim-panel reveal">
+                <div class="sim-tool-badge">Outil Patria &mdash; Rendement</div>
+                <div class="sim-panel-title">Comparaison du rendement annuel</div>
+                <div class="sim-panel-subtitle">Rendement net moyen projeté sur la base de l'allocation cible</div>
+                <div class="meter-row">
+                    <div class="meter-box">
+                        <div class="meter-label">Rendement actuel</div>
+                        <div class="meter-track">
+                            <div class="meter-fill low" data-width="11%"></div>
+                        </div>
+                        <div class="meter-value low">1,1%</div>
+                    </div>
+                    <div class="meter-box">
+                        <div class="meter-label">Rendement optimisé</div>
+                        <div class="meter-track">
+                            <div class="meter-fill high" data-width="54%"></div>
+                        </div>
+                        <div class="meter-value high">5,4%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 3: 15-year capital projection -->
+            <div class="sim-panel reveal">
+                <div class="sim-tool-badge">Outil Patria &mdash; Projection 15 ans</div>
+                <div class="sim-panel-title">Projection du capital à 15 ans</div>
+                <div class="sim-panel-subtitle">Comparaison de l'évolution du capital selon le rendement actuel et l'allocation optimisée</div>
+                <div class="bar-group">
+                    <div class="bar-label"><span>Scénario actuel &mdash; 1,1%/an</span> <span class="bar-value">363 000 &euro;</span></div>
+                    <div class="bar-track"><div class="bar-fill red" data-width="38%" style="height:36px;">363k&euro;</div></div>
+                </div>
+                <div class="bar-group" style="margin-top: 24px;">
+                    <div class="bar-label"><span>Scénario optimisé &mdash; 5,4%/an</span> <span class="bar-value">690 000 &euro;</span></div>
+                    <div class="bar-track"><div class="bar-fill green" data-width="82%" style="height:36px;">690k&euro;</div></div>
+                </div>
+                <div style="text-align: center; margin-top: 24px; padding: 16px; background: rgba(107,223,142,0.06); border-radius: var(--radius-sm); border: 1px solid rgba(107,223,142,0.12);">
+                    <span style="font-size: 14px; color: rgba(255,255,255,0.55);">Gain de capitalisation :</span>
+                    <span style="font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #6bdf8e; margin-left: 12px;">+327 000 &euro;</span>
+                </div>
+            </div>
+
+            <!-- Panel 4: Optimized allocation bars -->
+            <div class="sim-panel reveal">
+                <div class="sim-tool-badge">Outil Patria &mdash; Détail allocation</div>
+                <div class="sim-panel-title">Répartition détaillée de l'allocation cible</div>
+                <div class="sim-panel-subtitle">Ventilation par enveloppe avec projection du rendement attendu</div>
+                <div class="bar-group">
+                    <div class="bar-label"><span>PEA ETF monde</span> <span class="bar-value">80k&euro; &mdash; 7,0%/an</span></div>
+                    <div class="bar-track"><div class="bar-fill blue" data-width="26%">26%</div></div>
+                </div>
+                <div class="bar-group">
+                    <div class="bar-label"><span>AV gestion pilotée</span> <span class="bar-value">100k&euro; &mdash; 4,5%/an</span></div>
+                    <div class="bar-track"><div class="bar-fill gold" data-width="32%">32%</div></div>
+                </div>
+                <div class="bar-group">
+                    <div class="bar-label"><span>SCPI en assurance-vie</span> <span class="bar-value">80k&euro; &mdash; 4,8%/an</span></div>
+                    <div class="bar-track"><div class="bar-fill green" data-width="26%">26%</div></div>
+                </div>
+                <div class="bar-group">
+                    <div class="bar-label"><span>Immobilier locatif (apport)</span> <span class="bar-value">50k&euro; &mdash; 5,5%/an</span></div>
+                    <div class="bar-track"><div class="bar-fill navy" data-width="16%">16%</div></div>
+                </div>
+            </div>
+
+            <!-- Panel 5: Tax savings -->
+            <div class="sim-panel reveal">
+                <div class="sim-tool-badge">Outil Patria &mdash; Fiscalité</div>
+                <div class="sim-panel-title">Économie fiscale via enveloppe PEA</div>
+                <div class="sim-panel-subtitle">Le PEA exonère les plus-values d'impôt sur le revenu après 5 ans (hors prélèvements sociaux)</div>
+                <div class="tax-savings-box">
+                    <div class="tax-savings-label">Économie fiscale annuelle estimée</div>
+                    <div class="tax-savings-value">&minus;4 500 &euro; / an</div>
+                    <div class="tax-savings-note">Économie sur les plus-values et dividendes via PEA + AV après antériorité fiscale</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ========== STRATÉGIE ========== -->
+    <section class="section-cream">
+        <div class="section-inner">
+            <div class="section-label reveal">Stratégie déployée</div>
+            <h2 class="section-title dark reveal">Plan d'action structuré</h2>
+            <div class="strat-grid">
+                <div class="strat-card reveal reveal-delay-1">
+                    <div class="strat-number">01</div>
+                    <h3>PEA ETF monde</h3>
+                    <p>Ouverture d'un PEA investi en ETF monde pour capter la performance des marchés actions avec une fiscalité allégée après 5 ans.</p>
+                </div>
+                <div class="strat-card reveal reveal-delay-2">
+                    <div class="strat-number">02</div>
+                    <h3>AV en gestion pilotée</h3>
+                    <p>Assurance-vie multi-supports en gestion pilotée, adaptée au profil équilibré du couple avec un horizon de 15 ans.</p>
+                </div>
+                <div class="strat-card reveal reveal-delay-3">
+                    <div class="strat-number">03</div>
+                    <h3>SCPI en assurance-vie</h3>
+                    <p>Investissement en SCPI logé dans l'AV pour bénéficier du rendement immobilier sans la fiscalité foncière directe.</p>
+                </div>
+                <div class="strat-card reveal reveal-delay-4">
+                    <div class="strat-number">04</div>
+                    <h3>Immobilier structuré</h3>
+                    <p>Apport de 50k&euro; pour un investissement locatif avec effet de levier bancaire, structuré en LMNP pour optimiser la fiscalité.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== RÉSULTATS ========== -->
+    <section class="section-white">
+        <div class="section-inner">
+            <div class="section-label reveal">Résultats projetés</div>
+            <h2 class="section-title dark reveal">Impact mesurable</h2>
+            <div class="results-grid">
+                <div class="result-card reveal reveal-delay-1">
+                    <div class="result-value">5,4%</div>
+                    <div class="result-label">Rendement net vs 1,1% initial</div>
+                </div>
+                <div class="result-card reveal reveal-delay-2">
+                    <div class="result-value">&minus;4,5k&euro;/an</div>
+                    <div class="result-label">Économie fiscale annuelle</div>
+                </div>
+                <div class="result-card reveal reveal-delay-3">
+                    <div class="result-value">+327k&euro;</div>
+                    <div class="result-label">Capital supplémentaire à 15 ans</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== NAVIGATION + CTA ========== -->
+    <div class="cas-nav-bottom">
+        <div class="cas-nav-inner">
+            <a href="cas-concrets.html" class="cas-nav-link">&larr; Tous les cas concrets</a>
+            <a href="outil.html" class="cas-nav-link">Découvrir notre outil &rarr;</a>
+        </div>
+    </div>
+
+    <section class="cas-cta-section">
+        <h2 class="reveal">Votre épargne mérite mieux qu'un livret.</h2>
+        <p class="reveal reveal-delay-1">Prenez 45 minutes pour identifier vos leviers d'optimisation avec un conseiller dédié.</p>
+        <button class="btn btn-gold reveal reveal-delay-2" onclick="window.location='contact.html'" style="font-size:16px;padding:16px 40px;border-radius:40px;position:relative;">Réserver mon entretien stratégique</button>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="landing-footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><img src="logo.png" alt="Patria Capital" class="logo-img" style="height:36px;"></div>
+            <div style="font-size:0.85rem;opacity:0.6;margin-top:4px;">Cabinet de conseil en gestion de patrimoine</div>
+            <div class="footer-links">
+                <a href="mentions-legales.html">Mentions légales</a>
+                <a href="confidentialite.html">Confidentialité</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div style="font-size:0.75rem;opacity:0.45;margin-top:12px;line-height:1.7;max-width:700px;margin-left:auto;margin-right:auto;">
+                CIF &middot; ORIAS n&deg; [NUMÉRO] &middot; Membre de [ASSOCIATION] &middot; RCP assurée par [ASSUREUR]<br>
+                Les informations présentées ne constituent pas un conseil en investissement au sens de la directive MIF 2 (2014/65/UE).
+            </div>
+            <div class="footer-copy">&copy; 2026 Patria Capital. Tous droits réservés.</div>
+        </div>
+    </footer>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script>
+        const nav = document.querySelector('.landing-nav');
+        function updateNav() { if (window.scrollY > 60) nav.classList.add('scrolled'); else nav.classList.remove('scrolled'); }
+        window.addEventListener('scroll', updateNav, { passive: true }); updateNav();
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const navLinks = document.getElementById('nav-links');
+        mobileToggle.addEventListener('click', function() { navLinks.classList.toggle('open'); mobileToggle.innerHTML = navLinks.classList.contains('open') ? '&times;' : '&#9776;'; });
+        navLinks.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', function() { navLinks.classList.remove('open'); mobileToggle.innerHTML = '&#9776;'; }); });
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver(function(entries) { entries.forEach(function(entry) { if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); } }); }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        revealElements.forEach(function(el) { revealObserver.observe(el); });
+
+        // Animate bars and meters on scroll
+        const barObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.querySelectorAll('.bar-fill, .meter-fill').forEach(function(bar) {
+                        bar.style.width = bar.getAttribute('data-width');
+                    });
+                    barObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+        document.querySelectorAll('.sim-panel').forEach(function(panel) { barObserver.observe(panel); });
+    </script>
+
+</body>
+</html>
