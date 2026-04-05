@@ -2892,36 +2892,44 @@ function exportBilanPDF() {
 </body>
 </html>`;
 
-    // Create hidden iframe and trigger print
-    const iframe = document.createElement('iframe');
-    iframe.style.position = 'fixed';
-    iframe.style.right = '0';
-    iframe.style.bottom = '0';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
-    iframe.style.border = 'none';
-    document.body.appendChild(iframe);
+    // Generate PDF via html2pdf.js
+    const container = document.createElement('div');
+    container.innerHTML = html;
+    // Extract just the body content for html2pdf
+    const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+    const bodyContent = bodyMatch ? bodyMatch[1] : html;
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = bodyContent;
+    wrapper.style.cssText = 'width:210mm;padding:20px 24px;font-family:Georgia,serif;color:#1a1a2e;background:#fff;';
 
-    const iframeDoc = iframe.contentWindow.document;
-    iframeDoc.open();
-    iframeDoc.write(html);
-    iframeDoc.close();
+    // Apply inline styles from the <style> tag
+    const styleMatch = html.match(/<style>([\s\S]*?)<\/style>/i);
+    if (styleMatch) {
+        const styleEl = document.createElement('style');
+        styleEl.textContent = styleMatch[1];
+        wrapper.prepend(styleEl);
+    }
 
-    // Wait for content (especially logo image) to load before printing
-    iframe.contentWindow.onafterprint = () => {
-        document.body.removeChild(iframe);
+    document.body.appendChild(wrapper);
+
+    const fileName = `Bilan_Patrimonial_${(d.prenom || 'Client').replace(/\s/g,'_')}_${(d.nom || '').replace(/\s/g,'_')}_${new Date().toISOString().slice(0,10)}.pdf`;
+
+    const opt = {
+        margin:       [10, 10, 10, 10],
+        filename:     fileName,
+        image:        { type: 'jpeg', quality: 0.95 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
-    setTimeout(() => {
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
-        // Fallback cleanup after 60s if onafterprint doesn't fire
-        setTimeout(() => {
-            if (iframe.parentNode) {
-                document.body.removeChild(iframe);
-            }
-        }, 60000);
-    }, 500);
+    html2pdf().set(opt).from(wrapper).save().then(() => {
+        document.body.removeChild(wrapper);
+    }).catch(() => {
+        document.body.removeChild(wrapper);
+        // Fallback to print if html2pdf fails
+        alert('Erreur lors de la generation du PDF. Veuillez reessayer.');
+    });
 }
 
 function prendreRDV() {
