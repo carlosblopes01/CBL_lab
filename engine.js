@@ -2893,43 +2893,64 @@ function exportBilanPDF() {
 </html>`;
 
     // Generate PDF via html2pdf.js
-    const container = document.createElement('div');
-    container.innerHTML = html;
-    // Extract just the body content for html2pdf
-    const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-    const bodyContent = bodyMatch ? bodyMatch[1] : html;
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = bodyContent;
-    wrapper.style.cssText = 'width:210mm;padding:20px 24px;font-family:Georgia,serif;color:#1a1a2e;background:#fff;';
+    const fileName = `Bilan_Patrimonial_${(d.prenom || 'Client').replace(/\s/g,'_')}_${(d.nom || '').replace(/\s/g,'_')}_${new Date().toISOString().slice(0,10)}.pdf`;
 
-    // Apply inline styles from the <style> tag
+    // Extract body and style content from the full HTML
+    const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
     const styleMatch = html.match(/<style>([\s\S]*?)<\/style>/i);
+    const bodyHTML = bodyMatch ? bodyMatch[1] : html;
+
+    // Show loading overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'pdf-overlay';
+    overlay.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(12,15,26,0.95);z-index:999998;display:flex;align-items:center;justify-content:center;';
+    overlay.innerHTML = '<div style="text-align:center;color:#fff;"><div style="font-size:32px;margin-bottom:16px;">&#9881;</div><div style="font-size:18px;font-weight:600;">Generation du PDF en cours...</div><div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:8px;">Veuillez patienter quelques secondes</div></div>';
+    document.body.appendChild(overlay);
+
+    // Create visible container (behind overlay) for html2canvas to capture
+    const wrapper = document.createElement('div');
+    wrapper.id = 'pdf-export-wrapper';
+    wrapper.style.cssText = 'position:fixed;left:0;top:0;width:780px;background:#fff;color:#1a1a2e;font-family:Georgia,serif;padding:20px 24px;z-index:999997;overflow:visible;';
+
+    // Inject scoped styles
     if (styleMatch) {
-        const styleEl = document.createElement('style');
-        styleEl.textContent = styleMatch[1];
-        wrapper.prepend(styleEl);
+        const scopedStyle = document.createElement('style');
+        scopedStyle.textContent = styleMatch[1];
+        wrapper.appendChild(scopedStyle);
     }
+
+    // Inject body content
+    const contentDiv = document.createElement('div');
+    contentDiv.innerHTML = bodyHTML;
+    wrapper.appendChild(contentDiv);
 
     document.body.appendChild(wrapper);
 
-    const fileName = `Bilan_Patrimonial_${(d.prenom || 'Client').replace(/\s/g,'_')}_${(d.nom || '').replace(/\s/g,'_')}_${new Date().toISOString().slice(0,10)}.pdf`;
+    // Wait for rendering (images, layout)
+    setTimeout(() => {
+        const opt = {
+            margin:       [8, 8, 8, 8],
+            filename:     fileName,
+            image:        { type: 'jpeg', quality: 0.95 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false, width: 780 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        };
 
-    const opt = {
-        margin:       [10, 10, 10, 10],
-        filename:     fileName,
-        image:        { type: 'jpeg', quality: 0.95 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-    };
+        const cleanup = () => {
+            if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+            const ov = document.getElementById('pdf-overlay');
+            if (ov) ov.parentNode.removeChild(ov);
+        };
 
-    html2pdf().set(opt).from(wrapper).save().then(() => {
-        document.body.removeChild(wrapper);
-    }).catch(() => {
-        document.body.removeChild(wrapper);
-        // Fallback to print if html2pdf fails
-        alert('Erreur lors de la generation du PDF. Veuillez reessayer.');
-    });
+        html2pdf().set(opt).from(wrapper).save().then(() => {
+            setTimeout(cleanup, 500);
+        }).catch((err) => {
+            console.error('PDF generation error:', err);
+            cleanup();
+            alert('Erreur lors de la generation du PDF.');
+        });
+    }, 600);
 }
 
 function prendreRDV() {
