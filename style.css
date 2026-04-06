@@ -2190,16 +2190,30 @@ body {
 
 /* Step navigation */
 .step-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 16px;
+    padding: 16px 24px;
+    background: rgba(12, 15, 26, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(193, 146, 94, 0.15);
+    z-index: 100;
 }
 .step-counter {
     font-size: 13px;
     color: rgba(255,255,255,0.40);
     font-weight: 500;
 }
+/* Add bottom padding to profil section so content isn't hidden behind fixed nav */
+#profil { padding-bottom: 80px; }
+/* Hide step-nav when profil section is not active */
+.section:not(.active) .step-nav { display: none; }
 
 /* Validation */
 .validation-alert {
@@ -4028,11 +4042,12 @@ body {
     }
 
     .step-nav {
-        flex-direction: column;
+        flex-direction: row;
+        padding: 12px 16px;
     }
 
     .step-nav .btn {
-        width: 100%;
+        flex: 1;
     }
 
     .cta-floating {
