@@ -34,6 +34,15 @@ function recalcAll() {
     const totalRevenus = totalRevenusClient + totalRevenusConjoint;
     setHTML('total-revenus', fmt(totalRevenus));
 
+    // Revenue types
+    const revenusStables = d.revenusStables || d.salairesClient || 0;
+    const revenusVariables = d.revenusVariables || 0;
+    const revenusExceptionnels = d.revenusExceptionnels || 0;
+
+    // Step 4 revenue KPIs
+    setHTML('kpi-revenuAnnuel', fmt(totalRevenus));
+    setHTML('kpi-revenuMensuel', fmt(Math.round(totalRevenus / 12)));
+
     // Charges
     const totalCharges = (d.loyer || 0) + (d.creditRP || 0) + (d.creditLocatif || 0) + (d.creditConso || 0) + (d.pensionAlim || 0) + (d.autresCharges || 0);
     setHTML('total-charges', fmt(totalCharges));
@@ -41,13 +50,41 @@ function recalcAll() {
     const capaciteEpargne = (totalRevenus / 12) - totalCharges;
     setHTML('capacite-epargne', fmt(capaciteEpargne));
 
+    // Step 5 KPIs — Taux d'endettement & budget
+    const totalMensualites = (d.creditRP || 0) + (d.creditLocatif || 0) + (d.creditConso || 0) + (d.pensionAlim || 0);
+    const revenusMensuels = totalRevenus / 12;
+    const tauxEndettementBudget = revenusMensuels > 0 ? (totalMensualites / revenusMensuels * 100) : 0;
+    const resteAVivre = revenusMensuels - totalCharges;
+    const capaciteEpargneBudget = resteAVivre > 0 ? resteAVivre : 0;
+    const tauxEffort = revenusMensuels > 0 ? (totalCharges / revenusMensuels * 100) : 0;
+
+    setHTML('kpi-endettement', tauxEndettementBudget.toFixed(1) + '%');
+    setHTML('kpi-resteAVivre', fmt(resteAVivre) + '/mois');
+    setHTML('kpi-capaciteEpargne', fmt(capaciteEpargneBudget) + '/mois');
+    setHTML('kpi-tauxEffort', tauxEffort.toFixed(1) + '%');
+
     // Immobilier (including SCPI)
     const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoSCPI || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
     setHTML('total-immo', fmt(totalImmo));
 
+    // Step 6 KPIs — Immobilier summary
+    const totalImmoCredit = (d.immoRP_creditRestant || 0) + (d.immoRS_creditRestant || 0) + (d.immoLoc1_creditRestant || 0) + (d.immoLoc2_creditRestant || 0);
+    const netImmo = totalImmo - totalImmoCredit;
+    const loyerBrut = (d.immoLoc1_loyer || 0) * 12 + (d.immoLoc2_loyer || 0) * 12 + (d.immoSCPI_revenus || 0) * 4;
+    const totalLocatif = (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoSCPI || 0);
+    const rendementBrut = totalLocatif > 0 ? (loyerBrut / totalLocatif * 100) : 0;
+
+    setHTML('kpi-immoBrut', fmt(totalImmo));
+    setHTML('kpi-immoDettes', fmt(totalImmoCredit));
+    setHTML('kpi-immoNet', fmt(netImmo));
+    setHTML('kpi-immoRendement', rendementBrut.toFixed(1) + '%');
+
     // Financier
-    const totalFin = (d.livrets || 0) + (d.pel || 0) + (d.assuranceVie || 0) + (d.pea || 0) + (d.cto || 0) + (d.per || 0) + (d.epargneSalariale || 0) + (d.autresPlacement || 0);
+    const totalFin = (d.livrets || 0) + (d.pel || 0) + (d.assuranceVie || 0) + (d.pea || 0) + (d.cto || 0) + (d.per || 0) + (d.epargneSalariale || 0) + (d.autresPlacement || 0) + (d.privateEquity || 0) + (d.produitsStructures || 0) + (d.comptesTerme || 0) + (d.crypto || 0);
     setHTML('total-financier', fmt(totalFin));
+
+    // Step 7 KPI — Financial summary
+    setHTML('kpi-totalFin', fmt(totalFin));
 
     // Total dettes (capital restant du sur tous les biens + ancien champ capitalRestantRP)
     const dettes = (d.capitalRestantRP || 0) + (d.immoRP_creditRestant || 0) + (d.immoRS_creditRestant || 0) + (d.immoLoc1_creditRestant || 0) + (d.immoLoc2_creditRestant || 0);
@@ -82,6 +119,9 @@ function recalcAll() {
     setHTML('dash-horizon', d.horizon || '—');
     setHTML('dash-tmi', d.tmi ? pct(parseFloat(d.tmi)) : '—');
     setHTML('dash-apport', d.apportDispo ? fmt(d.apportDispo) : '—');
+
+    // Synthesis dashboard
+    renderSynthesisDashboard(d, patriBrut, patriNet, tauxEndettement, totalImmo, totalFin, classe);
 
     // IFI calc
     calculateIFI(d, totalImmo, dettes);
@@ -259,7 +299,7 @@ function saveAndCalculate() {
 function submitProfilAndLaunch() {
     recalcAll();
 
-    // Validate current step (should be step 5)
+    // Validate current step (should be last step)
     if (!validateCurrentStep()) return;
 
     // Mark current step validated
@@ -2970,7 +3010,7 @@ function prendreRDV() {
 }
 
 // ===== ONBOARDING WIZARD (Big Expert Style — 5 steps with validation) =====
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 11;
 
 // Required fields per step — progression blocked if missing
 const STEP_REQUIRED = {
@@ -2982,7 +3022,13 @@ const STEP_REQUIRED = {
     }},
     3: { fields: [], label: 'Patrimoine' },
     4: { fields: [], label: 'Fiscalite' },
-    5: { fields: ['objectifPrincipal', 'horizon', 'profilRisque'], label: 'Objectifs' }
+    5: { fields: [], label: 'Charges & Budget' },
+    6: { fields: [], label: 'Immobilier' },
+    7: { fields: [], label: 'Epargne financiere' },
+    8: { fields: [], label: 'Fiscalite' },
+    9: { fields: [], label: 'Prevoyance & Protection' },
+    10: { fields: ['objectifPrincipal', 'horizon'], label: 'Objectifs' },
+    11: { fields: ['profilRisque'], label: 'Profil de risque' }
 };
 
 // All fields per step (for completion tracking)
@@ -2990,12 +3036,18 @@ const STEP_ALL_FIELDS = {
     1: ['nom','prenom','dateNaissance','situationMatri','regimeMatri','nbEnfants','enfantsCharge','statutPro','profession','secteur','lieuNaissance','nationalite','adresse','codePostal','ville','telephone','nomConjoint','prenomConjoint','dateNaissanceConjoint','statutProConjoint','professionConjoint','employeur'],
     2: ['salairesClient','salairesConjoint','revenusBIC','dividendes','revenusFonciers','pensions','autresRevenus','loyer','creditRP','capitalRestantRP','echeanceRP','creditLocatif','creditConso','pensionAlim','autresCharges'],
     3: ['immoRP','immoRP_dateAcq','immoRP_prixAcq','immoRP_creditRestant','immoRS','immoRS_creditRestant','immoLoc1','immoLoc1_loyer','immoLoc1_creditRestant','immoLoc2','immoSCPI','livrets','pel','assuranceVie','pea','cto','per','epargneSalariale','autresPlacement'],
-    4: ['partsFiscales','tmi','revenuFiscalRef','regimeFoncier','prevoyance','assuranceEmprunteur','testament','donationRealisee'],
-    5: ['objectifPrincipal','horizon','horizonAnnees','apportDispo','epargneMensuelle','profilRisque','besoinRevenus','preoccSucc']
+    4: ['revenusStables','salairesClient','salairesConjoint','revenusBIC','dividendes','revenusFonciers','pensions','autresRevenus','revenusVariables','revenusExceptionnels'],
+    5: ['loyer','creditRP','capitalRestantRP','echeanceRP','creditLocatif','creditConso','pensionAlim','autresCharges'],
+    6: ['immoRP','immoRP_dateAcq','immoRP_prixAcq','immoRP_creditRestant','immoRS','immoRS_creditRestant','immoLoc1','immoLoc1_loyer','immoLoc1_creditRestant','immoLoc2','immoLoc2_loyer','immoLoc2_creditRestant','immoSCPI','immoSCPI_revenus','immoPro','immoAutres'],
+    7: ['livrets','pel','assuranceVie','pea','cto','per','epargneSalariale','autresPlacement','privateEquity','produitsStructures','comptesTerme','crypto'],
+    8: ['partsFiscales','tmi','revenuFiscalRef','regimeFoncier'],
+    9: ['prevoyance','assuranceEmprunteur','testament','donationRealisee'],
+    10: ['objectifPrincipal','horizon','horizonAnnees','apportDispo','epargneMensuelle','besoinRevenus','preoccSucc'],
+    11: ['profilRisque']
 };
 
 let currentStep = 1;
-let stepValidated = [false, false, false, false, false]; // tracks which steps have been validated
+let stepValidated = [false, false, false, false, false, false, false, false, false, false, false]; // tracks which steps have been validated
 
 function initOnboarding() {
     showStep(1);
@@ -3041,7 +3093,7 @@ function showStep(step) {
         }
     }
 
-    // Show/hide submit block at step 5
+    // Show/hide submit block at last step
     const submitBlock = document.getElementById('profil-submit-block');
     if (submitBlock) {
         if (step === TOTAL_STEPS) submitBlock.classList.remove('hidden');
@@ -3196,6 +3248,7 @@ function toggleConjointFields() {
     const d = collectFormData();
     const sm = d.situationMatri;
     const hasConjoint = (sm === 'Marie(e)' || sm === 'Pacse(e)' || sm === 'Concubinage');
+    const needsRegime = (sm === 'Marie(e)' || sm === 'Pacse(e)');
 
     document.querySelectorAll('.conjoint-field').forEach(el => {
         if (hasConjoint) el.classList.remove('hidden');
@@ -3207,9 +3260,14 @@ function toggleConjointFields() {
         else conjointCard.classList.add('hidden');
     }
     // Show regime matrimonial only for married/PACS
-    const regimeFields = document.querySelectorAll('.conjoint-field');
-    regimeFields.forEach(el => {
-        if (hasConjoint) el.classList.remove('hidden');
+    const regimeField = document.getElementById('regime-matri-field');
+    if (regimeField) {
+        if (needsRegime) regimeField.classList.remove('hidden');
+        else regimeField.classList.add('hidden');
+    }
+    // Also handle .regime-field class elements
+    document.querySelectorAll('.regime-field').forEach(el => {
+        if (needsRegime) el.classList.remove('hidden');
         else el.classList.add('hidden');
     });
 }
@@ -3249,7 +3307,7 @@ function updateStepResults() {
 
     // Step 3 result
     const totalImmo = (d.immoRP || 0) + (d.immoRS || 0) + (d.immoLoc1 || 0) + (d.immoLoc2 || 0) + (d.immoSCPI || 0) + (d.immoPro || 0) + (d.immoAutres || 0);
-    const totalFin = (d.livrets || 0) + (d.pel || 0) + (d.assuranceVie || 0) + (d.pea || 0) + (d.cto || 0) + (d.per || 0) + (d.epargneSalariale || 0) + (d.autresPlacement || 0);
+    const totalFin = (d.livrets || 0) + (d.pel || 0) + (d.assuranceVie || 0) + (d.pea || 0) + (d.cto || 0) + (d.per || 0) + (d.epargneSalariale || 0) + (d.autresPlacement || 0) + (d.privateEquity || 0) + (d.produitsStructures || 0) + (d.comptesTerme || 0) + (d.crypto || 0);
     const patriNet = totalImmo + totalFin - (d.capitalRestantRP || 0) - (d.immoRP_creditRestant || 0) - (d.immoRS_creditRestant || 0) - (d.immoLoc1_creditRestant || 0) - (d.immoLoc2_creditRestant || 0);
     const result3 = document.getElementById('step-result-3');
     if (result3 && (totalImmo + totalFin) > 0 && currentStep > 3) {
@@ -3363,6 +3421,18 @@ function toggleDirigeantSection() {
         } else {
             navItem.classList.add('hidden');
         }
+    }
+    // Show/hide cession entreprise section when dirigeant is checked
+    const cessionSection = document.getElementById('cession-entreprise-section');
+    if (cessionSection) {
+        if (cb && cb.checked) cessionSection.classList.remove('hidden');
+        else cessionSection.classList.add('hidden');
+    }
+    // Show/hide associe/actionnaire section when dirigeant is checked
+    const associeSection = document.getElementById('associe-actionnaire-section');
+    if (associeSection) {
+        if (cb && cb.checked) associeSection.classList.remove('hidden');
+        else associeSection.classList.add('hidden');
     }
 }
 
@@ -3970,6 +4040,214 @@ function loadComptesFromData() {
     list.innerHTML = '';
     if (comptes.length > 0) {
         comptes.forEach(c => addCompteBancaire(c));
+    }
+}
+
+// ===== SYNTHESIS DASHBOARD RENDERING =====
+function renderSynthesisDashboard(d, patriBrut, patriNet, tauxEndettement, totalImmo, totalFin, classe) {
+    var result = window._patriScore;
+    if (!result) {
+        // Scoring not yet computed, try to compute it
+        if (typeof refreshScoring === 'function') {
+            result = refreshScoring();
+        }
+        if (!result) return;
+    }
+
+    var scoreDetails = result.scoreDetails || {};
+    var narrative = result.narrative || {};
+    var alerts = result.alerts || [];
+    var globalScore = result.global || 0;
+
+    // --- Client profile summary ---
+    var profilEl = document.getElementById('synth-profil-text');
+    if (profilEl) {
+        var profileParts = [];
+        var fullName = ((d.prenom || '') + ' ' + (d.nom || '')).trim();
+        if (fullName) profileParts.push(fullName);
+        if (d.dateNaissance) {
+            var birthYear = parseInt(String(d.dateNaissance).substring(0, 4));
+            if (birthYear > 1900) profileParts.push((new Date().getFullYear() - birthYear) + ' ans');
+        }
+        if (d.situationMatrimoniale) profileParts.push(d.situationMatrimoniale);
+        if (d.profession) profileParts.push(d.profession);
+        if (classe && classe !== 'En construction') profileParts.push(classe);
+        profilEl.textContent = profileParts.length > 0 ? profileParts.join('  \u2022  ') : 'Compl\u00e9tez votre profil pour afficher votre synth\u00e8se';
+    }
+
+    // --- KPI mega-row ---
+    setHTML('synth-pat-brut', fmt(patriBrut));
+    setHTML('synth-pat-net', fmt(patriNet));
+    setHTML('synth-endettement', pct(tauxEndettement));
+
+    var scoreGlobalEl = document.getElementById('synth-score-global');
+    if (scoreGlobalEl) {
+        scoreGlobalEl.textContent = globalScore + '/100';
+        var level = typeof getScoreLevel === 'function' ? getScoreLevel(globalScore) : { color: '#c1925e', label: '--' };
+        scoreGlobalEl.style.color = level.color;
+        setHTML('synth-score-level', level.label);
+        var scoreLevelEl = document.getElementById('synth-score-level');
+        if (scoreLevelEl) scoreLevelEl.style.color = level.color;
+    }
+
+    // --- 6 Score cards ---
+    var scoreKeys = ['diversification', 'liquidite', 'adequationRisque', 'solidite', 'transmission', 'optimisation'];
+    scoreKeys.forEach(function(key) {
+        var detail = scoreDetails[key];
+        if (!detail) return;
+
+        var valEl = document.getElementById('score-val-' + key);
+        var fillEl = document.getElementById('score-fill-' + key);
+        var levelEl = document.getElementById('score-level-' + key);
+        var explainEl = document.getElementById('score-explain-' + key);
+
+        if (valEl) {
+            valEl.textContent = detail.value;
+            valEl.style.color = detail.color || '#fff';
+        }
+        if (fillEl) {
+            fillEl.style.width = detail.value + '%';
+            fillEl.style.background = detail.color || '#c1925e';
+        }
+        if (levelEl) {
+            levelEl.textContent = detail.level || '';
+            levelEl.style.color = detail.color || '#fff';
+        }
+        if (explainEl) {
+            explainEl.textContent = detail.explanation || '';
+        }
+    });
+
+    // --- Allocation breakdown ---
+    var allocBarsEl = document.getElementById('synth-alloc-bars');
+    if (allocBarsEl) {
+        var total = totalImmo + totalFin;
+        var liquidites = (d.livrets || 0) + (d.pel || 0);
+        var financierHorsLiq = totalFin - liquidites;
+        var allocData = [
+            { label: 'Immobilier', value: totalImmo, color: '#254a65' },
+            { label: 'Financier', value: financierHorsLiq, color: '#c1925e' },
+            { label: 'Liquidit\u00e9s', value: liquidites, color: '#059669' }
+        ];
+        var allocHtml = '';
+        allocData.forEach(function(item) {
+            var pctVal = total > 0 ? (item.value / total * 100) : 0;
+            allocHtml += '<div class="synth-alloc-row">' +
+                '<div class="synth-alloc-row-header">' +
+                '<span class="synth-alloc-row-label">' + item.label + '</span>' +
+                '<span class="synth-alloc-row-pct">' + pctVal.toFixed(1) + '% (' + fmt(item.value) + ')</span>' +
+                '</div>' +
+                '<div class="synth-alloc-bar">' +
+                '<div class="synth-alloc-bar-fill" style="width:' + pctVal + '%;background:' + item.color + ';"></div>' +
+                '</div>' +
+                '</div>';
+        });
+        allocBarsEl.innerHTML = allocHtml;
+
+        // Doughnut chart
+        var chartCanvas = document.getElementById('synth-chart-allocation');
+        if (chartCanvas && typeof Chart !== 'undefined') {
+            var existingChart = Chart.getChart(chartCanvas);
+            if (existingChart) existingChart.destroy();
+            new Chart(chartCanvas, {
+                type: 'doughnut',
+                data: {
+                    labels: allocData.map(function(a) { return a.label; }),
+                    datasets: [{
+                        data: allocData.map(function(a) { return a.value; }),
+                        backgroundColor: allocData.map(function(a) { return a.color; }),
+                        borderWidth: 0,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: { color: 'rgba(255,255,255,0.6)', font: { size: 11 }, padding: 12 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    var val = ctx.parsed || 0;
+                                    var t = ctx.dataset.data.reduce(function(s, v) { return s + v; }, 0);
+                                    return ctx.label + ': ' + (t > 0 ? (val / t * 100).toFixed(1) : 0) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // --- Alerts ---
+    var alertsEl = document.getElementById('synth-alertes-list');
+    if (alertsEl) {
+        var sortedAlerts = alerts.slice().sort(function(a, b) {
+            var order = { critical: 0, warning: 1, info: 2, success: 3 };
+            return (order[a.type] || 9) - (order[b.type] || 9);
+        });
+        var topAlerts = sortedAlerts.slice(0, 5);
+        var alertsHtml = '';
+        if (topAlerts.length === 0) {
+            alertsHtml = '<p style="color:rgba(255,255,255,0.4);text-align:center;padding:16px;">Aucune alerte pour le moment.</p>';
+        } else {
+            topAlerts.forEach(function(alert) {
+                alertsHtml += '<div class="synth-alert-item">' +
+                    '<div class="synth-alert-dot ' + (alert.type || 'info') + '"></div>' +
+                    '<div class="synth-alert-content">' +
+                    '<div class="synth-alert-title">' + (alert.title || '') + '</div>' +
+                    '<div class="synth-alert-desc">' + (alert.description || '') + '</div>' +
+                    '</div>' +
+                    '</div>';
+            });
+        }
+        alertsEl.innerHTML = alertsHtml;
+    }
+
+    // --- Forces & Fragilites ---
+    var forcesEl = document.getElementById('synth-forces-list');
+    if (forcesEl && narrative.forces) {
+        forcesEl.innerHTML = narrative.forces.map(function(f) { return '<li>' + f + '</li>'; }).join('');
+    }
+    var fragsEl = document.getElementById('synth-fragilites-list');
+    if (fragsEl && narrative.fragilites) {
+        fragsEl.innerHTML = narrative.fragilites.map(function(f) { return '<li>' + f + '</li>'; }).join('');
+    }
+
+    // --- Narrative text ---
+    var narrativeEl = document.getElementById('synth-narrative-text');
+    if (narrativeEl && narrative.syntheseNarrative) {
+        narrativeEl.textContent = narrative.syntheseNarrative;
+    }
+
+    // --- Priorites d'action ---
+    var prioritesEl = document.getElementById('synth-priorites-list');
+    if (prioritesEl && narrative.prioritesAction) {
+        var prioHtml = '';
+        narrative.prioritesAction.forEach(function(action, idx) {
+            // Remove the leading "1. " numbering from the narrative data
+            var cleanAction = action.replace(/^\d+\.\s*/, '');
+            var parts = cleanAction.split(' \u2014 ');
+            var title = parts[0] || cleanAction;
+            var desc = parts[1] || '';
+            prioHtml += '<div class="priority-card">' +
+                '<div class="priority-number">' + (idx + 1) + '</div>' +
+                '<div class="priority-content">' +
+                '<div class="priority-title">' + title + '</div>' +
+                (desc ? '<div class="priority-desc">' + desc + '</div>' : '') +
+                '</div>' +
+                '</div>';
+        });
+        if (prioHtml === '') {
+            prioHtml = '<p style="color:rgba(255,255,255,0.4);text-align:center;padding:16px;">Aucune action prioritaire identifi\u00e9e.</p>';
+        }
+        prioritesEl.innerHTML = prioHtml;
     }
 }
 
