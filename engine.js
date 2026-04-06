@@ -3159,19 +3159,36 @@ function validateCurrentStep() {
     return true;
 }
 
+var _validationAlertTimer = null;
 function showValidationAlert(msg) {
+    // Show alert in the fixed step-nav bar (always visible)
+    const navAlert = document.getElementById('step-nav-alert');
+    if (navAlert) {
+        if (_validationAlertTimer) clearTimeout(_validationAlertTimer);
+        navAlert.textContent = msg;
+        navAlert.classList.remove('hidden');
+        navAlert.style.animation = 'none';
+        navAlert.offsetHeight;
+        navAlert.style.animation = '';
+        _validationAlertTimer = setTimeout(() => {
+            navAlert.classList.add('hidden');
+            _validationAlertTimer = null;
+        }, 5000);
+    }
+    // Also show the old inline alert
     const el = document.getElementById('step-validation-alert');
     const msgEl = document.getElementById('step-validation-msg');
     if (el && msgEl) {
         msgEl.textContent = msg;
         el.classList.remove('hidden');
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
 function hideValidationAlert() {
     const el = document.getElementById('step-validation-alert');
     if (el) el.classList.add('hidden');
+    const navAlert = document.getElementById('step-nav-alert');
+    if (navAlert) navAlert.classList.add('hidden');
     document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
 }
 
