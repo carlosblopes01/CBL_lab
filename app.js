@@ -16,9 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('sidebar').classList.remove('open');
         window.scrollTo(0, 0);
 
-        // Hide floating CTA on profil (step-nav takes over), show on other sections
-        const cta = document.getElementById('cta-floating');
-        if (cta) cta.style.display = sectionId === 'profil' ? 'none' : '';
 
         setTimeout(() => {
             if (target) {
